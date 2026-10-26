@@ -25,7 +25,8 @@ exports.transcribe = async function (input, config, ctx) {
       data: ctx.helpers.encoding.bytesToBase64(bytes),
       format: format,
     },
-    response_format: "json",
+    response_format: "verbose_json",
+    timestamp_granularities: ["segment", "word"],
   };
   if (input.language && input.language !== "auto") {
     body.language = ctx.helpers.languages.toIso6391(input.language);
@@ -44,5 +45,5 @@ exports.transcribe = async function (input, config, ctx) {
   var result = ctx.helpers.openai.audio.parseTranscription(
     await ctx.http.request(request),
   );
-  return { text: result.text };
+  return result;
 };

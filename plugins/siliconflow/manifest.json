@@ -5,7 +5,7 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.1.1",
+  "version": "1.1.2",
   "apiVersion": "1",
   "icon": "assets/logo.png",
   "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
@@ -134,16 +134,16 @@
     },
     {
       "id": "transcriptions",
-      "name": "音频转写",
+      "name": "音频转写（Qwen，无时间戳）",
       "nameI18n": {
-        "zh": "音频转写",
-        "en": "Audio transcription",
-        "zh_TW": "音訊轉寫",
-        "ja": "音声文字起こし",
-        "ko": "음성 전사",
-        "tr": "Ses transkripsiyonu",
-        "vi": "Chép lời âm thanh",
-        "ru": "Транскрипция аудио"
+        "zh": "音频转写（Qwen，无时间戳）",
+        "en": "Audio transcription (Qwen, no timestamps)",
+        "zh_TW": "音訊轉寫（Qwen，無時間戳）",
+        "ja": "音声文字起こし（Qwen、タイムスタンプなし）",
+        "ko": "음성 전사 (Qwen, 타임스탬프 없음)",
+        "tr": "Ses transkripsiyonu (Qwen, zaman damgasız)",
+        "vi": "Chép lời (Qwen, không có mốc thời gian)",
+        "ru": "Транскрипция (Qwen, без временных меток)"
       },
       "implementation": {
         "kind": "script",
@@ -152,6 +152,7 @@
       "capabilities": {
         "transcribe": {
           "handler": "transcribe",
+          "timestamps": false,
           "outputModes": [
             "complete"
           ]
@@ -180,11 +181,70 @@
       "models": [
         {
           "id": "Qwen/Qwen3-ASR-1.7B",
-          "name": "Qwen3-ASR-1.7B"
-        },
+          "name": "Qwen3-ASR-1.7B",
+          "capabilities": {
+            "transcribe": {
+              "timestamps": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "xingchen-transcriptions",
+      "name": "音频转写（星辰，分段时间戳）",
+      "nameI18n": {
+        "zh": "音频转写（星辰，分段时间戳）",
+        "en": "Audio transcription (XingChen, segment timestamps)",
+        "zh_TW": "音訊轉寫（星辰，分段時間戳）",
+        "ja": "音声文字起こし（XingChen、区間タイムスタンプ）",
+        "ko": "음성 전사 (XingChen, 구간 타임스탬프)",
+        "tr": "Ses transkripsiyonu (XingChen, segment zaman damgaları)",
+        "vi": "Chép lời (XingChen, mốc thời gian theo đoạn)",
+        "ru": "Транскрипция (XingChen, метки сегментов)"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/transcribe.js"
+      },
+      "capabilities": {
+        "transcribe": {
+          "handler": "transcribe",
+          "timestamps": true,
+          "outputModes": [
+            "complete"
+          ]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "defaultValue": "XingChenAGI/XingChenASR-V3.2-Ultra",
+          "required": true
+        }
+      ],
+      "modelField": "model",
+      "models": [
         {
           "id": "XingChenAGI/XingChenASR-V3.2-Ultra",
-          "name": "XingChenASR-V3.2-Ultra"
+          "name": "XingChenASR-V3.2-Ultra",
+          "capabilities": {
+            "transcribe": {
+              "timestamps": true
+            }
+          }
         }
       ]
     },

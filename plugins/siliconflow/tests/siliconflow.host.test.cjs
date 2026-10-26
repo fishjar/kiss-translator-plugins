@@ -23,6 +23,7 @@ const pack = readProviderPackage(
 const models = {
   "chat-completions": "deepseek-ai/DeepSeek-V4.1-Flash",
   transcriptions: "Qwen/Qwen3-ASR-1.7B",
+  "xingchen-transcriptions": "XingChenAGI/XingChenASR-V3.2-Ultra",
   paddleocr: "PaddlePaddle/PaddleOCR-VL-1.5",
   "deepseek-ocr": "deepseek-ai/DeepSeek-OCR",
 };
@@ -120,7 +121,7 @@ const audio = (f) => ({
   ),
 });
 
-test("production package parser and four service definitions preserve model, config and capability boundaries", () => {
+test("production package parser and service definitions preserve model, config and capability boundaries", () => {
   assert.equal(pack.manifest.id, "siliconflow");
   assert.equal(pack.manifest.version, manifest.version);
   assert.deepEqual(
@@ -150,7 +151,10 @@ test("production package parser and four service definitions preserve model, con
       supportsApiCapability(instance, "parseImage"),
       ["paddleocr", "deepseek-ocr"].includes(id),
     );
-    assert.ok(!instance.provider.capabilities.transcribe?.timestamps);
+    assert.equal(
+      instance.provider.capabilities.transcribe?.timestamps === true,
+      id === "xingchen-transcriptions",
+    );
     assert.ok(!instance.provider.capabilities.parseImage?.coordinates);
     assert.equal(projectInstanceConfig(instance).config.apiKey, undefined);
     assert.equal(
@@ -259,18 +263,28 @@ for (const capability of ["chat", "translate"]) {
 }
 
 for (const model of asrModels)
-  test(`${model} uploads real multipart file bytes and sends only documented body fields`, async () => {
-    const f = fixture("transcriptions", model),
+  test(`${model} uploads real multipart file bytes and requests its supported timing`, async () => {
+    const timestamped = model === asrModels[1];
+    const f = fixture(timestamped ? "xingchen-transcriptions" : "transcriptions", model),
       input = audio(f);
-    f.respond(() => Response.json({ text: "你好" }));
+    const response = timestamped
+      ? { text: "你好", segments: [{ start: 0, end: 1, text: "你好" }] }
+      : { text: "你好" };
+    f.respond(() => Response.json(response));
     assert.deepEqual(
       await f.invoke("transcribe", { ...input, language: "zh-CN" }),
-      { text: "你好" },
+      response,
     );
     const { url, init } = f.calls[0];
     assert.equal(url, "https://api.siliconflow.cn/v1/audio/transcriptions");
     assert.ok(init.body instanceof FormData);
-    assert.deepEqual([...init.body.keys()], ["file", "model"]);
+    assert.deepEqual([...init.body.keys()], timestamped
+      ? ["file", "model", "response_format"]
+      : ["file", "model"]);
+    if (timestamped) {
+      assert.equal(init.body.get("response_format"), "verbose_json");
+      assert.equal(init.body.has("timestamp_granularities[]"), false);
+    }
     assert.equal(init.body.get("model"), model);
     assert.equal(init.body.get("file").type, "audio/wav");
     assert.equal(init.body.get("file").name, "audio.wav");
@@ -429,16 +443,17 @@ test("transcription rejects foreign assets and missing timestamp results", async
   );
 });
 
-test("one transcription definition provides both models and isolated model configuration", () => {
+test("separate transcription definitions declare the tested timestamp capabilities", () => {
   const service = pack.manifest.services.find(item => item.id === "transcriptions");
-  assert.deepEqual(service.models.map(item => item.id), asrModels);
+  assert.deepEqual(service.models.map(item => item.id), [asrModels[0]]);
   const first = fixture("transcriptions").instance;
-  const second = fixture("transcriptions", asrModels[1]).instance;
+  const second = fixture("xingchen-transcriptions").instance;
   assert.equal(first.pluginConfig.model, asrModels[0]);
   assert.equal(second.pluginConfig.model, asrModels[1]);
   second.pluginConfig.model = "custom/asr";
   assert.equal(first.pluginConfig.model, asrModels[0]);
   assert.ok(!first.provider.capabilities.transcribe.timestamps);
+  assert.equal(second.provider.capabilities.transcribe.timestamps, true);
 });
 
 test("transcription normalizes gateway errors and malformed successful responses", async () => {

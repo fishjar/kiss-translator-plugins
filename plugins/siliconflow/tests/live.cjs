@@ -226,8 +226,16 @@ async function check(
   );
   for (const model of ["Qwen/Qwen3-ASR-1.7B", "XingChenAGI/XingChenASR-V3.2-Ultra"])
     await check(
-      model + " transcription", "transcriptions", "transcribe", {},
-      (result) => { assert.match(result.text, /speech|recognition|test/i); },
+      model + " transcription",
+      model.startsWith("XingChenAGI/") ? "xingchen-transcriptions" : "transcriptions",
+      "transcribe", {},
+      (result) => {
+        assert.match(result.text, /speech|recognition|test/i);
+        if (model.startsWith("XingChenAGI/")) {
+          assert.ok(result.segments?.length > 1);
+          assert.ok(result.segments.every(segment => segment.end > segment.start));
+        } else assert.ok(!result.segments?.length);
+      },
       false, model,
     );
   for (const serviceId of ["paddleocr", "deepseek-ocr"])

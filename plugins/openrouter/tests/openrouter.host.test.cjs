@@ -129,7 +129,7 @@ test("ZIP parses with the production loader; two service definitions expose the 
       assert.deepEqual(api.provider.capabilities.transcribe.outputModes, [
         "complete",
       ]);
-      assert.ok(!api.provider.capabilities.transcribe.timestamps);
+      assert.equal(api.provider.capabilities.transcribe.timestamps, true);
     }
   }
 });
@@ -196,13 +196,25 @@ for (const handler of ["chat", "translate"]) {
   });
 }
 for (const model of ["openai/whisper-large-v3-turbo", "qwen/qwen3-asr-0.6b"]) {
-  test(`${model} sends binary audio as raw base64 JSON and maps text`, async () => {
+  test(`${model} sends binary audio as raw base64 JSON and preserves real word timing`, async () => {
     const f = fixture("transcriptions", model);
+    f.ctx.http.request = async (request) => {
+      f.calls.push(request);
+      return { status: 200, body: JSON.stringify({
+        text: "你好", language: "zh",
+        segments: [{ start: 0, end: 1, text: "你好" }],
+        words: [{ word: "你", start: 0, end: 0.4 }, { word: "好", start: 0.4, end: 1 }],
+      }) };
+    };
     const result = await f.invoke("transcribe", {
       ...audio,
       language: "zh-CN",
     });
-    assert.deepEqual(result, { text: "你好" });
+    assert.deepEqual(result, { text: "你好", language: "zh", segments: [
+      { start: 0, end: 1, text: "你好", words: [
+        { text: "你", start: 0, end: 0.4 }, { text: "好", start: 0.4, end: 1 },
+      ] },
+    ] });
     validateResult(
       "transcribe",
       result,
@@ -221,7 +233,8 @@ for (const model of ["openai/whisper-large-v3-turbo", "qwen/qwen3-asr-0.6b"]) {
     assert.deepEqual(f.calls[0].body, {
       model,
       input_audio: { data: "AAF/gP8=", format: "wav" },
-      response_format: "json",
+      response_format: "verbose_json",
+      timestamp_granularities: ["segment", "word"],
       language: "zh",
     });
     for (const language of [undefined, "", "auto"]) {
@@ -341,5 +354,5 @@ test("one transcription definition provides both models and isolated custom-mode
   assert.equal(custom.ctx.config.model, "custom/asr");
   second.ctx.config.model = "changed";
   assert.equal(first.ctx.config.model, expected[0]);
-  assert.ok(!first.api.provider.capabilities.transcribe.timestamps);
+  assert.equal(first.api.provider.capabilities.transcribe.timestamps, true);
 });

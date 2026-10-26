@@ -42,6 +42,18 @@ test("ASR reports provider failures and rejects unknown containers", async () =>
   );
 });
 
+test("XingChen requests segment timestamps with the verified minimal parameters", async () => {
+  const f = probe();
+  await transcribe(
+    { audio: { mimeType: "audio/mp4" } },
+    { ...f.config, model: "XingChenAGI/XingChenASR-V3.2-Ultra" },
+    f.ctx,
+  );
+  const body = f.requests[0].body;
+  assert.equal(body.response_format, "verbose_json");
+  assert.deepEqual(Object.keys(body).sort(), ["file", "model", "response_format"]);
+});
+
 test("ASR delegates HTTP failures to the SDK without swallowing errors", async () => {
   const f = probe(), input = { audio: { mimeType: "audio/wav" } };
   for (const response of [
