@@ -1,0 +1,54 @@
+name: Optional host compatibility
+
+on:
+  workflow_dispatch:
+    inputs:
+      host_ref:
+        description: "Host branch, tag or commit to test"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out plugins
+        uses: actions/checkout@v4
+        with:
+          path: plugins
+          persist-credentials: false
+      - name: Check out selected host
+        uses: actions/checkout@v4
+        with:
+          repository: fishjar/kiss-translator
+          ref: ${{ inputs.host_ref }}
+          path: host
+          persist-credentials: false
+      - name: Record tested revisions
+        shell: bash
+        run: |
+          plugin_sha=$(git -C plugins rev-parse HEAD)
+          host_sha=$(git -C host rev-parse HEAD)
+          printf 'Plugins: %s\nHost: %s\n' "$plugin_sha" "$host_sha" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install plugin dependencies
+        working-directory: plugins
+        run: npm ci
+      - name: Install host dependencies
+        working-directory: host
+        run: pnpm install --frozen-lockfile
+      - name: Test host compatibility with injected responses
+        working-directory: plugins
+        env:
+          KISS_TRANSLATOR_ROOT: ${{ github.workspace }}/host
+        run: npm run test:host

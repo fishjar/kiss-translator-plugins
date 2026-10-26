@@ -16,6 +16,7 @@ const { runDeclarative } = load("providers/declarative.js");
 const { providerHelpers } = load("providers/sdk/index.js");
 const { createTranslationHelpers } = load("providers/sdk/translation.js");
 const { supportsApiCapability } = load("config/serviceSelection.js");
+const manifest = require("../manifest.json");
 const pack = readProviderPackage(
   new Uint8Array(buildPackage(path.resolve(__dirname, "..")).bytes),
 );
@@ -121,7 +122,7 @@ const audio = (f) => ({
 
 test("production package parser and four service definitions preserve model, config and capability boundaries", () => {
   assert.equal(pack.manifest.id, "siliconflow");
-  assert.equal(pack.manifest.version, "1.1.0");
+  assert.equal(pack.manifest.version, manifest.version);
   assert.deepEqual(
     pack.manifest.services.map((service) => service.id),
     Object.keys(models),
@@ -438,4 +439,24 @@ test("one transcription definition provides both models and isolated model confi
   second.pluginConfig.model = "custom/asr";
   assert.equal(first.pluginConfig.model, asrModels[0]);
   assert.ok(!first.provider.capabilities.transcribe.timestamps);
+});
+
+test("transcription normalizes gateway errors and malformed successful responses", async () => {
+  const f = fixture("transcriptions"), input = audio(f);
+  for (const status of [502, 504]) {
+    f.respond(() => new Response("<html>private gateway response</html>", { status }));
+    await assert.rejects(f.invoke("transcribe", input), { code: "HTTP_ERROR" });
+  }
+  for (const body of ["<html>private gateway response</html>", "", '{"text":']) {
+    f.respond(() => new Response(body));
+    await assert.rejects(f.invoke("transcribe", input), {
+      code: "INVALID_RESPONSE",
+      message: "Invalid transcription JSON.",
+    });
+  }
+  f.respond(() => Response.json({ message: "Model unavailable" }));
+  await assert.rejects(f.invoke("transcribe", input), {
+    code: "PROVIDER_ERROR",
+    message: "Model unavailable",
+  });
 });

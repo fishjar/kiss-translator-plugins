@@ -42,6 +42,7 @@ jobs:
             git -C .published checkout --orphan dist
             git -C .published rm -rf .
           fi
+          node scripts/prune-retired.cjs .published
           cp -R dist/. .published/
           cd .published
           git config user.name github-actions[bot]

@@ -9,6 +9,27 @@ const { check } = require("../scripts/check.cjs");
 const { buildPackage } = require("../scripts/build.cjs");
 const { readPackageZip } = require("../scripts/package-files.cjs");
 
+test("injected LICENSE counts towards the final archive file and size limits", (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kiss-license-limits-"));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const source = "exports.chat = () => ({ text: 'ok' });";
+  const manifest = {
+    manifestVersion: 1, apiVersion: "1", id: "license-test", version: "1.0.0",
+    services: [{ id: "chat", implementation: { kind: "script", entry: "chat.js" }, capabilities: { chat: { handler: "chat" } } }],
+    resources: Array.from({ length: 98 }, (_, index) => ({ path: `resource-${index}.txt` })),
+  };
+  fs.writeFileSync(path.join(dir, "chat.js"), source);
+  for (const resource of manifest.resources) fs.writeFileSync(path.join(dir, resource.path), "");
+  fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify(manifest));
+  assert.throws(() => buildPackage(dir), /file count/);
+
+  manifest.resources = [{ path: "padding.bin" }];
+  const json = JSON.stringify(manifest);
+  fs.writeFileSync(path.join(dir, "manifest.json"), json);
+  fs.writeFileSync(path.join(dir, "padding.bin"), Buffer.alloc(10 * 1024 * 1024 - Buffer.byteLength(json) - Buffer.byteLength(source)));
+  assert.throws(() => buildPackage(dir), /exceeds 10 MiB/);
+});
+
 test("standalone directory and ZIP checks do not execute scripts or require a host", async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kiss-check-"));
   try {

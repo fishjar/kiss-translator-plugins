@@ -2,14 +2,16 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
 const { zipSync } = require("fflate");
+const { pruneRetired } = require("./prune-retired.cjs");
 
 const root = path.resolve(__dirname, "..");
 const base = "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist";
 
 function buildPackage(folder) {
-  const { readPackageDirectory } = require("./package-files.cjs");
+  const { readPackageDirectory, validatePackageFiles } = require("./package-files.cjs");
   const content = readPackageDirectory(folder);
-  const manifest = JSON.parse(content["manifest.json"].toString("utf8"));
+  content.LICENSE = Buffer.from(fs.readFileSync(path.join(root, "LICENSE"), "utf8").replace(/\r\n/g, "\n"));
+  const manifest = validatePackageFiles(content);
   const files = {};
   for (const entry of Object.keys(content).sort()) {
     files[entry] = [content[entry], { mtime: new Date(2000, 0, 1) }];
@@ -45,6 +47,7 @@ function build(projectRoot = root) {
     if (fs.existsSync(file) && !fs.readFileSync(file).equals(pack.bytes)) throw new Error("Published content changed; increase version: " + pack.relative);
     if (old?.version === pack.item.version && old.sha256 !== pack.item.sha256) throw new Error("Published fingerprint changed");
   }
+  pruneRetired(dist);
   for (const pack of packages) {
     const file = path.join(dist, pack.relative);
     fs.mkdirSync(path.dirname(file), { recursive: true });

@@ -42,6 +42,42 @@ test("ASR reports provider failures and rejects unknown containers", async () =>
   );
 });
 
+test("ASR delegates HTTP failures to the SDK without swallowing errors", async () => {
+  const f = probe(), input = { audio: { mimeType: "audio/wav" } };
+  for (const response of [
+    { status: 502, body: "<html>gateway</html>" },
+    { status: 504, body: '{"message":"gateway"}' },
+  ]) {
+    const failure = Object.assign(new Error("SDK error"), { code: "SDK_TEST_ERROR" });
+    f.ctx.http.request = async () => response;
+    f.ctx.helpers.openai.audio.parseTranscription = (actual) => {
+      assert.equal(actual, response);
+      throw failure;
+    };
+    await assert.rejects(transcribe(input, f.config, f.ctx), (error) => error === failure);
+  }
+});
+
+test("ASR normalizes malformed JSON without requiring a newer SDK parser", async () => {
+  const f = probe(), input = { audio: { mimeType: "audio/wav" } };
+  let parsed = false;
+  f.ctx.helpers.openai.audio.parseTranscription = (response) => {
+    parsed = true;
+    return JSON.parse(response.body);
+  };
+  for (const body of ["<html>private gateway response</html>", "", '{"text":']) {
+    f.ctx.http.request = async () => ({ status: 200, body });
+    await assert.rejects(transcribe(input, f.config, f.ctx), {
+      code: "INVALID_RESPONSE",
+      message: "Invalid transcription JSON.",
+    });
+  }
+  assert.equal(parsed, false);
+  f.ctx.http.request = async () => ({ status: 200, body: '{"text":"Hello"}' });
+  assert.equal((await transcribe(input, f.config, f.ctx)).text, "Hello");
+  assert.equal(parsed, true);
+});
+
 test("DeepSeek OCR puts image before custom prompt and preserves returned text", async () => {
   const f = probe();
   const result = await parseImage(

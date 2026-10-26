@@ -1,6 +1,8 @@
 # SiliconFlow 官方适配插件
 
-插件 ID：`siliconflow`，版本：`1.1.0`，要求宿主 SDK v1。由简约翻译项目维护，不代表 SiliconFlow 或模型提供商发布。
+1.1.1：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
+
+插件 ID：`siliconflow`，版本：`1.1.1`，要求宿主 SDK v1。由简约翻译项目维护，不代表 SiliconFlow 或模型提供商发布。
 
 ## 安装与配置
 

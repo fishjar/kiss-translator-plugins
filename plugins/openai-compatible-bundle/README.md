@@ -1,5 +1,7 @@
 # OpenAI 兼容协议 插件
 
+2.0.2：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
+
 2.0.1：移除未预置可用模型的带时间戳音频转写接口，保留聊天与翻译、普通音频转写、语音合成及图片全文识别四个服务，并统一接口功能名称。插件 ID 为 `openai-compatible-bundle`。
 
 这是 [SDK v1](../../docs/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。

@@ -1,6 +1,8 @@
 # OpenRouter 官方插件
 
-版本：1.1.0。需要支持 SDK v1、声明式规则 v2 和脚本插件的 KISS Translator。
+1.1.1：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
+
+版本：1.1.1。需要支持 SDK v1、声明式规则 v2 和脚本插件的 KISS Translator。
 
 | 服务                            | 默认模型                        | 能力                               |
 | ------------------------------- | ------------------------------- | ---------------------------------- |
@@ -28,8 +30,8 @@ npm test
 npm run build
 ```
 
-输出到 `dist/openrouter/1.1.0.zip` 和 `dist/catalog.json`。
-ZIP 只包含 Manifest 和实现文件。目录包含版本、能力摘要、下载地址及 ZIP SHA-256，并保留其他插件条目。
+输出到 `dist/openrouter/1.1.1.zip` 和 `dist/catalog.json`。
+ZIP 包含 Manifest、实现文件和根目录的 LICENSE。目录包含版本、能力摘要、下载地址及 ZIP SHA-256，并保留其他插件条目。
 同版本的不同内容禁止覆盖；相同输入生成相同 ZIP。
 目录中的线上地址约定发布至官方仓库 `dist` 分支，执行本地打包不等于已发布。
 可通过 KISS Translator 的“接口插件 → 官方插件”联网安装，或导入独立 ZIP／插件文件夹。

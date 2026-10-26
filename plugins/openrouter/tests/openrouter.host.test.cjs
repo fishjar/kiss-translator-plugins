@@ -23,6 +23,7 @@ const manifest = JSON.parse(
 const files = Object.fromEntries(
   [
     "manifest.json",
+    manifest.icon,
     ...new Set(manifest.services.map((s) => s.implementation.entry)),
   ].map((file) => [file, fs.readFileSync(path.join(root, file))]),
 );
@@ -101,7 +102,7 @@ function stream(f, text, terminal = true) {
 
 test("ZIP parses with the production loader; two service definitions expose the intended capabilities", () => {
   assert.equal(pack.manifest.id, "openrouter");
-  assert.equal(pack.manifest.version, "1.1.0");
+  assert.equal(pack.manifest.version, manifest.version);
   assert.equal(pack.manifest.services.length, 2);
   for (const id of [
     "chat-completions",
@@ -284,25 +285,34 @@ test("streamed provider errors propagate for both chat and translation", async (
     });
   }
 });
-test("packaging is deterministic, produces an installable ZIP and matching official catalog", () => {
-  const { execFileSync } = require("node:child_process");
+test("packaging is deterministic, produces an installable ZIP and matching official catalog", (t) => {
   const { createHash } = require("node:crypto");
-  const build = path.resolve(root, "../../scripts/build.cjs");
-  execFileSync(process.execPath, [build]);
-  const dist = path.resolve(root, "../../dist");
-  const file = path.join(dist, "openrouter/1.1.0.zip");
+  const { build } = require("../../../scripts/build.cjs");
+  const project = fs.mkdtempSync(path.join(require("node:os").tmpdir(), "openrouter-host-"));
+  t.after(() => fs.rmSync(project, { recursive: true, force: true }));
+  fs.cpSync(root, path.join(project, "plugins/openrouter"), { recursive: true });
+  build(project);
+  const dist = path.join(project, "dist");
+  const file = path.join(dist, "openrouter", `${manifest.version}.zip`);
   const bytes = fs.readFileSync(file);
-  execFileSync(process.execPath, [build]);
+  build(project);
   assert.deepEqual(fs.readFileSync(file), bytes);
   const installed = readProviderPackage(new Uint8Array(bytes));
   assert.equal(installed.manifest.id, "openrouter");
+  assert.equal(installed.manifest.version, manifest.version);
   assert.equal(installed.manifest.services.length, 2);
   const { unzipSync } = hostRequire("fflate");
   assert.deepEqual(Object.keys(unzipSync(bytes)).sort(), [
+    "LICENSE",
+    "assets/logo.png",
     "manifest.json",
     "services/chat.json",
     "services/transcribe.js",
   ]);
+  assert.equal(
+    Buffer.from(unzipSync(bytes).LICENSE).toString("utf8"),
+    fs.readFileSync(path.resolve(root, "../../LICENSE"), "utf8").replace(/\r\n/g, "\n"),
+  );
   const catalog = JSON.parse(
     fs.readFileSync(path.join(dist, "catalog.json"), "utf8"),
   );
@@ -313,6 +323,10 @@ test("packaging is deterministic, produces an installable ZIP and matching offic
     createHash("sha256").update(bytes).digest("hex"),
   );
   assert.equal(entries[0].version, installed.manifest.version);
+  assert.equal(
+    entries[0].downloadUrl,
+    `https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/${manifest.version}.zip`,
+  );
 });
 
 test("one transcription definition provides both models and isolated custom-model instances", () => {

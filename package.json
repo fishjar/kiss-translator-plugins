@@ -1,7 +1,7 @@
 {
   "name": "kiss-translator-plugins",
   "private": true,
-  "license": "GPL-3.0",
+  "license": "MIT",
   "scripts": {
     "build": "node scripts/build.cjs",
     "test": "npm run test:packages && npm run test:protocol",

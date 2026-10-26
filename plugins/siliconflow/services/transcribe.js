@@ -43,10 +43,19 @@ exports.transcribe = async function (input, config, ctx) {
     model: config.model,
   };
   var response = await ctx.http.request(request);
-  var data =
-    typeof response.body === "string"
-      ? JSON.parse(response.body)
-      : response.body;
+  if (response.status < 200 || response.status >= 300) {
+    return ctx.helpers.openai.audio.parseTranscription(response);
+  }
+  var data = response.body;
+  if (typeof data === "string") {
+    try {
+      data = JSON.parse(data);
+    } catch {
+      var invalidResponse = new Error("Invalid transcription JSON.");
+      invalidResponse.code = "INVALID_RESPONSE";
+      throw invalidResponse;
+    }
+  }
   if (data && data.message) {
     var failure = new Error(data.message);
     failure.code = "PROVIDER_ERROR";

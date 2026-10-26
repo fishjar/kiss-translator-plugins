@@ -5,8 +5,9 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.1.0",
+  "version": "1.1.1",
   "apiVersion": "1",
+  "icon": "assets/logo.png",
   "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
   "descriptionI18n": {
     "zh": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
@@ -31,7 +32,14 @@
       "key": "baseUrl",
       "label": "API 基础地址（包含 /v1）",
       "labelI18n": {
-        "en": "API base URL (including /v1)"
+        "zh": "API 基础地址（包含 /v1）",
+        "en": "API base URL (including /v1)",
+        "zh_TW": "API 基礎地址（包含 /v1）",
+        "ja": "APIベースURL（/v1を含む）",
+        "ko": "API 기본 URL (/v1 포함)",
+        "tr": "API temel URL'si (/v1 dahil)",
+        "vi": "URL gốc API (gồm /v1)",
+        "ru": "Базовый URL API (включая /v1)"
       },
       "type": "text",
       "defaultValue": "https://api.siliconflow.cn/v1",
@@ -90,7 +98,14 @@
           "key": "model",
           "label": "模型 ID",
           "labelI18n": {
-            "en": "Model ID"
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
           },
           "type": "text",
           "defaultValue": "deepseek-ai/DeepSeek-V4.1-Flash",
@@ -147,7 +162,14 @@
           "key": "model",
           "label": "模型 ID",
           "labelI18n": {
-            "en": "Model ID"
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
           },
           "type": "text",
           "defaultValue": "Qwen/Qwen3-ASR-1.7B",
@@ -202,7 +224,14 @@
           "key": "model",
           "label": "模型 ID",
           "labelI18n": {
-            "en": "Model ID"
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
           },
           "type": "text",
           "defaultValue": "PaddlePaddle/PaddleOCR-VL-1.5",
@@ -258,7 +287,14 @@
           "key": "model",
           "label": "模型 ID",
           "labelI18n": {
-            "en": "Model ID"
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
           },
           "type": "text",
           "defaultValue": "deepseek-ai/DeepSeek-OCR",

@@ -27,12 +27,20 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 外部插件作者可为公开仓库添加 `kiss-translator-plugin` Topic，供宿主自动发现；一个仓库对应一个插件，默认分支根目录必须包含 manifest.json。Topic 不代表官方审核。
 
-本项目部分源码迁自 fishjar/kiss-translator，遵循 GPL-3.0，保留原项目及贡献者署名。
+本项目采用 [MIT License](LICENSE)。部分源码迁自 fishjar/kiss-translator，保留原项目及贡献者署名；宿主仓库的许可证独立维护。发布 ZIP 包含许可证全文。
+
+四个官方插件通过 Manifest 的 `icon` 引用包内 `assets/logo.png`，安装后从本机读取，离线也可显示。服务实例与本机模板版本不一致、缺少模板或图标解码失败时回退默认图标；已有实例需通过宿主现有升级流程匹配新模板。图标不随实例同步到其他设备。DeepSeek、OpenRouter 和 SiliconFlow 品牌图形归各自所有者，代码的 MIT 许可证不重新授权品牌资产；来源与原始素材见各插件的 `assets/SOURCES.md`。OpenAI 兼容协议采用中性的接口连接图标。
+
+构建和发布仅清理停用的 `example-deepseek`、`example-openai-compatible-bundle` 分发目录，保留现役插件的历史 ZIP 和其他文件。清理生效后，两个旧示例的直接下载链接不可用；已有实例快照不会被删除，但不能再通过旧链接恢复模板。远端清理随正常发布提交生效，不重写分支历史。
 
 ## 本地校验与发布门槛
 
 仅需本仓库和 Node.js 22：`npm ci`、`npm run check`、`npm test`、`npm run build`。`check -- <目录或 ZIP>` 检查单包，不带参数检查所有官方插件。默认测试覆盖打包与供应商适配逻辑，SDK 使用测试替身，不读取或下载宿主源码。
 
-`npm run test:host` 是可选的真实宿主 SDK 集成测试，需额外准备宿主源码和依赖，可用 `KISS_TRANSLATOR_ROOT` 指定位置。它不是打包、CI 或发布的前置条件，也不绑定宿主分支或提交 SHA。
+`npm run test:host` 是可选的真实宿主 SDK 集成测试，需额外准备宿主源码和依赖，可用 `KISS_TRANSLATOR_ROOT` 指定位置。它不是默认 CI、打包或发布的前置条件，也不绑定宿主分支或提交 SHA。默认测试还检查官方插件设置标签的八语言完整性，这项元数据要求不限制第三方插件加载。
+
+需要在 Actions 验证时，手动运行 [Optional host compatibility](.github/workflows/compatibility.yml)，必填 `host_ref`，选择 `fishjar/kiss-translator` 的分支、标签或提交。工作流记录双方实际提交 SHA，使用真实宿主 SDK、解析器和执行器配合模拟 HTTP 响应；不需要供应商密钥，不执行发布。它不自动触发、不作为合并必需检查，也不阻塞发布工作流；主仓库无需对应修改。尚未实际运行的工作流不能视为已通过线上验收。
+
+模型参数分支是插件的适配策略；独立测试证明请求构造逻辑，宿主集成证明指定源码版本下的执行行为，两者都不能证明所有真实模型接受这些参数。真实服务与浏览器验收需要有效凭据和实际调用，单独记录验证版本及结果。
 
 插件在 Manifest 和目录中声明 `apiVersion`、可选 `minHostVersion`。宿主加载列表时判断兼容性，并在安装和执行边界复核；发布器只校验版本格式，不根据某台机器上的宿主版本限制发布。静态检查、适配单元测试、宿主集成、真实厂家调用与浏览器验收分别记录。

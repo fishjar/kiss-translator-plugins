@@ -1326,7 +1326,7 @@ GitHub 使用项目根地址，例如 https://github.com/owner/repo，支持末�
 
 ### 12.4 发布
 
-发布包只需要 Manifest、引用入口、资源和图标，不包含凭据、个人配置、node_modules、构建缓存或本机路径。README 说明协议、能力、配置和版本变化。先完成本地实际调用，再制作 ZIP；GitHub 分发需要验证项目根 URL 的安装与更新。不同协议的服务应分别说明所需基础地址。
+发布包包含 Manifest、引用入口、资源、图标及 MIT LICENSE，不包含凭据、个人配置、node_modules、构建缓存或本机路径。README 说明协议、能力、配置和版本变化。先完成本地实际调用，再制作 ZIP；GitHub 分发需要验证项目根 URL 的安装与更新。不同协议的服务应分别说明所需基础地址。
 
 ### 12.5 在本仓库新增官方插件
 
@@ -1347,7 +1347,7 @@ GitHub 使用项目根地址，例如 https://github.com/owner/repo，支持末�
    仅需 Node.js 22 和本仓库依赖。`npm test` 自动运行根目录打包回归和插件 `*.test.cjs` 适配测试，排除 `*.host.test.cjs`；真实厂家测试单独显式执行。打包、默认测试和 CI 不读取或下载宿主源码。
 
 5. 如需额外验证宿主 SDK，设置 `KISS_TRANSLATOR_ROOT` 并运行 `npm run test:host`；这不是发布门槛。公共宿主加载器与 Sval 适配器位于 `tests/support/`，供应商样例留在各插件目录。导入 ZIP 或单插件文件夹进行扩展验收；有凭据时逐服务发出最小真实请求，无凭据时注明未实测。不要把密钥写入源码、日志或发布包。分别记录独立测试、宿主集成、真实厂家调用与浏览器验收。
-6. 核对 `dist/<plugin-id>/<version>.zip` 与 `dist/catalog.json`。构建脚本自动扫描 `plugins/`，仅打包 Manifest 引用的实现、资源和图标，并生成目录项和 ZIP SHA-256，无需手填目录或哈希；README 和测试文件不进入安装包。
+6. 核对 `dist/<plugin-id>/<version>.zip` 与 `dist/catalog.json`。构建脚本自动扫描 `plugins/`，打包 Manifest 引用的实现、资源、图标以及根目录 MIT LICENSE，并生成目录项和 ZIP SHA-256，无需手填目录或哈希；README 和测试文件不进入安装包。
 7. 修改已发布包内容必须递增该插件 Manifest 三段版本，禁止覆盖旧版本或降级。现有构建使用固定文件顺序和 ZIP 时间戳，保留该可复现行为；本地 `dist/` 被忽略，不提交生成物。
 8. 合并到 `main` 后，[现有 Actions](../.github/workflows/publish.yml)执行统一校验、打包回归、独立适配测试和构建，恢复历史安装包并发布到 `dist` 分支；PR 只校验、不发布。发布后读取[公开目录](https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.json)，下载新 ZIP 并核对 SHA-256，同时检查安装包 ID、版本和可安装性。
 

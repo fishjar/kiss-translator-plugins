@@ -16,7 +16,17 @@ for (const folder of fs.readdirSync(path.join(root, "plugins"))) {
     const pack = buildPackage(path.join(root, "plugins", folder));
     assert.deepEqual(pack.bytes, buildPackage(path.join(root, "plugins", folder)).bytes);
     const files = unzipSync(pack.bytes);
+    assert.equal(Buffer.from(files.LICENSE).toString("utf8"), fs.readFileSync(path.join(root, "LICENSE"), "utf8").replace(/\r\n/g, "\n"));
+    assert.match(Buffer.from(files.LICENSE).toString("utf8"), /^MIT License\n/);
     const manifest = JSON.parse(Buffer.from(files["manifest.json"]));
+    assert.equal(manifest.icon, "assets/logo.png");
+    const icon = Buffer.from(files[manifest.icon]);
+    assert.ok(icon.length <= 256 * 1024);
+    assert.equal(icon.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+    assert.equal(icon.toString("ascii", 12, 16), "IHDR");
+    assert.equal(icon.readUInt32BE(16), 128);
+    assert.equal(icon.readUInt32BE(20), 128);
+    assert.ok(!Object.keys(files).some((name) => /logo-source|SOURCES\.md/.test(name)));
     assert.equal(manifest.id, pack.item.id);
     assert.equal(manifest.version, pack.item.version);
     for (const locale of ["zh", "en", "zh_TW", "ja", "ko", "tr", "vi", "ru"]) {
