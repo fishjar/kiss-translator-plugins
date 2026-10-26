@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "plugins": [
     {
-      "id": "example-deepseek",
+      "id": "deepseek",
       "name": "DeepSeek",
       "nameI18n": {
         "zh": "DeepSeek",
@@ -31,11 +31,11 @@
         "chat",
         "translate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/example-deepseek/1.2.2.zip",
-      "sha256": "b0bd9f738e163d38818afec8b1919694203c9400658636bd986c6e69bcca39ed"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.2.zip",
+      "sha256": "ff80d7e73b852b75121b1070ce921597d96f2de065355f8044c5097067512e06"
     },
     {
-      "id": "example-openai-compatible-bundle",
+      "id": "openai-compatible-bundle",
       "name": "OpenAI 兼容协议",
       "nameI18n": {
         "zh": "OpenAI 兼容协议",
@@ -67,8 +67,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/example-openai-compatible-bundle/2.0.0.zip",
-      "sha256": "7f549def42db74e725365f1e9caf8a667c3ea5aecdbede886da0f5c08e4f42ec"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.0.zip",
+      "sha256": "cab0380b05198eb00df3b60344a9151579031e27c1c7b09aafd8d1ff4b30fc86"
     },
     {
       "id": "openrouter",
