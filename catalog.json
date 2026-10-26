@@ -89,6 +89,27 @@
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.0.0.zip",
       "sha256": "60affe9ce3af5141a2bf6ca918a929cbda96e64801bbcc5afca1446867a98c61"
+    },
+    {
+      "id": "siliconflow",
+      "name": "硅基流动 SiliconFlow",
+      "nameI18n": {
+        "en": "SiliconFlow"
+      },
+      "description": "DeepSeek 聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 全文识别。",
+      "descriptionI18n": {
+        "en": "DeepSeek chat and translation, Qwen and XingChen audio transcription, and full-text recognition with PaddleOCR and DeepSeek OCR."
+      },
+      "version": "1.0.0",
+      "apiVersion": "1",
+      "capabilities": [
+        "chat",
+        "translate",
+        "transcribe",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.0.0.zip",
+      "sha256": "ee352262e6235fb107e9579a3bc33fd0ccfec7de02bd7a22fed38de4821cb37e"
     }
   ]
 }
