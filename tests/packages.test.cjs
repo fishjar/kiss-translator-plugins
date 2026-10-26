@@ -5,6 +5,12 @@ const path = require("node:path");
 const { unzipSync } = require("fflate");
 const { buildPackage, build } = require("../scripts/build.cjs");
 const root = path.resolve(__dirname, "..");
+test("package bytes are independent of the builder timezone", () => {
+  const { execFileSync } = require("node:child_process");
+  const source = `const { buildPackage } = require(${JSON.stringify(path.join(root, "scripts/build.cjs"))}); console.log(buildPackage(${JSON.stringify(path.join(root, "plugins/deepseek"))}).item.sha256);`;
+  const hash = (timezone) => execFileSync(process.execPath, ["-e", source], { env: { ...process.env, TZ: timezone }, encoding: "utf8" }).trim();
+  assert.equal(hash("UTC"), hash("Asia/Shanghai"));
+});
 for (const folder of fs.readdirSync(path.join(root, "plugins"))) {
   test(`${folder}: deterministic installable archive with no development files`, () => {
     const pack = buildPackage(path.join(root, "plugins", folder));

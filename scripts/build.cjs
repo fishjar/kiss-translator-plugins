@@ -24,7 +24,8 @@ function buildPackage(folder) {
   const files = {};
   for (const entry of [...entries].sort()) {
     if (!safePath(entry)) throw new Error("Invalid package path: " + entry);
-    files[entry] = [fs.readFileSync(path.join(folder, entry)), { mtime: new Date("2000-01-01T00:00:00Z") }];
+    // ZIP stores local calendar fields, so a UTC Date would vary by build timezone.
+    files[entry] = [fs.readFileSync(path.join(folder, entry)), { mtime: new Date(2000, 0, 1) }];
   }
   const bytes = Buffer.from(zipSync(files, { level: 9 }));
   if (bytes.length > 5 * 1024 * 1024) throw new Error("Package exceeds 5 MiB");
