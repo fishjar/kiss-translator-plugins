@@ -14,25 +14,25 @@
         "vi": "DeepSeek",
         "ru": "DeepSeek"
       },
-      "description": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
+      "description": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
       "descriptionI18n": {
-        "zh": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
-        "en": "DeepSeek Chat Completions: chat, batch translation, streaming and thinking modes.",
-        "zh_TW": "DeepSeek Chat Completions：聊天、批次翻譯、串流輸出與思考模式。",
-        "ja": "DeepSeek Chat Completions：チャット、一括翻訳、ストリーミング、思考モード。",
-        "ko": "DeepSeek Chat Completions: 채팅, 일괄 번역, 스트리밍 및 사고 모드.",
-        "tr": "DeepSeek Chat Completions: sohbet, toplu çeviri, akış ve düşünme modları.",
-        "vi": "DeepSeek Chat Completions: trò chuyện, dịch hàng loạt, luồng và chế độ suy nghĩ.",
-        "ru": "DeepSeek Chat Completions: чат, пакетный перевод, потоковый вывод и режимы размышления."
+        "zh": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
+        "en": "DeepSeek chat and translation with batch translation, streaming output, and reasoning settings.",
+        "zh_TW": "DeepSeek 聊天與翻譯，支援批次翻譯、串流輸出與思考模式。",
+        "ja": "DeepSeek のチャットと翻訳。一括翻訳、ストリーミング出力、推論設定に対応。",
+        "ko": "DeepSeek 채팅 및 번역. 일괄 번역, 스트리밍 출력, 추론 설정을 지원합니다.",
+        "tr": "DeepSeek sohbet ve çeviri; toplu çeviri, akış çıktısı ve akıl yürütme ayarları sunar.",
+        "vi": "Trò chuyện và dịch với DeepSeek, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
+        "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
-      "version": "1.2.2",
+      "version": "1.2.3",
       "apiVersion": "1",
       "capabilities": [
         "chat",
         "translate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.2.zip",
-      "sha256": "ff80d7e73b852b75121b1070ce921597d96f2de065355f8044c5097067512e06"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.3.zip",
+      "sha256": "e1103d118fb986d1af8007e069f6178ab66c92eaa304826e4736ef3e6890146d"
     },
     {
       "id": "openai-compatible-bundle",
@@ -47,18 +47,18 @@
         "vi": "OpenAI Compatible",
         "ru": "OpenAI Compatible"
       },
-      "description": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
+      "description": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
       "descriptionI18n": {
-        "zh": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
-        "en": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "zh_TW": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "ja": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "ko": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "tr": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "vi": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-        "ru": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition."
+        "zh": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
+        "en": "OpenAI-compatible chat and translation, audio transcription, speech synthesis, and image text recognition.",
+        "zh_TW": "OpenAI 相容協定：聊天與翻譯、音訊轉寫、語音合成與圖片全文辨識。",
+        "ja": "OpenAI 互換プロトコルによるチャットと翻訳、音声文字起こし、音声合成、画像の全文認識。",
+        "ko": "OpenAI 호환 프로토콜을 통한 채팅 및 번역, 음성 전사, 음성 합성, 이미지 전체 텍스트 인식.",
+        "tr": "OpenAI uyumlu sohbet ve çeviri, ses transkripsiyonu, konuşma sentezi ve görüntü metni tanıma.",
+        "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
+        "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.0",
+      "version": "2.0.1",
       "apiVersion": "1",
       "capabilities": [
         "chat",
@@ -67,8 +67,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.0.zip",
-      "sha256": "cab0380b05198eb00df3b60344a9151579031e27c1c7b09aafd8d1ff4b30fc86"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.1.zip",
+      "sha256": "b245cc89f5028a703fcd851e34a96b097cec15d20c05bd54231fb8c5e08ea1ed"
     },
     {
       "id": "openrouter",
@@ -76,19 +76,26 @@
       "nameI18n": {
         "en": "OpenRouter"
       },
-      "description": "GPT-6 Luna 聊天与翻译，以及 Whisper 和 Qwen 音频转写。",
+      "description": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
       "descriptionI18n": {
-        "en": "GPT-6 Luna chat and translation, plus Whisper and Qwen audio transcription."
+        "zh": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+        "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
+        "zh_TW": "OpenRouter 聊天與翻譯，以及 Whisper、Qwen 音訊轉寫。",
+        "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
+        "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
+        "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
+        "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen.",
+        "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen."
       },
-      "version": "1.0.0",
+      "version": "1.1.0",
       "apiVersion": "1",
       "capabilities": [
         "chat",
         "translate",
         "transcribe"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.0.0.zip",
-      "sha256": "60affe9ce3af5141a2bf6ca918a929cbda96e64801bbcc5afca1446867a98c61"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.1.0.zip",
+      "sha256": "ef2890e0e018438286c089d58349042dad57c110303053780c965e8115f96f7b"
     },
     {
       "id": "siliconflow",
@@ -96,11 +103,18 @@
       "nameI18n": {
         "en": "SiliconFlow"
       },
-      "description": "DeepSeek 聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 全文识别。",
+      "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
       "descriptionI18n": {
-        "en": "DeepSeek chat and translation, Qwen and XingChen audio transcription, and full-text recognition with PaddleOCR and DeepSeek OCR."
+        "zh": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
+        "en": "SiliconFlow chat and translation, Qwen and XingChen audio transcription, and image text recognition with PaddleOCR and DeepSeek OCR.",
+        "zh_TW": "矽基流動：聊天與翻譯、Qwen 與星辰音訊轉寫，以及 PaddleOCR 與 DeepSeek OCR 圖片全文辨識。",
+        "ja": "SiliconFlow のチャットと翻訳、Qwen と XingChen による音声文字起こし、PaddleOCR と DeepSeek OCR による画像の全文認識。",
+        "ko": "SiliconFlow 채팅 및 번역, Qwen과 XingChen 음성 전사, PaddleOCR과 DeepSeek OCR 이미지 전체 텍스트 인식.",
+        "tr": "SiliconFlow sohbet ve çeviri, Qwen ve XingChen ile ses transkripsiyonu, PaddleOCR ve DeepSeek OCR ile görüntü metni tanıma.",
+        "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
+        "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.0.0",
+      "version": "1.1.0",
       "apiVersion": "1",
       "capabilities": [
         "chat",
@@ -108,8 +122,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.0.0.zip",
-      "sha256": "ee352262e6235fb107e9579a3bc33fd0ccfec7de02bd7a22fed38de4821cb37e"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.0.zip",
+      "sha256": "46e523e81d78c09f5428762de7c6c665f95ee430d25acc2c835156b79a3ba42e"
     }
   ]
 }
