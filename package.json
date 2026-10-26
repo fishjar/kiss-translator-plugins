@@ -1,0 +1,10 @@
+{
+  "name": "kiss-translator-plugins",
+  "private": true,
+  "license": "GPL-3.0",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": { "fflate": "0.8.3" }
+}

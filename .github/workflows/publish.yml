@@ -1,0 +1,52 @@
+name: Validate and publish plugins
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: plugins-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Preserve previously published packages
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/dist; then
+            mkdir -p dist
+            git archive origin/dist | tar -x -C dist
+          fi
+      - run: npm test
+      - run: npm run build
+      - name: Publish distribution branch
+        if: github.event_name != 'pull_request'
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/dist; then
+            git worktree add -B dist .published origin/dist
+          else
+            git worktree add --detach .published
+            git -C .published checkout --orphan dist
+            git -C .published rm -rf .
+          fi
+          cp -R dist/. .published/
+          cd .published
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish plugin catalog and packages"
+            git push origin HEAD:dist
+          fi

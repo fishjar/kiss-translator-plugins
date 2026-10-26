@@ -1,0 +1,70 @@
+{
+  "manifestVersion": 1,
+  "id": "example-signed-dictionary",
+  "name": "签名词典开发示例",
+  "version": "1.0.0",
+  "apiVersion": "1",
+  "description": "仅供开发演示，需要自定义词典服务端。",
+  "permissions": {
+    "network": [
+      "https://api.openai.com"
+    ],
+    "endpointFields": [
+      "baseUrl"
+    ]
+  },
+  "sharedSettings": [
+    {
+      "key": "baseUrl",
+      "label": "API 基础地址（包含 /v1）",
+      "type": "text",
+      "defaultValue": "https://api.openai.com/v1",
+      "required": true,
+      "labelI18n": {
+        "zh": "API 基础地址（包含 /v1）",
+        "en": "API base URL (including /v1)",
+        "zh_TW": "API 基礎地址（包含 /v1）",
+        "ja": "APIベースURL（/v1を含む）",
+        "ko": "API 기본 URL (/v1 포함)",
+        "tr": "API temel URL'si (/v1 dahil)",
+        "vi": "URL gốc API (gồm /v1)",
+        "ru": "Базовый URL API (включая /v1)"
+      }
+    },
+    {
+      "key": "apiKey",
+      "label": "API Key",
+      "type": "password",
+      "isSecret": true,
+      "required": true
+    }
+  ],
+  "services": [
+    {
+      "id": "signed-dictionary",
+      "name": "签名词典（mock/自定义服务）",
+      "implementation": {
+        "kind": "script",
+        "entry": "services/signed-dictionary.js"
+      },
+      "capabilities": {
+        "dictionary": {
+          "handler": "dictionary",
+          "outputModes": [
+            "complete"
+          ]
+        }
+      },
+      "nameI18n": {
+        "zh": "签名词典（mock/自定义服务）",
+        "en": "Signed dictionary (mock/custom service)",
+        "zh_TW": "簽名詞典（mock/自定義服務）",
+        "ja": "署名辞書（mock/カスタムサービス）",
+        "ko": "서명 사전(mock/사용자 정의 서비스)",
+        "tr": "İmzalı sözlük (mock/özel hizmet)",
+        "vi": "Từ điển có chữ ký (mock/dịch vụ tùy chỉnh)",
+        "ru": "Подписанный словарь (mock/пользовательский сервис)"
+      }
+    }
+  ]
+}
