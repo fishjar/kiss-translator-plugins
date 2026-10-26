@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "plugins": [
+    {
+      "id": "example-deepseek",
+      "name": "DeepSeek",
+      "nameI18n": {
+        "zh": "DeepSeek",
+        "en": "DeepSeek",
+        "zh_TW": "DeepSeek",
+        "ja": "DeepSeek",
+        "ko": "DeepSeek",
+        "tr": "DeepSeek",
+        "vi": "DeepSeek",
+        "ru": "DeepSeek"
+      },
+      "description": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
+      "descriptionI18n": {
+        "zh": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
+        "en": "DeepSeek Chat Completions: chat, batch translation, streaming and thinking modes.",
+        "zh_TW": "DeepSeek Chat Completions：聊天、批次翻譯、串流輸出與思考模式。",
+        "ja": "DeepSeek Chat Completions：チャット、一括翻訳、ストリーミング、思考モード。",
+        "ko": "DeepSeek Chat Completions: 채팅, 일괄 번역, 스트리밍 및 사고 모드.",
+        "tr": "DeepSeek Chat Completions: sohbet, toplu çeviri, akış ve düşünme modları.",
+        "vi": "DeepSeek Chat Completions: trò chuyện, dịch hàng loạt, luồng và chế độ suy nghĩ.",
+        "ru": "DeepSeek Chat Completions: чат, пакетный перевод, потоковый вывод и режимы размышления."
+      },
+      "version": "1.2.2",
+      "apiVersion": "1",
+      "capabilities": [
+        "chat",
+        "translate"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/example-deepseek/1.2.2.zip",
+      "sha256": "b0bd9f738e163d38818afec8b1919694203c9400658636bd986c6e69bcca39ed"
+    },
+    {
+      "id": "example-openai-compatible-bundle",
+      "name": "OpenAI 兼容协议",
+      "nameI18n": {
+        "zh": "OpenAI 兼容协议",
+        "en": "OpenAI Compatible",
+        "zh_TW": "OpenAI 相容協定",
+        "ja": "OpenAI Compatible",
+        "ko": "OpenAI Compatible",
+        "tr": "OpenAI Compatible",
+        "vi": "OpenAI Compatible",
+        "ru": "OpenAI Compatible"
+      },
+      "description": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
+      "descriptionI18n": {
+        "zh": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
+        "en": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "zh_TW": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "ja": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "ko": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "tr": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "vi": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
+        "ru": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition."
+      },
+      "version": "2.0.0",
+      "apiVersion": "1",
+      "capabilities": [
+        "chat",
+        "translate",
+        "transcribe",
+        "synthesizeSpeech",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/example-openai-compatible-bundle/2.0.0.zip",
+      "sha256": "7f549def42db74e725365f1e9caf8a667c3ea5aecdbede886da0f5c08e4f42ec"
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "nameI18n": {
+        "en": "OpenRouter"
+      },
+      "description": "GPT-6 Luna 聊天与翻译，以及 Whisper 和 Qwen 音频转写。",
+      "descriptionI18n": {
+        "en": "GPT-6 Luna chat and translation, plus Whisper and Qwen audio transcription."
+      },
+      "version": "1.0.0",
+      "apiVersion": "1",
+      "capabilities": [
+        "chat",
+        "translate",
+        "transcribe"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.0.0.zip",
+      "sha256": "60affe9ce3af5141a2bf6ca918a929cbda96e64801bbcc5afca1446867a98c61"
+    }
+  ]
+}
