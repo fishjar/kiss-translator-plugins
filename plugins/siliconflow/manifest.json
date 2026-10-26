@@ -5,7 +5,7 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.1.2",
+  "version": "1.1.3",
   "apiVersion": "1",
   "icon": "assets/logo.png",
   "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
@@ -134,16 +134,16 @@
     },
     {
       "id": "transcriptions",
-      "name": "音频转写（Qwen，无时间戳）",
+      "name": "音频转写（Qwen）",
       "nameI18n": {
-        "zh": "音频转写（Qwen，无时间戳）",
-        "en": "Audio transcription (Qwen, no timestamps)",
-        "zh_TW": "音訊轉寫（Qwen，無時間戳）",
-        "ja": "音声文字起こし（Qwen、タイムスタンプなし）",
-        "ko": "음성 전사 (Qwen, 타임스탬프 없음)",
-        "tr": "Ses transkripsiyonu (Qwen, zaman damgasız)",
-        "vi": "Chép lời (Qwen, không có mốc thời gian)",
-        "ru": "Транскрипция (Qwen, без временных меток)"
+        "zh": "音频转写（Qwen）",
+        "en": "Audio transcription (Qwen)",
+        "zh_TW": "音訊轉寫（Qwen）",
+        "ja": "音声文字起こし（Qwen）",
+        "ko": "음성 전사 (Qwen)",
+        "tr": "Ses transkripsiyonu (Qwen)",
+        "vi": "Chép lời (Qwen)",
+        "ru": "Транскрипция (Qwen)"
       },
       "implementation": {
         "kind": "script",
@@ -181,27 +181,22 @@
       "models": [
         {
           "id": "Qwen/Qwen3-ASR-1.7B",
-          "name": "Qwen3-ASR-1.7B",
-          "capabilities": {
-            "transcribe": {
-              "timestamps": false
-            }
-          }
+          "name": "Qwen3-ASR-1.7B"
         }
       ]
     },
     {
       "id": "xingchen-transcriptions",
-      "name": "音频转写（星辰，分段时间戳）",
+      "name": "音频转写（星辰）",
       "nameI18n": {
-        "zh": "音频转写（星辰，分段时间戳）",
-        "en": "Audio transcription (XingChen, segment timestamps)",
-        "zh_TW": "音訊轉寫（星辰，分段時間戳）",
-        "ja": "音声文字起こし（XingChen、区間タイムスタンプ）",
-        "ko": "음성 전사 (XingChen, 구간 타임스탬프)",
-        "tr": "Ses transkripsiyonu (XingChen, segment zaman damgaları)",
-        "vi": "Chép lời (XingChen, mốc thời gian theo đoạn)",
-        "ru": "Транскрипция (XingChen, метки сегментов)"
+        "zh": "音频转写（星辰）",
+        "en": "Audio transcription (XingChen)",
+        "zh_TW": "音訊轉寫（星辰）",
+        "ja": "音声文字起こし（XingChen）",
+        "ko": "음성 전사 (XingChen)",
+        "tr": "Ses transkripsiyonu (XingChen)",
+        "vi": "Chép lời (XingChen)",
+        "ru": "Транскрипция (XingChen)"
       },
       "implementation": {
         "kind": "script",
@@ -239,12 +234,7 @@
       "models": [
         {
           "id": "XingChenAGI/XingChenASR-V3.2-Ultra",
-          "name": "XingChenASR-V3.2-Ultra",
-          "capabilities": {
-            "transcribe": {
-              "timestamps": true
-            }
-          }
+          "name": "XingChenASR-V3.2-Ultra"
         }
       ]
     },

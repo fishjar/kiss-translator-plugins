@@ -8,6 +8,17 @@ const { zipSync } = require("fflate");
 const { check } = require("../scripts/check.cjs");
 const { buildPackage } = require("../scripts/build.cjs");
 const { readPackageZip } = require("../scripts/package-files.cjs");
+const { packagePaths } = require("../scripts/package-files.cjs");
+
+test("publisher rejects model-level capability declarations", () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "../plugins/siliconflow/manifest.json"), "utf8"));
+  const service = manifest.services.find((entry) => entry.id === "transcriptions");
+  assert.doesNotThrow(() => packagePaths(manifest));
+  for (const capabilities of [{}, { transcribe: { timestamps: false } }, null]) {
+    service.models[0].capabilities = capabilities;
+    assert.throws(() => packagePaths(manifest), /separate services/);
+  }
+});
 
 test("injected LICENSE counts towards the final archive file and size limits", (t) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kiss-license-limits-"));

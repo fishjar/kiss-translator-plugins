@@ -56,6 +56,11 @@ function packagePaths(manifest) {
       "Missing service implementation/capabilities: " + service.id,
     );
     ids.add(service.id);
+    for (const model of service.models || [])
+      requireValue(
+        model?.capabilities === undefined,
+        "Model capabilities must be declared on separate services: " + service.id,
+      );
     entries.add(service.implementation.entry);
   }
   for (const resource of manifest.resources || []) entries.add(resource.path);
