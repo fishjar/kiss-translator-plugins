@@ -114,7 +114,7 @@
         "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.1.2",
+      "version": "1.1.3",
       "apiVersion": "1",
       "capabilities": [
         "chat",
@@ -122,8 +122,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.2.zip",
-      "sha256": "d77db5f1faea607f476909f1380e858fd1315297cc874ed3bfd5a3ab066e8a0e"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.3.zip",
+      "sha256": "d2d67911e0ea4e0b768cb0b062bd20112d0abbc98ba31b2c0e9e35e8a097048d"
     }
   ]
 }
