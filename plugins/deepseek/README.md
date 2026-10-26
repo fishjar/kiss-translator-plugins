@@ -1,13 +1,15 @@
 # DeepSeek 插件
 
+1.2.3：统一接口名称为“聊天与翻译”，模型名称保留在模型目录中。
+
 1.2.2：从宿主项目迁入官方插件仓库，展示名称去掉“示例”，插件 ID 为 `deepseek`，保留服务 ID。
 
-这是 [SDK v1](https://github.com/fishjar/kiss-translator/blob/dev/docs/plugins/plugin-development-guide.md) 的独立 JSON 声明式示例，规则使用 `rulesVersion: 2`，适用于支持该版本的当前开发分支。一个 `chat-completions` 服务实例同时提供 `chat` 和 `translate`，支持完整结果、流式输出及按稳定 ID 对齐的批量翻译。实现见 [services/chat.json](services/chat.json)，包内不含 JS 入口。
+这是 [SDK v1](../../docs/plugin-development-guide.md) 的独立 JSON 声明式示例，规则使用 `rulesVersion: 2`，适用于支持该版本的当前开发分支。一个 `chat-completions` 服务实例同时提供 `chat` 和 `translate`，支持完整结果、流式输出及按稳定 ID 对齐的批量翻译。实现见 [services/chat.json](services/chat.json)，包内不含 JS 入口。
 
 ## 安装与配置
 
 1. 在“接口插件 → 导入文件夹”选择本目录，目录根部直接包含 `manifest.json`。也可将本目录内容压缩为 ZIP，确保 `manifest.json` 位于 ZIP 根目录，再导入 ZIP。
-2. 在插件列表查看网络地址，再在“服务配置 → 添加 → 外部插件”选择“DeepSeek 文本生成与翻译”。
+2. 在插件列表查看网络地址，再在“服务配置 → 添加 → 插件接口”选择“聊天与翻译”。
 3. 填写自己的 DeepSeek API Key，选择模型并保存；在翻译场景选择该实例，或在能力测试中测试聊天和翻译。“快捷翻译测试”可直接验证当前未保存配置，不会自动保存。
 
 | 配置         | 默认值与说明                                                               |

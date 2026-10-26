@@ -2,22 +2,37 @@
   "manifestVersion": 1,
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "apiVersion": "1",
-  "description": "GPT-6 Luna 聊天与翻译，以及 Whisper 和 Qwen 音频转写。",
-  "nameI18n": { "en": "OpenRouter" },
+  "description": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+  "nameI18n": {
+    "en": "OpenRouter"
+  },
   "descriptionI18n": {
-    "en": "GPT-6 Luna chat and translation, plus Whisper and Qwen audio transcription."
+    "zh": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+    "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
+    "zh_TW": "OpenRouter 聊天與翻譯，以及 Whisper、Qwen 音訊轉寫。",
+    "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
+    "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
+    "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
+    "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen.",
+    "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen."
   },
   "permissions": {
-    "network": ["https://openrouter.ai"],
-    "endpointFields": ["baseUrl"]
+    "network": [
+      "https://openrouter.ai"
+    ],
+    "endpointFields": [
+      "baseUrl"
+    ]
   },
   "sharedSettings": [
     {
       "key": "baseUrl",
       "label": "API 基础地址",
-      "labelI18n": { "en": "API base URL" },
+      "labelI18n": {
+        "en": "API base URL"
+      },
       "type": "text",
       "defaultValue": "https://openrouter.ai/api/v1",
       "required": true
@@ -33,8 +48,17 @@
   "services": [
     {
       "id": "chat-completions",
-      "name": "GPT-6 Luna 聊天与翻译",
-      "nameI18n": { "en": "GPT-6 Luna chat and translation" },
+      "name": "聊天与翻译",
+      "nameI18n": {
+        "zh": "聊天与翻译",
+        "en": "Chat and translation",
+        "zh_TW": "聊天與翻譯",
+        "ja": "チャットと翻訳",
+        "ko": "채팅 및 번역",
+        "tr": "Sohbet ve çeviri",
+        "vi": "Trò chuyện và dịch",
+        "ru": "Чат и перевод"
+      },
       "implementation": {
         "kind": "declarative",
         "entry": "services/chat.json"
@@ -42,27 +66,44 @@
       "capabilities": {
         "chat": {
           "handler": "chat",
-          "inputModalities": ["text"],
-          "outputModes": ["complete", "stream"]
+          "inputModalities": [
+            "text"
+          ],
+          "outputModes": [
+            "complete",
+            "stream"
+          ]
         },
         "translate": {
           "handler": "translate",
-          "batch": { "supported": true },
-          "outputModes": ["complete", "stream"]
+          "batch": {
+            "supported": true
+          },
+          "outputModes": [
+            "complete",
+            "stream"
+          ]
         }
       },
       "settings": [
         {
           "key": "model",
           "label": "模型 ID",
-          "labelI18n": { "en": "Model ID" },
+          "labelI18n": {
+            "en": "Model ID"
+          },
           "type": "text",
           "defaultValue": "openai/gpt-6-luna",
           "required": true
         }
       ],
       "modelField": "model",
-      "models": [{ "id": "openai/gpt-6-luna", "name": "GPT-6 Luna" }],
+      "models": [
+        {
+          "id": "openai/gpt-6-luna",
+          "name": "GPT-6 Luna"
+        }
+      ],
       "defaultPrompts": {
         "batch": {
           "protocol": "json",
@@ -77,18 +118,37 @@
       }
     },
     {
-      "id": "whisper-transcriptions",
-      "name": "Whisper Large V3 Turbo 音频转写",
-      "nameI18n": { "en": "Whisper Large V3 Turbo transcription" },
-      "implementation": { "kind": "script", "entry": "services/transcribe.js" },
+      "id": "transcriptions",
+      "name": "音频转写",
+      "nameI18n": {
+        "zh": "音频转写",
+        "en": "Audio transcription",
+        "zh_TW": "音訊轉寫",
+        "ja": "音声文字起こし",
+        "ko": "음성 전사",
+        "tr": "Ses transkripsiyonu",
+        "vi": "Chép lời âm thanh",
+        "ru": "Транскрипция аудио"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/transcribe.js"
+      },
       "capabilities": {
-        "transcribe": { "handler": "transcribe", "outputModes": ["complete"] }
+        "transcribe": {
+          "handler": "transcribe",
+          "outputModes": [
+            "complete"
+          ]
+        }
       },
       "settings": [
         {
           "key": "model",
           "label": "模型 ID",
-          "labelI18n": { "en": "Model ID" },
+          "labelI18n": {
+            "en": "Model ID"
+          },
           "type": "text",
           "defaultValue": "openai/whisper-large-v3-turbo",
           "required": true
@@ -99,29 +159,12 @@
         {
           "id": "openai/whisper-large-v3-turbo",
           "name": "Whisper Large V3 Turbo"
+        },
+        {
+          "id": "qwen/qwen3-asr-0.6b",
+          "name": "Qwen3 ASR 0.6B"
         }
       ]
-    },
-    {
-      "id": "qwen-transcriptions",
-      "name": "Qwen3 ASR 0.6B 音频转写",
-      "nameI18n": { "en": "Qwen3 ASR 0.6B transcription" },
-      "implementation": { "kind": "script", "entry": "services/transcribe.js" },
-      "capabilities": {
-        "transcribe": { "handler": "transcribe", "outputModes": ["complete"] }
-      },
-      "settings": [
-        {
-          "key": "model",
-          "label": "模型 ID",
-          "labelI18n": { "en": "Model ID" },
-          "type": "text",
-          "defaultValue": "qwen/qwen3-asr-0.6b",
-          "required": true
-        }
-      ],
-      "modelField": "model",
-      "models": [{ "id": "qwen/qwen3-asr-0.6b", "name": "Qwen3 ASR 0.6B" }]
     }
   ]
 }

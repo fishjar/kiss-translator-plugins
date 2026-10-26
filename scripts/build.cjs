@@ -5,27 +5,14 @@ const { zipSync } = require("fflate");
 
 const root = path.resolve(__dirname, "..");
 const base = "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist";
-const safePath = (value) => typeof value === "string" && /^[\w./-]+$/.test(value) && !value.startsWith("/") && !value.split("/").some((part) => ["", ".", ".."].includes(part));
 
 function buildPackage(folder) {
-  const manifest = JSON.parse(fs.readFileSync(path.join(folder, "manifest.json"), "utf8"));
-  if (manifest.manifestVersion !== 1 || manifest.apiVersion !== "1" || !/^[a-z][a-z0-9-]{1,100}$/.test(manifest.id) || !/^\d+\.\d+\.\d+$/.test(manifest.version) || !manifest.services?.length) throw new Error("Invalid manifest: " + folder);
-  const ids = new Set();
-  const entries = new Set(["manifest.json"]);
-  for (const service of manifest.services) {
-    if (ids.has(service.id) || !/^[A-Za-z][\w-]{0,100}$/.test(service.id) || !["declarative", "script"].includes(service.implementation?.kind) || !Object.keys(service.capabilities || {}).length) throw new Error("Invalid service: " + service.id);
-    ids.add(service.id);
-    if (!safePath(service.implementation.entry)) throw new Error("Invalid service entry path");
-    entries.add(service.implementation.entry);
-    if (service.implementation.kind === "declarative") JSON.parse(fs.readFileSync(path.join(folder, service.implementation.entry), "utf8"));
-  }
-  for (const resource of manifest.resources || []) entries.add(resource.path);
-  if (manifest.icon) entries.add(manifest.icon);
+  const { readPackageDirectory } = require("./package-files.cjs");
+  const content = readPackageDirectory(folder);
+  const manifest = JSON.parse(content["manifest.json"].toString("utf8"));
   const files = {};
-  for (const entry of [...entries].sort()) {
-    if (!safePath(entry)) throw new Error("Invalid package path: " + entry);
-    // ZIP stores local calendar fields, so a UTC Date would vary by build timezone.
-    files[entry] = [fs.readFileSync(path.join(folder, entry)), { mtime: new Date(2000, 0, 1) }];
+  for (const entry of Object.keys(content).sort()) {
+    files[entry] = [content[entry], { mtime: new Date(2000, 0, 1) }];
   }
   const bytes = Buffer.from(zipSync(files, { level: 9 }));
   if (bytes.length > 5 * 1024 * 1024) throw new Error("Package exceeds 5 MiB");
@@ -34,6 +21,8 @@ function buildPackage(folder) {
     id: manifest.id, name: manifest.name, nameI18n: manifest.nameI18n,
     description: manifest.description, descriptionI18n: manifest.descriptionI18n,
     version: manifest.version, apiVersion: manifest.apiVersion,
+    ...(manifest.kind !== undefined && { kind: manifest.kind }),
+    ...(manifest.minHostVersion !== undefined && { minHostVersion: manifest.minHostVersion }),
     capabilities: [...new Set(manifest.services.flatMap((service) => Object.keys(service.capabilities)))],
     downloadUrl: `${base}/${relative}`,
     sha256: createHash("sha256").update(bytes).digest("hex"),

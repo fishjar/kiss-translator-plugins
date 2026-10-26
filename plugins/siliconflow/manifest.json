@@ -5,15 +5,26 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "apiVersion": "1",
-  "description": "DeepSeek 聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 全文识别。",
+  "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
   "descriptionI18n": {
-    "en": "DeepSeek chat and translation, Qwen and XingChen audio transcription, and full-text recognition with PaddleOCR and DeepSeek OCR."
+    "zh": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
+    "en": "SiliconFlow chat and translation, Qwen and XingChen audio transcription, and image text recognition with PaddleOCR and DeepSeek OCR.",
+    "zh_TW": "矽基流動：聊天與翻譯、Qwen 與星辰音訊轉寫，以及 PaddleOCR 與 DeepSeek OCR 圖片全文辨識。",
+    "ja": "SiliconFlow のチャットと翻訳、Qwen と XingChen による音声文字起こし、PaddleOCR と DeepSeek OCR による画像の全文認識。",
+    "ko": "SiliconFlow 채팅 및 번역, Qwen과 XingChen 음성 전사, PaddleOCR과 DeepSeek OCR 이미지 전체 텍스트 인식.",
+    "tr": "SiliconFlow sohbet ve çeviri, Qwen ve XingChen ile ses transkripsiyonu, PaddleOCR ve DeepSeek OCR ile görüntü metni tanıma.",
+    "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
+    "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
   },
   "permissions": {
-    "network": ["https://api.siliconflow.cn"],
-    "endpointFields": ["baseUrl"]
+    "network": [
+      "https://api.siliconflow.cn"
+    ],
+    "endpointFields": [
+      "baseUrl"
+    ]
   },
   "sharedSettings": [
     {
@@ -37,9 +48,16 @@
   "services": [
     {
       "id": "chat-completions",
-      "name": "DeepSeek-V4.1-Flash 聊天与翻译",
+      "name": "聊天与翻译",
       "nameI18n": {
-        "en": "DeepSeek-V4.1-Flash chat and translation"
+        "zh": "聊天与翻译",
+        "en": "Chat and translation",
+        "zh_TW": "聊天與翻譯",
+        "ja": "チャットと翻訳",
+        "ko": "채팅 및 번역",
+        "tr": "Sohbet ve çeviri",
+        "vi": "Trò chuyện và dịch",
+        "ru": "Чат и перевод"
       },
       "implementation": {
         "kind": "declarative",
@@ -48,15 +66,23 @@
       "capabilities": {
         "chat": {
           "handler": "chat",
-          "inputModalities": ["text"],
-          "outputModes": ["complete", "stream"]
+          "inputModalities": [
+            "text"
+          ],
+          "outputModes": [
+            "complete",
+            "stream"
+          ]
         },
         "translate": {
           "handler": "translate",
           "batch": {
             "supported": true
           },
-          "outputModes": ["complete", "stream"]
+          "outputModes": [
+            "complete",
+            "stream"
+          ]
         }
       },
       "settings": [
@@ -92,10 +118,17 @@
       }
     },
     {
-      "id": "qwen-transcriptions",
-      "name": "Qwen3-ASR-1.7B 音频转写",
+      "id": "transcriptions",
+      "name": "音频转写",
       "nameI18n": {
-        "en": "Qwen3-ASR-1.7B audio transcription"
+        "zh": "音频转写",
+        "en": "Audio transcription",
+        "zh_TW": "音訊轉寫",
+        "ja": "音声文字起こし",
+        "ko": "음성 전사",
+        "tr": "Ses transkripsiyonu",
+        "vi": "Chép lời âm thanh",
+        "ru": "Транскрипция аудио"
       },
       "implementation": {
         "kind": "script",
@@ -104,7 +137,9 @@
       "capabilities": {
         "transcribe": {
           "handler": "transcribe",
-          "outputModes": ["complete"]
+          "outputModes": [
+            "complete"
+          ]
         }
       },
       "settings": [
@@ -124,39 +159,7 @@
         {
           "id": "Qwen/Qwen3-ASR-1.7B",
           "name": "Qwen3-ASR-1.7B"
-        }
-      ]
-    },
-    {
-      "id": "xingchen-transcriptions",
-      "name": "XingChenASR-V3.2-Ultra 音频转写",
-      "nameI18n": {
-        "en": "XingChenASR-V3.2-Ultra audio transcription"
-      },
-      "implementation": {
-        "kind": "script",
-        "entry": "services/transcribe.js"
-      },
-      "capabilities": {
-        "transcribe": {
-          "handler": "transcribe",
-          "outputModes": ["complete"]
-        }
-      },
-      "settings": [
-        {
-          "key": "model",
-          "label": "模型 ID",
-          "labelI18n": {
-            "en": "Model ID"
-          },
-          "type": "text",
-          "defaultValue": "XingChenAGI/XingChenASR-V3.2-Ultra",
-          "required": true
-        }
-      ],
-      "modelField": "model",
-      "models": [
+        },
         {
           "id": "XingChenAGI/XingChenASR-V3.2-Ultra",
           "name": "XingChenASR-V3.2-Ultra"
@@ -165,9 +168,16 @@
     },
     {
       "id": "paddleocr",
-      "name": "PaddleOCR-VL-1.5 全文识别",
+      "name": "图片全文识别（PaddleOCR）",
       "nameI18n": {
-        "en": "PaddleOCR-VL-1.5 full-text recognition"
+        "zh": "图片全文识别（PaddleOCR）",
+        "en": "Image text recognition (PaddleOCR)",
+        "zh_TW": "圖片全文辨識（PaddleOCR）",
+        "ja": "画像の全文認識（PaddleOCR）",
+        "ko": "이미지 전체 텍스트 인식 (PaddleOCR)",
+        "tr": "Görüntü metni tanıma (PaddleOCR)",
+        "vi": "Nhận dạng văn bản trong ảnh (PaddleOCR)",
+        "ru": "Распознавание текста на изображении (PaddleOCR)"
       },
       "implementation": {
         "kind": "declarative",
@@ -176,9 +186,15 @@
       "capabilities": {
         "parseImage": {
           "handler": "parseImage",
-          "inputModalities": ["image"],
-          "outputModes": ["complete"],
-          "taskModes": ["doc"]
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "taskModes": [
+            "doc"
+          ]
         }
       },
       "settings": [
@@ -208,9 +224,16 @@
     },
     {
       "id": "deepseek-ocr",
-      "name": "DeepSeek-OCR 全文识别",
+      "name": "图片全文识别（DeepSeek OCR）",
       "nameI18n": {
-        "en": "DeepSeek-OCR full-text recognition"
+        "zh": "图片全文识别（DeepSeek OCR）",
+        "en": "Image text recognition (DeepSeek OCR)",
+        "zh_TW": "圖片全文辨識（DeepSeek OCR）",
+        "ja": "画像の全文認識（DeepSeek OCR）",
+        "ko": "이미지 전체 텍스트 인식 (DeepSeek OCR)",
+        "tr": "Görüntü metni tanıma (DeepSeek OCR)",
+        "vi": "Nhận dạng văn bản trong ảnh (DeepSeek OCR)",
+        "ru": "Распознавание текста на изображении (DeepSeek OCR)"
       },
       "implementation": {
         "kind": "script",
@@ -219,9 +242,15 @@
       "capabilities": {
         "parseImage": {
           "handler": "parseImage",
-          "inputModalities": ["image"],
-          "outputModes": ["complete"],
-          "taskModes": ["doc"]
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "taskModes": [
+            "doc"
+          ]
         }
       },
       "settings": [

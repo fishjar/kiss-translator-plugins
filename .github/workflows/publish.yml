@@ -29,6 +29,7 @@ jobs:
             mkdir -p dist
             git archive origin/dist | tar -x -C dist
           fi
+      - run: npm run check
       - run: npm test
       - run: npm run build
       - name: Publish distribution branch

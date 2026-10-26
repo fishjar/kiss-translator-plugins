@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
-const { load } = require("../../openrouter/tests/host.cjs");
+const { load } = require("../../../tests/support/host.cjs");
 const { buildPackage } = require("../../../scripts/build.cjs");
 const { readProviderPackage } = load("providers/package.js");
 const { createServiceInstance, projectInstanceConfig } = load(
@@ -32,12 +32,12 @@ const redact = (text) =>
     .join("[redacted]")
     .replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]");
 
-async function invoke(serviceId, capability, input, streaming = false) {
+async function invoke(serviceId, capability, input, streaming = false, model) {
   const instance = createServiceInstance(
     pack.manifest,
     serviceId,
     pack.implementations[serviceId],
-    { apiKey: key },
+    { apiKey: key, ...(model && { model }) },
     "live-" + serviceId,
   );
   const assets = createAssetStore(),
@@ -77,7 +77,7 @@ async function invoke(serviceId, capability, input, streaming = false) {
     }),
     runners: {
       declarative: runDeclarative,
-      script: require("./script-runner.cjs"),
+      script: require("../../../tests/support/script-runner.cjs"),
     },
   });
   const call = registry.invoke(instance.apiSlug, capability, input, {
@@ -107,6 +107,7 @@ async function check(
   input,
   verify,
   streaming = false,
+  model,
 ) {
   const started = Date.now();
   try {
@@ -115,11 +116,13 @@ async function check(
       capability,
       input,
       streaming,
+      model,
     );
     verify(result, events);
     const row = {
       name,
       serviceId,
+      ...(model && { model }),
       capability,
       passed: true,
       durationMs: Date.now() - started,
@@ -139,6 +142,7 @@ async function check(
     const row = {
       name,
       serviceId,
+      ...(model && { model }),
       capability,
       passed: false,
       durationMs: Date.now() - started,
@@ -220,24 +224,12 @@ async function check(
     },
     true,
   );
-  await check(
-    "Qwen transcription",
-    "qwen-transcriptions",
-    "transcribe",
-    {},
-    (result) => {
-      assert.match(result.text, /speech|recognition|test/i);
-    },
-  );
-  await check(
-    "XingChen transcription",
-    "xingchen-transcriptions",
-    "transcribe",
-    {},
-    (result) => {
-      assert.match(result.text, /speech|recognition|test/i);
-    },
-  );
+  for (const model of ["Qwen/Qwen3-ASR-1.7B", "XingChenAGI/XingChenASR-V3.2-Ultra"])
+    await check(
+      model + " transcription", "transcriptions", "transcribe", {},
+      (result) => { assert.match(result.text, /speech|recognition|test/i); },
+      false, model,
+    );
   for (const serviceId of ["paddleocr", "deepseek-ocr"])
     await check(
       serviceId + " full-text OCR",

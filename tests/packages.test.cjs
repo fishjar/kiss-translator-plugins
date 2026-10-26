@@ -19,6 +19,11 @@ for (const folder of fs.readdirSync(path.join(root, "plugins"))) {
     const manifest = JSON.parse(Buffer.from(files["manifest.json"]));
     assert.equal(manifest.id, pack.item.id);
     assert.equal(manifest.version, pack.item.version);
+    for (const locale of ["zh", "en", "zh_TW", "ja", "ko", "tr", "vi", "ru"]) {
+      assert.ok(manifest.descriptionI18n[locale]?.trim(), `${folder}: missing ${locale} description`);
+      assert.equal(pack.item.descriptionI18n[locale], manifest.descriptionI18n[locale]);
+      for (const service of manifest.services) assert.ok(service.nameI18n[locale]?.trim(), `${folder}/${service.id}: missing ${locale} name`);
+    }
     for (const service of manifest.services) assert.ok(files[service.implementation.entry]);
     assert.ok(!Object.keys(files).some((name) => /README|test|package\.json/.test(name)));
     assert.ok(!manifest.services.some((service) => service.id === "signed-dictionary"));
@@ -38,16 +43,18 @@ test("published versions cannot be replaced or downgraded", () => {
     assert.deepEqual(JSON.parse(fs.readFileSync(catalogPath)).plugins.map((entry) => entry.id), ["deepseek"]);
     const manifestPath = path.join(project, "plugins/deepseek/manifest.json");
     const manifest = JSON.parse(fs.readFileSync(manifestPath));
+    const originalVersion = manifest.version;
     manifest.description += " changed";
     fs.writeFileSync(manifestPath, JSON.stringify(manifest));
     assert.throws(() => build(project), /Published/);
     manifest.version = "1.0.0";
     fs.writeFileSync(manifestPath, JSON.stringify(manifest));
     assert.throws(() => build(project), /cannot decrease/);
-    manifest.version = "1.2.3";
+    const parts = originalVersion.split(".").map(Number);
+    manifest.version = `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
     fs.writeFileSync(manifestPath, JSON.stringify(manifest));
     build(project);
-    assert.ok(fs.existsSync(path.join(project, "dist/deepseek/1.2.2.zip")));
-    assert.ok(fs.existsSync(path.join(project, "dist/deepseek/1.2.3.zip")));
+    assert.ok(fs.existsSync(path.join(project, `dist/deepseek/${originalVersion}.zip`)));
+    assert.ok(fs.existsSync(path.join(project, `dist/deepseek/${manifest.version}.zip`)));
   } finally { fs.rmSync(project, { recursive: true, force: true }); }
 });

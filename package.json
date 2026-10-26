@@ -4,8 +4,14 @@
   "license": "GPL-3.0",
   "scripts": {
     "build": "node scripts/build.cjs",
-    "test": "node --test tests/*.test.cjs",
-    "test:siliconflow": "node --test plugins/siliconflow/tests/siliconflow.test.cjs"
+    "test": "npm run test:packages && npm run test:protocol",
+    "test:siliconflow": "node --test plugins/siliconflow/tests/siliconflow.host.test.cjs",
+    "test:packages": "node scripts/test.cjs packages",
+    "test:protocol": "node scripts/test.cjs protocol",
+    "check": "node scripts/check.cjs",
+    "test:host": "node scripts/test.cjs host"
   },
-  "devDependencies": { "fflate": "0.8.3" }
+  "devDependencies": {
+    "fflate": "0.8.3"
+  }
 }

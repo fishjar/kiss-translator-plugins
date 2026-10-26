@@ -2,9 +2,9 @@
   "manifestVersion": 1,
   "id": "openai-compatible-bundle",
   "name": "OpenAI 兼容协议",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "apiVersion": "1",
-  "description": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
+  "description": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
   "permissions": {
     "network": [
       "https://api.openai.com"
@@ -42,7 +42,7 @@
   "services": [
     {
       "id": "chat-completions",
-      "name": "文本生成与翻译",
+      "name": "聊天与翻译",
       "implementation": {
         "kind": "script",
         "entry": "services/chat.js"
@@ -137,14 +137,14 @@
         }
       },
       "nameI18n": {
-        "zh": "文本生成与翻译",
-        "en": "Text generation and translation",
-        "zh_TW": "文字生成與翻譯",
-        "ja": "テキスト生成と翻訳",
-        "ko": "텍스트 생성 및 번역",
-        "tr": "Metin oluşturma ve çeviri",
-        "vi": "Tạo văn bản và dịch",
-        "ru": "Генерация текста и перевод"
+        "zh": "聊天与翻译",
+        "en": "Chat and translation",
+        "zh_TW": "聊天與翻譯",
+        "ja": "チャットと翻訳",
+        "ko": "채팅 및 번역",
+        "tr": "Sohbet ve çeviri",
+        "vi": "Trò chuyện và dịch",
+        "ru": "Чат и перевод"
       }
     },
     {
@@ -192,63 +192,17 @@
       "nameI18n": {
         "zh": "音频转写",
         "en": "Audio transcription",
-        "zh_TW": "音頻轉寫",
+        "zh_TW": "音訊轉寫",
         "ja": "音声文字起こし",
-        "ko": "오디오 전사",
-        "tr": "Ses dökümü",
+        "ko": "음성 전사",
+        "tr": "Ses transkripsiyonu",
         "vi": "Chép lời âm thanh",
         "ru": "Транскрипция аудио"
       }
     },
     {
-      "id": "timestamped-transcriptions",
-      "name": "带时间戳音频转写",
-      "implementation": {
-        "kind": "declarative",
-        "entry": "services/timestamped-transcription.json"
-      },
-      "capabilities": {
-        "transcribe": {
-          "handler": "transcribe",
-          "timestamps": true,
-          "outputModes": [
-            "complete"
-          ]
-        }
-      },
-      "settings": [
-        {
-          "key": "model",
-          "label": "转写模型",
-          "type": "text",
-          "required": true,
-          "labelI18n": {
-            "zh": "转写模型",
-            "en": "Transcription model",
-            "zh_TW": "轉寫模型",
-            "ja": "文字起こしモデル",
-            "ko": "전사 모델",
-            "tr": "Döküm modeli",
-            "vi": "Mô hình chép lời",
-            "ru": "Модель транскрипции"
-          }
-        }
-      ],
-      "modelField": "model",
-      "nameI18n": {
-        "zh": "带时间戳音频转写",
-        "en": "Transcription with timestamps",
-        "zh_TW": "含時間戳音訊轉寫",
-        "ja": "タイムスタンプ付き文字起こし",
-        "ko": "타임스탬프 포함 전사",
-        "tr": "Zaman damgalı döküm",
-        "vi": "Chép lời có dấu thời gian",
-        "ru": "Транскрипция с временными метками"
-      }
-    },
-    {
       "id": "speech",
-      "name": "音频合成",
+      "name": "语音合成",
       "implementation": {
         "kind": "declarative",
         "entry": "services/speech.json"
@@ -366,19 +320,19 @@
         }
       ],
       "nameI18n": {
-        "zh": "音频合成",
-        "en": "Audio synthesis",
-        "zh_TW": "音頻合成",
+        "zh": "语音合成",
+        "en": "Speech synthesis",
+        "zh_TW": "語音合成",
         "ja": "音声合成",
-        "ko": "오디오 합성",
-        "tr": "Ses sentezi",
-        "vi": "Tổng hợp âm thanh",
-        "ru": "Синтез аудио"
+        "ko": "음성 합성",
+        "tr": "Konuşma sentezi",
+        "vi": "Tổng hợp giọng nói",
+        "ru": "Синтез речи"
       }
     },
     {
       "id": "vision",
-      "name": "图片文字识别",
+      "name": "图片全文识别",
       "implementation": {
         "kind": "script",
         "entry": "services/vision.js"
@@ -435,14 +389,14 @@
         }
       },
       "nameI18n": {
-        "zh": "图片文字识别",
+        "zh": "图片全文识别",
         "en": "Image text recognition",
-        "zh_TW": "圖片文字識別",
-        "ja": "画像文字認識",
-        "ko": "이미지 문자 인식",
-        "tr": "Görüntüden metin tanıma",
-        "vi": "Nhận dạng chữ trong ảnh",
-        "ru": "Распознавание текста на изображениях"
+        "zh_TW": "圖片全文辨識",
+        "ja": "画像の全文認識",
+        "ko": "이미지 전체 텍스트 인식",
+        "tr": "Görüntü metni tanıma",
+        "vi": "Nhận dạng văn bản trong ảnh",
+        "ru": "Распознавание текста на изображении"
       }
     }
   ],
@@ -457,13 +411,13 @@
     "ru": "OpenAI Compatible"
   },
   "descriptionI18n": {
-    "zh": "OpenAI 兼容协议：聊天、翻译、音频转写、语音合成与图片全文识别。",
-    "en": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "zh_TW": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "ja": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "ko": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "tr": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "vi": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition.",
-    "ru": "OpenAI-compatible chat, translation, transcription, speech synthesis and image text recognition."
+    "zh": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
+    "en": "OpenAI-compatible chat and translation, audio transcription, speech synthesis, and image text recognition.",
+    "zh_TW": "OpenAI 相容協定：聊天與翻譯、音訊轉寫、語音合成與圖片全文辨識。",
+    "ja": "OpenAI 互換プロトコルによるチャットと翻訳、音声文字起こし、音声合成、画像の全文認識。",
+    "ko": "OpenAI 호환 프로토콜을 통한 채팅 및 번역, 음성 전사, 음성 합성, 이미지 전체 텍스트 인식.",
+    "tr": "OpenAI uyumlu sohbet ve çeviri, ses transkripsiyonu, konuşma sentezi ve görüntü metni tanıma.",
+    "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
+    "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
   }
 }

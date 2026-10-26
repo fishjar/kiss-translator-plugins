@@ -2,9 +2,9 @@
   "manifestVersion": 1,
   "id": "deepseek",
   "name": "DeepSeek",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "apiVersion": "1",
-  "description": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
+  "description": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
   "permissions": {
     "network": [
       "https://api.deepseek.com"
@@ -42,7 +42,7 @@
   "services": [
     {
       "id": "chat-completions",
-      "name": "DeepSeek 文本生成与翻译",
+      "name": "聊天与翻译",
       "implementation": {
         "kind": "declarative",
         "entry": "services/chat.json"
@@ -267,14 +267,14 @@
         }
       },
       "nameI18n": {
-        "zh": "DeepSeek 文本生成与翻译",
-        "en": "DeepSeek text generation and translation",
-        "zh_TW": "DeepSeek 文本生成與翻譯",
-        "ja": "DeepSeekテキスト生成と翻訳",
-        "ko": "DeepSeek 텍스트 생성 및 번역",
-        "tr": "DeepSeek metin oluşturma ve çeviri",
-        "vi": "Tạo văn bản và dịch DeepSeek",
-        "ru": "Генерация текста и перевод DeepSeek"
+        "zh": "聊天与翻译",
+        "en": "Chat and translation",
+        "zh_TW": "聊天與翻譯",
+        "ja": "チャットと翻訳",
+        "ko": "채팅 및 번역",
+        "tr": "Sohbet ve çeviri",
+        "vi": "Trò chuyện và dịch",
+        "ru": "Чат и перевод"
       }
     }
   ],
@@ -289,13 +289,13 @@
     "ru": "DeepSeek"
   },
   "descriptionI18n": {
-    "zh": "DeepSeek Chat Completions：聊天、批量翻译、流式输出与思考模式。",
-    "en": "DeepSeek Chat Completions: chat, batch translation, streaming and thinking modes.",
-    "zh_TW": "DeepSeek Chat Completions：聊天、批次翻譯、串流輸出與思考模式。",
-    "ja": "DeepSeek Chat Completions：チャット、一括翻訳、ストリーミング、思考モード。",
-    "ko": "DeepSeek Chat Completions: 채팅, 일괄 번역, 스트리밍 및 사고 모드.",
-    "tr": "DeepSeek Chat Completions: sohbet, toplu çeviri, akış ve düşünme modları.",
-    "vi": "DeepSeek Chat Completions: trò chuyện, dịch hàng loạt, luồng và chế độ suy nghĩ.",
-    "ru": "DeepSeek Chat Completions: чат, пакетный перевод, потоковый вывод и режимы размышления."
+    "zh": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
+    "en": "DeepSeek chat and translation with batch translation, streaming output, and reasoning settings.",
+    "zh_TW": "DeepSeek 聊天與翻譯，支援批次翻譯、串流輸出與思考模式。",
+    "ja": "DeepSeek のチャットと翻訳。一括翻訳、ストリーミング出力、推論設定に対応。",
+    "ko": "DeepSeek 채팅 및 번역. 일괄 번역, 스트리밍 출력, 추론 설정을 지원합니다.",
+    "tr": "DeepSeek sohbet ve çeviri; toplu çeviri, akış çıktısı ve akıl yürütme ayarları sunar.",
+    "vi": "Trò chuyện và dịch với DeepSeek, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
+    "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
   }
 }

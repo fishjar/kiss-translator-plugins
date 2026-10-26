@@ -1,16 +1,15 @@
 # OpenAI 兼容协议 插件
 
-2.0.0：从宿主项目迁入官方插件仓库，去掉“示例”，插件 ID 为 `openai-compatible-bundle`，保留五个正式接口的服务 ID；签名词典移至开发示例。旧签名词典实例保留独立快照。
+2.0.1：移除未预置可用模型的带时间戳音频转写接口，保留聊天与翻译、普通音频转写、语音合成及图片全文识别四个服务，并统一接口功能名称。插件 ID 为 `openai-compatible-bundle`。
 
-这是 [SDK v1](https://github.com/fishjar/kiss-translator/blob/dev/docs/plugins/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。
+这是 [SDK v1](../../docs/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。
 
-包中有五个服务接口：
+包中有四个服务接口：
 
 | 接口              | 实现                          | 创建后实例能力                     |
 | ----------------- | ----------------------------- | ---------------------------------- |
 | chat-completions  | services/chat.js              | chat、translate（完整/流式）       |
 | transcriptions    | services/transcription.json   | transcribe                         |
-| timestamped-transcriptions | services/timestamped-transcription.json | transcribe（真实分段时间戳） |
 | speech            | services/speech.json          | synthesizeSpeech                   |
 | vision            | services/vision.js            | parseImage（全文识别，无坐标）     |
 
@@ -46,7 +45,7 @@ ASR 使用 JSON 全文输出，不申请时间戳。TTS 保留 /audio/speech、M
 
 在官方项目根目录执行 `npm ci`、`npm test`、`npm run build`。从简约翻译“接口插件 → 官方插件”安装；也可导入生成的独立 ZIP。不要使用官方项目仓库根地址作为单插件安装地址。
 
-宿主的固定夹具测试覆盖协议与流式回归；模拟响应不能代替真实服务验证。
+宿主使用通用测试样例覆盖 SDK 协议与流式回归；模拟响应不能代替真实服务验证。
 
 ## GitHub 源码分发
 
@@ -91,9 +90,3 @@ ASR 使用 JSON 全文输出，不申请时间戳。TTS 保留 /audio/speech、M
 ```
 
 新模板版本为 1.6.1。已安装实例保留自己的快照，需先更新插件包，再创建升级实例、测试并替换场景引用。旧快照没有 protocol 声明时继续兼容 JSON；显式绑定宿主提示词时按该提示词的模式和协议执行。脚本若自行解析响应，需同步读取 translationMode/outputProtocol；使用 SDK helpers 的旧脚本可继承本次调用协议。
-
-## YouTube ASR 时间戳接口（1.6.2）
-
-新增 `timestamped-transcriptions`，要求兼容服务支持 `/audio/transcriptions`、`verbose_json` 和 `timestamp_granularities[]=segment`，返回 `text` 与秒单位的 `segments[{start,end,text}]`。没有默认模型：请填写已验证支持此协议和时间戳的模型 ID；仅输出全文的模型不能用于同步字幕。原 `transcriptions` 的 JSON 全文行为保持原样。创建新接口实例并开启 transcribe 后，可在“字幕翻译 → YouTube 音频识别服务”选择该实例，分块上限在服务设置中配置。
-
-此示例经过模拟响应和生产解析器测试，未代替真实服务验收。网络权限范围与原插件一致，没有新增站点。
