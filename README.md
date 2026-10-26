@@ -7,6 +7,7 @@
 - [DeepSeek](plugins/deepseek/README.md)：聊天、翻译、流式输出与思考模式。
 - [OpenAI 兼容协议](plugins/openai-compatible-bundle/README.md)：聊天、翻译、转写、语音合成和图片全文识别。
 - [OpenRouter](plugins/openrouter/README.md)：保留现有实现，详见插件文档。
+- [SiliconFlow](plugins/siliconflow/README.md)：DeepSeek 聊天与翻译、Qwen 和星辰音频转写、PaddleOCR 和 DeepSeek OCR 全文识别。
 
 这些适配插件由简约翻译维护，不代表对应服务商发布或背书。
 

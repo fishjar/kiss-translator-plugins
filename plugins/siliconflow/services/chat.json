@@ -1,0 +1,41 @@
+{
+  "rulesVersion": 2,
+  "handlers": {
+    "chat": {
+      "protocol": "openai-chat-completions",
+      "task": "chat",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    },
+    "translate": {
+      "protocol": "openai-chat-completions",
+      "task": "translate",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    }
+  }
+}
