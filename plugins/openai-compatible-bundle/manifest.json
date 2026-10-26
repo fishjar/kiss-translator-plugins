@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "id": "example-openai-compatible-bundle",
+  "id": "openai-compatible-bundle",
   "name": "OpenAI 兼容协议",
   "version": "2.0.0",
   "apiVersion": "1",

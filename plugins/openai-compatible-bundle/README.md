@@ -1,6 +1,6 @@
 # OpenAI 兼容协议 插件
 
-2.0.0：从宿主项目迁入官方插件仓库，去掉“示例”，保留原插件 ID 和五个正式接口的服务 ID；签名词典移至开发示例。旧签名词典实例保留独立快照。
+2.0.0：从宿主项目迁入官方插件仓库，去掉“示例”，插件 ID 为 `openai-compatible-bundle`，保留五个正式接口的服务 ID；签名词典移至开发示例。旧签名词典实例保留独立快照。
 
 这是 [SDK v1](https://github.com/fishjar/kiss-translator/blob/dev/docs/plugins/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。
 

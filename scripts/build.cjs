@@ -60,7 +60,7 @@ function build(projectRoot = root) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, pack.bytes);
   }
-  const plugins = [...previous.plugins.filter((item) => !ids.has(item.id)), ...packages.map((pack) => pack.item)].sort((a, b) => a.id.localeCompare(b.id));
+  const plugins = packages.map((pack) => pack.item).sort((a, b) => a.id.localeCompare(b.id));
   fs.writeFileSync(previousFile, JSON.stringify({ schemaVersion: 1, plugins }, null, 2) + "\n");
   console.log(`Built ${packages.length} plugins`);
 }

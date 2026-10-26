@@ -1,6 +1,6 @@
 # DeepSeek 插件
 
-1.2.2：从宿主项目迁入官方插件仓库，展示名称去掉“示例”，保留原插件 ID 和服务 ID。
+1.2.2：从宿主项目迁入官方插件仓库，展示名称去掉“示例”，插件 ID 为 `deepseek`，保留服务 ID。
 
 这是 [SDK v1](https://github.com/fishjar/kiss-translator/blob/dev/docs/plugins/plugin-development-guide.md) 的独立 JSON 声明式示例，规则使用 `rulesVersion: 2`，适用于支持该版本的当前开发分支。一个 `chat-completions` 服务实例同时提供 `chat` 和 `translate`，支持完整结果、流式输出及按稳定 ID 对齐的批量翻译。实现见 [services/chat.json](services/chat.json)，包内不含 JS 入口。
 

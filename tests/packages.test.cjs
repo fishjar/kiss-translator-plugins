@@ -24,6 +24,12 @@ test("published versions cannot be replaced or downgraded", () => {
   try {
     fs.cpSync(path.join(root, "plugins/deepseek"), path.join(project, "plugins/deepseek"), { recursive: true });
     build(project);
+    const catalogPath = path.join(project, "dist/catalog.json");
+    const catalog = JSON.parse(fs.readFileSync(catalogPath));
+    catalog.plugins.push({ ...catalog.plugins[0], id: "removed-plugin" });
+    fs.writeFileSync(catalogPath, JSON.stringify(catalog));
+    build(project);
+    assert.deepEqual(JSON.parse(fs.readFileSync(catalogPath)).plugins.map((entry) => entry.id), ["deepseek"]);
     const manifestPath = path.join(project, "plugins/deepseek/manifest.json");
     const manifest = JSON.parse(fs.readFileSync(manifestPath));
     manifest.description += " changed";
@@ -35,7 +41,7 @@ test("published versions cannot be replaced or downgraded", () => {
     manifest.version = "1.2.3";
     fs.writeFileSync(manifestPath, JSON.stringify(manifest));
     build(project);
-    assert.ok(fs.existsSync(path.join(project, "dist/example-deepseek/1.2.2.zip")));
-    assert.ok(fs.existsSync(path.join(project, "dist/example-deepseek/1.2.3.zip")));
+    assert.ok(fs.existsSync(path.join(project, "dist/deepseek/1.2.2.zip")));
+    assert.ok(fs.existsSync(path.join(project, "dist/deepseek/1.2.3.zip")));
   } finally { fs.rmSync(project, { recursive: true, force: true }); }
 });

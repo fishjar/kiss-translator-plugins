@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "id": "example-deepseek",
+  "id": "deepseek",
   "name": "DeepSeek",
   "version": "1.2.2",
   "apiVersion": "1",
