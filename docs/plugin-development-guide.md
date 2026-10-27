@@ -1,8 +1,8 @@
-# 网络服务插件开发指南（SDK v1）
+# 网络服务插件开发指南（SDK 2，兼容 SDK 1）
 
 本文面向官方及外部插件作者，说明创建、配置、执行、调试和发布插件所需的文件与接口。基础开发无需克隆宿主；新增官方插件按第 12.5 节在本仓库开发，可选运行真实宿主 SDK 集成测试时，才需要额外准备宿主源码和依赖。
 
-契约核对：2026-10-26。适用于已提供“接口插件”页面及声明式协议规则 v2 的当前开发分支；正式发布版以对应版本支持的功能为准。`apiVersion: "1"` 是 SDK 版本，`rulesVersion` 是规则格式版本，两者独立。
+契约核对：2026-10-27。当前开发分支支持 SDK 1 和 SDK 2。新插件使用 `apiVersion: "2"`；旧版宿主会在安装时拒绝 SDK 2。SDK 版本独立于宿主 package.json 发布版本，`rulesVersion` 则表示声明式规则格式。开发 SDK 新功能只升级 SDK 契约并重新构建宿主，无需提高宿主发布版本。已有 SDK 1 插件继续加载，不改写其 Manifest 或实例快照。
 
 ## 目录
 
@@ -36,7 +36,7 @@
 
 执行流程：安装 → 添加实例 → 填写并保存配置 → 能力测试或场景调用 → 执行 handler → 校验标准结果。
 
-一个服务可实现多个能力，不必为每个能力复制账号、URL 和模型配置。能力统一在服务层声明，模型目录只提供 ID 和名称，不允许模型层声明 capabilities。同一服务内的模型必须支持相同的任务与特性，包括时间戳、坐标、流式和批量；能力不一致时必须拆分服务。能力、请求、结果解析和配置一致的模型可以放在同一目录；存在实际协议、默认提示词或消息排列差异时也应拆分服务。服务名称使用“聊天与翻译”“音频转写”“语音合成”“图片全文识别”等功能名，不含供应商或具体模型版本；独立 OCR 适配可加模型系列区分。需要独立模型或参数的端点可拆成不同服务。宿主不会自动将 chat 当作 translate，必须分别声明和实现。
+一个服务可实现多个能力，不必为每个能力复制账号、URL 和模型配置。能力统一在服务层声明，模型目录只提供 ID 和名称，不允许模型层声明 capabilities。同一服务内的模型必须支持相同的任务与特性，包括时间戳、坐标、流式和批量；能力不一致时必须拆分服务。能力、请求、结果解析和配置一致的模型可以放在同一目录；存在实际协议、默认提示词或消息排列差异时也应拆分服务。服务名称使用“对话与翻译（LLM）”“语音识别（ASR）”“语音合成（TTS）”“图片全文识别”等功能名，不含供应商或具体模型版本；独立 OCR 适配可加模型系列区分。需要独立模型或参数的端点可拆成不同服务。宿主不会自动将 chat 当作 translate，必须分别声明和实现。
 
 | 实现方式                     | 适合情况                                            | 执行方式                         |
 | ---------------------------- | --------------------------------------------------- | -------------------------------- |
@@ -75,7 +75,7 @@ my-text-provider/
   "id": "my-text-provider",
   "name": "我的文本服务",
   "version": "1.0.0",
-  "apiVersion": "1",
+  "apiVersion": "2",
   "permissions": { "endpointFields": ["baseUrl"] },
   "sharedSettings": [
     {
@@ -184,7 +184,7 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | id              | 字符串，必需   | 稳定 ID，匹配 `^[a-z][a-z0-9-]{1,100}$`，2–101 字符 |
 | name            | 字符串         | 插件显示名，发布时填写                              |
 | version         | 字符串，必需   | 三段数字，如 1.0.0，无 v 前缀、预发布或构建后缀     |
-| apiVersion      | 字符串，必需   | 固定 "1"，不是整数                                  |
+| apiVersion      | 字符串，必需   | "1" 或 "2"；新插件使用 "2"，不是整数                                  |
 | services        | 非空数组，必需 | 服务定义                                            |
 | sharedSettings  | 可选字段数组   | 共用字段定义，实例值各自独立                        |
 | permissions     | 可选对象       | network 和 endpointFields                           |
@@ -325,8 +325,8 @@ v2 的每个 handler 只允许 protocol、task 和 request 三个字段，没有
 | ------------------ | ------------------------------------------------------- |
 | rulesVersion       | 整数 2                                                  |
 | handlers           | handler 映射，覆盖 Manifest 引用                        |
-| protocol           | 仅 openai-chat-completions                              |
-| task               | chat / translate / parseImage，与能力名一致             |
+| protocol           | openai-chat-completions / openai-audio-transcriptions / openai-audio-speech |
+| task               | 下表 13 种网络任务，与能力名及协议匹配；speak 仅内置 |
 | request.baseUrl    | 必需字符串或取值节点，包含 /v1 等前缀                   |
 | request.model      | 必需字符串或取值节点                                    |
 | request.auth       | 必需 Bearer，secret 为 `{"$secret":"已声明秘密字段键"}` |
@@ -334,13 +334,46 @@ v2 的每个 handler 只允许 protocol、task 和 request 三个字段，没有
 
 request 不接受 url/method/headers/bodyType/responseType/streamFormat。parameters 不覆盖 baseUrl/auth/model/messages/stream，不含原型属性或 $ 开头键。
 
-| task       | 自动处理                                         | 特性                                         |
-| ---------- | ------------------------------------------------ | -------------------------------------------- |
-| chat       | input.messages → Chat Completions → 标准聊天结果 | 仅 text，complete/stream，无批量/坐标/时间戳 |
-| translate  | 翻译消息 → 所选 text/JSON/LINE/XML 协议 → items                    | complete/stream，可批量，无坐标/时间戳       |
-| parseImage | 图片 data URL + prompt → 全文                    | image，complete，无 stream/坐标/时间戳/批量  |
+| protocol | task | 标准支持 |
+| --- | --- | --- |
+| openai-chat-completions | chat | complete/stream，text/image/audio 输入 |
+| openai-chat-completions | translate | complete/stream，可批量，text/JSON/LINE/XML |
+| openai-chat-completions | summarize、dictionary | complete/stream |
+| openai-chat-completions | detectLanguage、suggest、segmentSubtitle、evaluate | complete，结构化结果 |
+| openai-chat-completions | recognizeText、parseImage、analyzeLayout | image，complete；OCR 可声明 coordinates，布局返回区域 |
+| openai-audio-transcriptions | transcribe | audio，complete，可声明 timestamps |
+| openai-audio-speech | synthesizeSpeech | text，complete，返回任务音频资产 |
 
-v2 chat 不支持多模态转换，image/audio chat 使用 script。parseImage 支持 PNG/JPEG/WebP/GIF，真实 MIME 与 AssetRef 必须一致，返回 `{text,format:"text",items:[{text,poly:null}]}`，按非空行拆分，不能用于要求坐标的场景。
+以上 13 项均可用 script 实现；公共 SDK 负责通用协议，脚本自行适配厂家差异并返回第 6 节的标准结果。speak 是宿主系统朗读，仅内置实现可以使用，外部包、实例恢复和执行会拒绝它。声明某项能力不意味着模型支持它，必须用实际模型验证。coordinates 仅适用于图像识别/布局，timestamps 仅适用于 ASR，batch 仅用于翻译。
+
+声明式只允许 chat/translate/summarize/dictionary 声明 stream，其他任务会在安装及执行时拒绝；v1 无流式路径，任何 stream 声明均拒绝。脚本自行实现声明的流式事件与完整结果，不能只返回完整响应却声称已经输出增量。
+
+图片支持 PNG/JPEG/WebP/GIF。Chat 音频标准转换支持 WAV/MP3，不会把 M4A 字节伪装成 WAV；其他音频协议由 script 适配。AssetRef 的真实 MIME 和任务所有权必须匹配，单资产及 HTTP 体积上限为 8 MiB。SDK 2 无坐标 OCR 返回 Markdown 与 poly=null 行项；SDK 1 声明式无坐标 OCR 保留 format:text。声明 coordinates 时模型必须返回真实文字多边形，布局必须返回真实像素区域，宿主只验证，不生成坐标。
+
+音频协议复用第 8 节 HTTP Broker。ASR 发送 multipart file/model，按 requireTimestamps（未传时按能力声明）选择 JSON/verbose_json，解析真实 segments/words；TTS 发送 input/model/voice/speed，返回 MP3 资产。TTS 的 voice/speed 优先使用任务输入，其次使用实例同名配置，voice 必填。parameters 只补充厂家选项，不能覆盖 file/input/audio/language/voice/speed/response_format/timestamp_granularities[] 或模型、鉴权等绑定字段。OpenRouter 的 Base64 ASR 等非标准协议继续使用 script。
+
+以下示例的 capabilities 是服务字段，rules 保存为该服务的 implementation.entry；还需在 Manifest 声明 apiVersion:"2"、baseUrl/model/apiKey 配置和网络权限。
+
+<!-- sdk2-example -->
+```json
+{
+  "capabilities": {
+    "summarize": {"handler":"summarize","outputModes":["complete","stream"]},
+    "transcribe": {"handler":"transcribe","inputModalities":["audio"],"timestamps":true,"outputModes":["complete"]},
+    "synthesizeSpeech": {"handler":"synthesizeSpeech","outputModes":["complete"]}
+  },
+  "rules": {
+    "rulesVersion": 2,
+    "handlers": {
+      "summarize": {"protocol":"openai-chat-completions","task":"summarize","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}},
+      "transcribe": {"protocol":"openai-audio-transcriptions","task":"transcribe","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}},
+      "synthesizeSpeech": {"protocol":"openai-audio-speech","task":"synthesizeSpeech","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}}
+    }
+  }
+}
+```
+
+这些 handler 使用同一套配置只是示例。真实 ASR、TTS 和 LLM 通常需要不同模型，应拆成服务定义，不应把不支持同一能力的模型放进同一服务。
 
 ### 4.2 取值与条件
 
@@ -423,7 +456,7 @@ v2 普通节点仅支持 `$ref`（含省略选项）和 `$if`，不支持 transf
 }
 ```
 
-默认提示词要求忠实提取可见文字，明确传入的 input.prompt 优先。taskModes 只声明已验证模式；v2 不根据 input.mode 自动生成表格或公式专用提示词，需要场景传入合适的 prompt。需要坐标或特殊结果结构时使用 script。
+默认提示词要求忠实提取可见文字，明确传入的 input.prompt 优先。taskModes 只声明已验证模式；v2 不根据 input.mode 自动生成表格或公式专用提示词，需要场景传入合适的 prompt。SDK 2 声明 coordinates:true 时采用结构化 OCR 契约；厂家特殊结果结构仍使用 script。
 
 ## 5. 声明式请求映射规则 v1
 
@@ -436,7 +469,7 @@ v1 适合一次固定请求和结果映射，不自动生成消息，也不输�
 ```json
 {
   "id": "transcription",
-  "name": "音频转写",
+  "name": "语音识别",
   "implementation": {
     "kind": "declarative",
     "entry": "services/transcription.json"
@@ -449,7 +482,7 @@ v1 适合一次固定请求和结果映射，不自动生成消息，也不输�
     }
   },
   "settings": [
-    { "key": "model", "label": "转写模型 ID", "type": "text", "required": true }
+    { "key": "model", "label": "语音识别模型 ID", "type": "text", "required": true }
   ]
 }
 ```
@@ -643,7 +676,7 @@ type Result = {
 };
 ```
 
-messages 必须非空，没有推理正文时返回 reasoning 空字符串。多模态需声明 inputModalities；宿主的 image/asset 结构不是厂家的 image_url，script 需要自行转换，helper 不自动转换。当前没有工具调用消息契约。
+messages 必须非空，没有推理正文时返回 reasoning 空字符串。多模态需声明 inputModalities；宿主的 image/asset 结构不是厂家的 image_url，script 可调用 prepareMessages(messages, ctx.assets.read) 转换标准图片和音频部件；声明式自动完成同一转换。当前没有工具调用消息契约。
 
 ### 6.4 summarize、detectLanguage、dictionary、suggest
 
@@ -654,13 +687,13 @@ messages 必须非空，没有推理正文时返回 reasoning 空字符串。多
 | dictionary     | `{text,sourceLanguage?,language?,context?,instructions?,userPrompt?}` | `{text,format:"text" \| "markdown"}`   |
 | suggest        | `{text,language?}`                                                    | `{items:string[]}`                     |
 
-输入 text 非空白，可选语言/提示词/上下文字符串。dictionary 当前文本或 Markdown，不要求词条对象。检测返回语言代码。
+输入 text 非空白，可选语言/提示词/上下文字符串。dictionary 和 summarize 可提供 document:{title,description,summary,url}；detectLanguage.candidates 必须是非空语言代码字符串数组，返回语言必须属于候选。dictionary 当前文本或 Markdown，不要求词条对象。检测返回语言代码。
 
 ### 6.5 segmentSubtitle
 
 ```ts
 type Input = {
-  items: Array<{ id: string; text: string; start: number; end: number }>;
+  items: Array<{ id: string; text: string; start: number; end: number; pauseMs?: number }>;
   sourceLanguage?: string;
   targetLanguage?: string;
   instructions?: string;
@@ -670,6 +703,8 @@ type Result = {
   groups: Array<{ ids: string[]; text: string; translation?: string }>;
 };
 ```
+
+输入另支持 document:{title,description,summary,url}、tone:string 和 glossary:Record<string,string>。pauseMs 为非负毫秒停顿；真实字幕场景由相邻事件时间计算。摘要与 surrounding context 分别传递，不互相替换。
 
 groups 和各组 ids 必须非空，所有组的 ID 串联后与输入顺序完全一致，每项只覆盖一次。输入 a,b,c 可分为 [a,b] 和 [c]，不能重排或遗漏，结果不需要重复输出时间。
 
@@ -768,6 +803,8 @@ type Result = {
 这是当前 JEV 类型化决策契约，不是普通聊天 JSON。questions 非空，每 ID 一个相同 type 答案，概率/置信度 [0,1]，score 有限数值，仅真实支持契约时声明。
 
 ### 6.10 synthesizeSpeech 与 speak
+
+speak 仅为内置系统朗读能力，外部插件不能声明或执行；网络插件使用 synthesizeSpeech 返回音频，再由宿主场景播放。
 
 ```ts
 type Input = {
@@ -1135,7 +1172,7 @@ JSON `[{"id":"a","text":"你好"}]`；XML `<root><t id="a">你好</t></root>`；
 
 ### 10.1 选择与事件
 
-规则 v2 自动处理 chat/translate 流式，script 则需自行实现。能力和当前模型支持时默认开启，实例 useStream=false 明确关闭；ctx.options.streaming 是本次实际选择。只等待最终结果的场景也可能采用流式传输。
+规则 v2 自动处理 chat/translate/summarize/dictionary 流式，script 则需自行实现。能力和当前模型支持时默认开启，实例 useStream=false 明确关闭；ctx.options.streaming 是本次实际选择。只等待最终结果的场景也可能采用流式传输。
 
 | 事件            | 结构                                                            |
 | --------------- | --------------------------------------------------------------- |
@@ -1379,7 +1416,7 @@ npm run build
 
 可选运行 `npm run test:host` 验证真实 SDK：通过 `KISS_TRANSLATOR_ROOT` 指定已安装依赖的宿主源码，未指定时查找相邻的 kiss-translator。仅这一命令及显式使用它的测试需要宿主。集成测试不覆盖真实 Worker/RPC 隔离，仍需浏览器验收；它不是打包、CI 或发布的前置条件。
 
-两个仓库通过 `apiVersion` 和可选 `minHostVersion` 约定兼容性。目录保留这些声明，宿主刷新列表时展示是否兼容，安装、恢复和执行时再复核；插件仓库独立发布，不需先合并宿主代码。
+两个仓库主要通过 `apiVersion` 约定 SDK 兼容性。SDK 2 功能不依赖宿主发布版本号；`minHostVersion` 仅用于 SDK 之外的宿主功能依赖，仍按原规则检查。目录和同步模板索引保留显式 apiVersion；旧索引不自动补写版本默认值。宿主刷新列表时展示是否兼容，安装、恢复和执行时再复核；插件仓库独立发布，不需先合并宿主代码。
 
 ### 13.2 扩展验证
 
@@ -1460,3 +1497,46 @@ pnpm test --watchAll=false --runInBand src/providers/declarative.test.js src/pro
 ```
 
 语言代码为 `en`、`zh`、`zh_TW`、`ja`、`ko`、`tr`、`vi`、`ru`，翻译值须为字符串。界面优先使用当前语言，其次使用 `en`，最后使用基础文案。名称翻译随插件快照和同步索引保留；已安装旧版示例包的常见中文标签也有显示兼容，无需重写配置。用户修改过的服务名称按用户原值显示。
+
+
+### 官方 LLM 服务的基础能力
+
+官方 DeepSeek、OpenAI 兼容、OpenRouter、SiliconFlow 的 LLM 服务均明确提供 translate、chat、segmentSubtitle、dictionary。宿主不会自动为第三方 chat 服务补齐能力；插件必须声明并实现对应处理器。
+
+SDK 2 补齐标准网络任务，官方插件使用 apiVersion:"2"，不通过宿主发布版本号判断这些能力。dictionary 将 instructions/userPrompt 中的 {{text}}、{{sourceLanguage}}、{{language}}、{{context}} 及 {{from}}/{{to}} 等语言别名替换后构造消息，返回 {text,format:"markdown"}，支持完整及流式响应。segmentSubtitle 使用 items、语言和上下文构造消息，只支持完整响应，返回 {groups:[{ids,text,translation?}]}；所有 ID 必须按输入顺序恰好覆盖一次。任务指令中的分组、措辞等要求保留，输出格式由宿主的 groups 契约固定。
+
+脚本插件可使用 ctx.helpers.textTasks.buildMessages(task,input) 和 parseResult(task,text,input) 复用同一消息与结果校验；默认提示词通过 defaultPrompts.dictionary/subtitle 声明，场景或用户提供的指令优先。
+
+
+## SDK 2 公共任务工具与兼容维护
+
+`ctx.helpers.textTasks.buildMessages(task,input,descriptor?)` 支持 summarize、dictionary、detectLanguage、suggest、segmentSubtitle、evaluate、recognizeText、parseImage、analyzeLayout，返回标准消息。`parseResult(task,text,input,descriptor?)` 校验完整结果；descriptor.coordinates 决定 OCR 是否使用 JSON 坐标契约，evaluate 的 descriptor.model/usage 由实际请求模型和响应元数据提供。未知任务、空结果、非法 JSON、缺失或乱序字幕 ID、候选外语言均报错，不当作成功写入缓存。无坐标 OCR 不尝试从任意输出中猜测区域。
+
+`ctx.helpers.openai.chatCompletions.prepareMessages(messages,readAsset)` 是异步工具，将标准消息的 image/audio AssetRef 转为 image_url/input_audio；readAsset 使用 `ctx.assets.read`。纯文字消息保持原值。图片/音频 MIME、资产权限和大小均检查；模型是否接受多模态须另行验证。
+
+<!-- sdk2-script-example -->
+```javascript
+exports.summarize = async function(input, config, ctx) {
+  var sdk = ctx.helpers.openai.chatCompletions;
+  var messages = ctx.helpers.textTasks.buildMessages("summarize", input);
+  var response = await ctx.http.request(sdk.buildRequest({
+    baseUrl: config.baseUrl, model: config.model,
+    auth: {type: "bearer", secret: ctx.secrets.ref("apiKey")},
+    messages: messages, stream: false
+  }));
+  var result = sdk.parseResponse(response);
+  return ctx.helpers.textTasks.parseResult("summarize", result.text, input);
+};
+```
+
+此示例仅实现 complete，服务须声明 outputModes:["complete"]。流式实现须逐个消费 SSE、await ctx.emit 并在结束时调用 parser.finish()；缺少终止帧或结果不完整必须失败，不能把预览当作最终成功。图片任务先调用 prepareMessages，再发送请求。
+
+默认提示词槽新增 summary→summarize、detectLanguage、suggest、evaluate、recognizeText、analyzeLayout；原有 batch/nobatch/dictionary/subtitle/vlm 保留。文字任务支持 instructions/userPrompt，图片任务使用 prompt。显式输入优先于插件默认值；选择插件内部默认时使用实例快照，不读取远端新模板。textTasks 支持 text、transcript（text 的摘要场景别名）、sourceLanguage、targetLanguage、language、from/fromLang、to/toLang、context、title、description、summary、url、tone、glossary、items；缺失文字变量为空，语言默认 auto，glossary 为 `- term: value` 列表。翻译 helper 的 glossary 继续使用 JSON 对象文本。结构化任务的输入载荷与输出契约由 SDK 固定，用户只能调整任务要求，不能改变 wire 输出格式。
+
+SDK 版本表示功能契约，不是插件版本或宿主发布版本。SDK 2 宿主接受 apiVersion:"1" 和 "2"；旧宿主只接受 "1"。新插件依赖上述新 helper/协议时声明 "2"。后续 SDK 2 内的模型、厂家参数、端点和提示词调整只提高插件版本；确实需要新增宿主接口时才升级 SDK。保留已有 helper 名称和输入输出语义，不静默改变旧快照。minHostVersion 仅用于 SDK 外的宿主功能依赖，普通 SDK 适配不设置它。
+
+安装新包只更新模板。用户通过现有实例升级流程创建或升级快照，原账号、模型、显式提示词和能力选择按现有预览处理，不自动改写。模板与实例支持的 SDK 均在执行边界复核。SDK 2 的通用提示词与文档示例进入宿主集成回归；新增能力必须补齐支持矩阵、输入输出、非法声明及两种执行方式的测试。
+
+验收分别记录：静态打包与语法检查、模拟厂家 HTTP 的协议测试、生产 SDK/解释器集成、真实浏览器 Worker/RPC、真实厂家请求。前几项通过不能代替后两项；真实模型输出品质需要具体任务样例验证。运行 npm run check、npm test、npm run test:host 和 npm run build，宿主运行 providers/相关场景测试及 Chrome 构建。开发时重新构建并加载包含 SDK 2 的宿主即可，不必修改宿主发布版本号。
+
+本次 SDK 2 的具体测试数量、浏览器安装/实例创建和 Worker/RPC 验收结果见 [SDK 2 验证记录](sdk-2-acceptance.md)。

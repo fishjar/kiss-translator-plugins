@@ -1,5 +1,5 @@
-// SDK v1 示例；用户脚本通过宿主提供的 ctx SDK 执行。
-// 一个接口实例拥有 chat、translate 两项能力，共用请求实现。
+// SDK 2 示例；用户脚本通过宿主提供的 ctx SDK 执行。
+// 一个接口实例拥有 chat、translate、dictionary、segmentSubtitle 四项能力，共用请求实现。
 async function complete(messages, config, ctx, translationInput) {
   if (!config.model || !config.baseUrl) {
     throw new Error("请配置模型和 API 基础地址");
@@ -54,9 +54,27 @@ exports.translate = async function (input, config, ctx) {
     messages,
     Object.assign({}, config, { temperature: config.translationTemperature }),
     ctx,
-    input
+    input,
   );
   // 解析器负责格式、缺项、重复/未知 ID 校验，不直接按返回顺序配对。
   if (ctx.options && ctx.options.streaming) return result;
   return ctx.helpers.translation.parseResult(result.text, input);
+};
+
+exports.dictionary = async function (input, config, ctx) {
+  var messages = ctx.helpers.textTasks.buildMessages("dictionary", input);
+  var result = await complete(messages, config, ctx);
+  return ctx.helpers.textTasks.parseResult("dictionary", result.text, input);
+};
+
+exports.segmentSubtitle = async function (input, config, ctx) {
+  if (ctx.options && ctx.options.streaming)
+    throw new Error("Subtitle segmentation requires a complete response.");
+  var messages = ctx.helpers.textTasks.buildMessages("segmentSubtitle", input);
+  var result = await complete(messages, config, ctx);
+  return ctx.helpers.textTasks.parseResult(
+    "segmentSubtitle",
+    result.text,
+    input,
+  );
 };

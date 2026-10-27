@@ -65,7 +65,7 @@ test("vision reads binary assets, maps prompts and model parameters, and never f
       assert.equal(built.messages[0].content[1].image_url.url, "data:image/png;base64,AH+A/w==");
       assert.equal(f.requests.length, 1);
       assert.equal(result.text, "recognized\nsecond line");
-      assert.equal(result.format, "text");
+      assert.equal(result.format, "markdown");
       assert.deepEqual(Array.from(result.items, (item) => ({ ...item })), [
         { text: "recognized", poly: null }, { text: "second line", poly: null },
       ]);

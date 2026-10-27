@@ -21,7 +21,7 @@ const requireValue = (valid, message) => {
 function packagePaths(manifest) {
   requireValue(
     manifest.manifestVersion === 1 &&
-      manifest.apiVersion === "1" &&
+      ["1", "2"].includes(manifest.apiVersion) &&
       /^[a-z][a-z0-9-]{1,100}$/.test(manifest.id) &&
       validVersion(manifest.version),
     "Invalid manifest identity/version",
@@ -55,11 +55,16 @@ function packagePaths(manifest) {
         Object.keys(service.capabilities).length,
       "Missing service implementation/capabilities: " + service.id,
     );
+    requireValue(
+      !Object.hasOwn(service.capabilities, "speak"),
+      "System speech is native-only",
+    );
     ids.add(service.id);
     for (const model of service.models || [])
       requireValue(
         model?.capabilities === undefined,
-        "Model capabilities must be declared on separate services: " + service.id,
+        "Model capabilities must be declared on separate services: " +
+          service.id,
       );
     entries.add(service.implementation.entry);
   }
@@ -106,11 +111,46 @@ function validatePackageFiles(files) {
           Object.hasOwn(rules.handlers, descriptor.handler),
           `Missing handler: ${service.id}/${name}`,
         );
-        if (rules.rulesVersion === 2)
+        if (rules.rulesVersion === 1)
+          requireValue(
+            !(descriptor.outputModes || []).includes("stream"),
+            "Rules v1 do not support streaming",
+          );
+        if (rules.rulesVersion === 2) {
+          requireValue(
+            (rules.handlers[descriptor.handler].protocol ===
+              "openai-chat-completions" &&
+              [
+                "chat",
+                "translate",
+                "summarize",
+                "detectLanguage",
+                "parseImage",
+                "recognizeText",
+                "analyzeLayout",
+                "dictionary",
+                "suggest",
+                "segmentSubtitle",
+                "evaluate",
+              ].includes(rules.handlers[descriptor.handler].task)) ||
+              (rules.handlers[descriptor.handler].protocol ===
+                "openai-audio-transcriptions" &&
+                name === "transcribe") ||
+              (rules.handlers[descriptor.handler].protocol ===
+                "openai-audio-speech" &&
+                name === "synthesizeSpeech"),
+            `Unsupported protocol task: ${service.id}/${name}`,
+          );
+          requireValue(
+            !(descriptor.outputModes || []).includes("stream") ||
+              ["chat", "translate", "summarize", "dictionary"].includes(name),
+            `Unsupported streaming task: ${name}`,
+          );
           requireValue(
             rules.handlers[descriptor.handler].task === name,
             `Handler task mismatch: ${service.id}/${name}`,
           );
+        }
       }
     }
   }

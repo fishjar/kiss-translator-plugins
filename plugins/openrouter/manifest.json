@@ -2,17 +2,17 @@
   "manifestVersion": 1,
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.1.2",
-  "apiVersion": "1",
+  "version": "1.1.3",
+  "apiVersion": "2",
   "icon": "assets/logo.png",
-  "description": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+  "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
   "nameI18n": {
     "en": "OpenRouter"
   },
   "descriptionI18n": {
-    "zh": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+    "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
     "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
-    "zh_TW": "OpenRouter 聊天與翻譯，以及 Whisper、Qwen 音訊轉寫。",
+    "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。",
     "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
     "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
     "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
@@ -56,11 +56,11 @@
   "services": [
     {
       "id": "chat-completions",
-      "name": "聊天与翻译",
+      "name": "对话与翻译（LLM）",
       "nameI18n": {
-        "zh": "聊天与翻译",
+        "zh": "对话与翻译（LLM）",
         "en": "Chat and translation",
-        "zh_TW": "聊天與翻譯",
+        "zh_TW": "對話與翻譯（LLM）",
         "ja": "チャットと翻訳",
         "ko": "채팅 및 번역",
         "tr": "Sohbet ve çeviri",
@@ -90,6 +90,19 @@
           "outputModes": [
             "complete",
             "stream"
+          ]
+        },
+        "dictionary": {
+          "handler": "dictionary",
+          "outputModes": [
+            "complete",
+            "stream"
+          ]
+        },
+        "segmentSubtitle": {
+          "handler": "segmentSubtitle",
+          "outputModes": [
+            "complete"
           ]
         }
       },
@@ -122,23 +135,30 @@
       "defaultPrompts": {
         "batch": {
           "protocol": "json",
-          "systemPrompt": "Translate the input items from {{sourceLanguage}} to {{targetLanguage}}. Return only a JSON array of {id,text}, keeping every ID. Glossary: {{glossary}}. Context: {{context}}",
-          "userPrompt": "{{segments}}"
+          "systemPrompt": "Act as a professional machine translation engine. Output a raw JSON array strictly. No Markdown fences, no conversational filler.",
+          "userPrompt": "{{title}}\n{{description}}\n{{summary}}\n{{context}}\n{{glossary}}\n{{tone}}\nTranslate the text field of each object in the JSON array below into {{to}}. Keep the id unchanged and output a raw JSON array. Output ONLY the translated JSON result without any additional explanation:\n{{segments}}\nPreserve whitespace, HTML entities, all HTML-like tags, code, and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Keep every string ID exactly once. Use context only for meaning, never translate the instructions."
         },
         "nobatch": {
           "protocol": "text",
-          "systemPrompt": "Translate the source text from {{sourceLanguage}} to {{targetLanguage}}. Output only the translated text, without explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}}",
-          "userPrompt": "{{text}}"
+          "systemPrompt": "",
+          "userPrompt": "{{glossary}}\n{{tone}}\nTranslate the following text into {{to}}. Preserve all HTML-like tags. Output ONLY the translated text without any explanation:\n{{text}}\nPreserve code and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Use this context only for meaning:\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nContext: {{context}}"
+        },
+        "dictionary": {
+          "systemPrompt": "# Role\nIf source language is auto, identify it from the target text. Localize the headings below into {{language}}.\nYou are an expert {{sourceLanguage}}-{{language}} lexicographer specializing in contrastive linguistics and modern corpus linguistics. Analyze the user's {{sourceLanguage}} text with academic rigor and clear, elegant formatting, or translate it naturally into {{language}} when dictionary analysis is not appropriate.\n\n# Execution Rules\n1. **Smart routing (CRITICAL)**: Choose the mode strictly from the length and nature of `[Target]`:\n   - **Dictionary mode**: Apply pronunciation and etymology only when appropriate to the source language; do not invent facts. Translate all section headings and labels into {{language}}. Use the dictionary output format only when `[Target]` is clearly a single {{sourceLanguage}} word, an idiom, or a short fixed collocation (for space-separated languages, no more than 3 words).\n   - **Pure translation mode**: Use pure translation for complete sentences, clauses, natural-language phrases, paragraphs, long text, or, for space-separated languages, any continuous text longer than 3 words. When uncertain, choose pure translation mode.\n2. **Context first**: In dictionary mode, if `[Context]` contains useful information, put the contextually correct sense first.\n3. **Target-language contract**: All headings, labels, definitions, explanations, usage notes, and example translations in dictionary mode must be written in {{language}}. Keep {{sourceLanguage}} only for the entry, {{sourceLanguage}} examples, pronunciation, and {{sourceLanguage}} words being compared.\n4. **No extra framing**: Follow the selected format exactly. Do not add greetings, prefaces, or closing summaries.\n\n---\n\n# Pure Translation Output Contract (only for pure translation mode)\n\nYour entire response must contain only the {{language}} translation itself:\n- Do not output the source text, bilingual comparison, headings, labels, language names, quotation marks, Markdown, or explanations.\n- Do not add prefixes such as \"Translation:\" or include pronunciation, etymology, collocations, examples, or acknowledgements.\n- If the source has one paragraph, output one paragraph. Preserve paragraph breaks only when the source has multiple paragraphs.\n\nExample:\n- Input: The library for web and native user interfaces\n- Correct output: [Natural translation of the example into {{language}}]\n\n# Output Format (only for dictionary mode)\n\n## Entry: [original word or phrase]\n> [If the form is inflected in `[Context]`, provide its lemma in parentheses.]\n\n### 1. Forms and pronunciation\n- **Pronunciation**: [Standard pronunciation for {{sourceLanguage}}; US/UK IPA for English]\n- **Parts of speech and meanings**:\n  - `[part of speech]` ① [primary {{language}} definition] ② [secondary {{language}} definition]\n  - `[part of speech]` ① [primary {{language}} definition]\n\n### 2. Context analysis *[include only when useful Context exists]*\n- **Meaning in context**: State the part of speech and precise meaning in the given context.\n- **Register and tone**: Describe sentiment, register, formality, and tone.\n- **Contextual synonyms**: Give 1-2 {{sourceLanguage}} synonyms that can replace the entry in this context without changing the meaning.\n\n### 3. Etymology and usage\n- **Etymology and memory aids**: Explain roots, affixes, historical development, or provide a logical memory aid.\n- **Common collocations**:\n  * `[collocation 1]` ➔ [precise {{language}} translation]\n  * `[collocation 2]` ➔ [precise {{language}} translation]\n- **Synonym distinctions**:\n  * **[entry] vs [synonym 1] vs [synonym 2]**: Explain their differences in context, intensity, register, or collocation habits in 1-2 sentences.\n\n### 4. Examples\n[Provide 2-3 natural examples from publications, news, professional writing, or everyday {{sourceLanguage}}.]\n\n1. **[natural {{sourceLanguage}} example]**\n   - 💡 *Translation*: [accurate, idiomatic {{language}} translation]\n   - 📌 *Usage context*: `[localized scene label]`",
+          "userPrompt": "# Input Data\n\n## [Context] (Optional)\n> Use this information to identify the target text's meaning in context:\n- Document title: {{title}}\n- Document description: {{description}}\n- Document summary: {{summary}}\n- Surrounding paragraph: {{context}}\n\n## [Target] (Required)\n> Use this text to choose between dictionary mode and pure translation mode:\n{{text}}"
+        },
+        "subtitle": {
+          "systemPrompt": "# Context\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nTone: {{tone}}\n\n# Glossary (Terminology):\n{{glossary}}\n\n# Task\nGroup the input word-level JSON array into readable, well-paced bilingual subtitle segments. Target Language: {{to}}.\n\n# Output Contract\nReturn only JSON {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"exact merged source\",\"translation\":\"translation\"}]}. Keep string IDs unchanged. Cover all inputs exactly once in input order, without gaps or overlaps. Do not output timestamps.\n\n# Rules\n1. Hard Source Length Limit:\n   - For space-separated source languages, each source span MUST contain no more than 15 words; aim for 8-12 words when a natural boundary exists.\n   - For Chinese, Japanese, and other non-space-separated source languages, each source span MUST contain no more than 30 source characters.\n   - If a sentence exceeds the applicable limit, split it at a clause, comma, conjunction, or natural phrase boundary. The hard length limit takes priority over keeping a long grammatical sentence intact.\n2. Sentence Boundaries: Never merge two complete sentences into one subtitle segment. Terminal punctuation such as .?!。！？ normally ends the current segment.\n3. Pause Indicators: An optional \"pauseMs\" field is the timeline gap in milliseconds after the current input item. If \"pauseMs\" is missing, treat it as 0 milliseconds and do not infer a pause. Larger positive values indicate stronger sentence boundaries, but grammatical correctness and semantic coherence always take priority.\n4. Exact Translation Alignment: Build \"text\" first from the exact source span covered by the current group IDs. Then translate only the current \"text\" into \"translation\". The \"translation\" field MUST NOT omit that span, translate future input items, or carry text from adjacent segments.\n5. Silent Self-Check: Before returning, silently verify that every group ID range, \"text\", and \"translation\" correspond one-to-one, every \"text\" matches its exact input range, all source-length limits are satisfied, and all input items are covered exactly once. Do not output the self-check or any reasoning.\n6. Translation Quality: Keep \"translation\" concise, accurate, and natural while strictly adhering to the provided Context, Tone, and Glossary. When a term matches the Glossary, output ONLY the glossary value; never echo the source term alongside it and never wrap the value in parentheses.\n\n# Example\nInput: [{\"id\":\"0\",\"text\":\"Hello\",\"start\":0,\"end\":0.4},{\"id\":\"1\",\"text\":\"world.\",\"start\":0.4,\"end\":1}]\nOutput: {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"Hello world.\",\"translation\":\"你好，世界。\"}]}"
         }
       }
     },
     {
       "id": "transcriptions",
-      "name": "音频转写",
+      "name": "语音识别（ASR）",
       "nameI18n": {
-        "zh": "音频转写",
+        "zh": "语音识别（ASR）",
         "en": "Audio transcription",
-        "zh_TW": "音訊轉寫",
+        "zh_TW": "語音辨識（ASR）",
         "ja": "音声文字起こし",
         "ko": "음성 전사",
         "tr": "Ses transkripsiyonu",

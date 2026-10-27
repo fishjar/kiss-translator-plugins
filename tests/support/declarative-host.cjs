@@ -5,6 +5,7 @@ const { readProviderPackage } = load("providers/package.js");
 const { createServiceInstance, projectInstanceConfig } = load("providers/instances.js");
 const { createAssetStore, createTransportBroker } = load("providers/transport.js");
 const { runDeclarative } = load("providers/declarative.js");
+const runScript = require("./script-runner.cjs");
 const { providerHelpers } = load("providers/sdk/index.js");
 
 // Real package loader, rule executor, SDK and transport; only fetch is injected.
@@ -35,8 +36,10 @@ module.exports = function fixture(plugin, service, config = {}) {
     emit: async () => {},
   };
   return {
-    assets, calls, config: ctx.config,
+    instance, ctx, assets, calls, config: ctx.config,
     respond: (value) => { respond = value; },
-    invoke: (handler, input) => runDeclarative(instance.provider, handler, input, ctx),
+    invoke: (handler, input) => instance.provider.implementation.kind === "script"
+      ? runScript(instance.provider, handler, input, ctx)
+      : runDeclarative(instance.provider, handler, input, ctx),
   };
 };

@@ -37,7 +37,7 @@ exports.parseImage = async function (input, config, ctx) {
   );
   return {
     text: result.text,
-    format: "text",
+    format: "markdown",
     items: result.text
       .split(/\r?\n/)
       .filter(Boolean)

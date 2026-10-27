@@ -36,6 +36,42 @@
           }
         }
       }
+    },
+    "dictionary": {
+      "protocol": "openai-chat-completions",
+      "task": "dictionary",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    },
+    "segmentSubtitle": {
+      "protocol": "openai-chat-completions",
+      "task": "segmentSubtitle",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
     }
   }
 }

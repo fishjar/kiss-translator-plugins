@@ -91,6 +91,88 @@
           }
         }
       }
+    },
+    "dictionary": {
+      "protocol": "openai-chat-completions",
+      "task": "dictionary",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        },
+        "parameters": {
+          "thinking": {
+            "$if": {
+              "$ref": "config.thinkingMode",
+              "equals": "auto"
+            },
+            "else": {
+              "type": {
+                "$ref": "config.thinkingMode"
+              }
+            }
+          },
+          "reasoning_effort": {
+            "$if": {
+              "$ref": "config.thinkingMode",
+              "equals": "enabled"
+            },
+            "then": {
+              "$ref": "config.thinkingEffort",
+              "omitValues": ["_default"]
+            }
+          }
+        }
+      }
+    },
+    "segmentSubtitle": {
+      "protocol": "openai-chat-completions",
+      "task": "segmentSubtitle",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        },
+        "parameters": {
+          "thinking": {
+            "$if": {
+              "$ref": "config.thinkingMode",
+              "equals": "auto"
+            },
+            "else": {
+              "type": {
+                "$ref": "config.thinkingMode"
+              }
+            }
+          },
+          "reasoning_effort": {
+            "$if": {
+              "$ref": "config.thinkingMode",
+              "equals": "enabled"
+            },
+            "then": {
+              "$ref": "config.thinkingEffort",
+              "omitValues": ["_default"]
+            }
+          }
+        }
+      }
     }
   }
 }

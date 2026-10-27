@@ -1,12 +1,15 @@
 # DeepSeek 插件
 
+1.2.5：采用 SDK 2（apiVersion:"2"），优化翻译、AI 词典与字幕断句默认提示词；宿主发布版本号不作为 SDK 功能依赖。旧实例通过现有升级流程获取新快照，用户自定义提示词保持优先。
+
+
 1.2.4：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
 
 1.2.3：统一接口名称为“聊天与翻译”，模型名称保留在模型目录中。
 
 1.2.2：从宿主项目迁入官方插件仓库，展示名称去掉“示例”，插件 ID 为 `deepseek`，保留服务 ID。
 
-这是 [SDK v1](../../docs/plugin-development-guide.md) 的独立 JSON 声明式示例，规则使用 `rulesVersion: 2`，适用于支持该版本的当前开发分支。一个 `chat-completions` 服务实例同时提供 `chat` 和 `translate`，支持完整结果、流式输出及按稳定 ID 对齐的批量翻译。实现见 [services/chat.json](services/chat.json)，包内不含 JS 入口。
+这是 [SDK 2](../../docs/plugin-development-guide.md) 的独立 JSON 声明式示例，规则使用 `rulesVersion: 2`，适用于支持该版本的当前开发分支。一个 `chat-completions` 服务实例同时提供 `chat` 和 `translate`，支持完整结果、流式输出及按稳定 ID 对齐的批量翻译。实现见 [services/chat.json](services/chat.json)，包内不含 JS 入口。
 
 ## 安装与配置
 
@@ -82,3 +85,5 @@ JSON 选择 `openai-chat-completions` 协议和 `chat` / `translate` 任务，�
 ```
 
 新模板版本为 1.2.1。已安装实例保留自己的快照，需先更新插件包，再创建升级实例、测试并替换场景引用。旧快照没有 protocol 声明时继续兼容 JSON；显式绑定宿主提示词时按该提示词的模式和协议执行。脚本若自行解析响应，需同步读取 translationMode/outputProtocol；使用 SDK helpers 的旧脚本可继承本次调用协议。
+
+当前 LLM 服务支持翻译、对话（LLM）、字幕断句和 AI 词典，共用模型与凭据配置。新增能力需要支持 SDK 2 的宿主；现有安装需更新插件包。

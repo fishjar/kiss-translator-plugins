@@ -202,8 +202,8 @@ test("single and batch translation preserve IDs, prompts and reject missing resu
     { items: [{ id: "a", text: "你好" }] },
   );
   assert.match(
-    JSON.parse(f.calls[0].init.body).messages[0].content,
-    /without explanations/,
+    JSON.parse(f.calls[0].init.body).messages[1].content,
+    /without any explanation/,
   );
   f.respond(() =>
     Response.json(
@@ -307,7 +307,7 @@ for (const id of ["paddleocr", "deepseek-ocr"]) {
     f.respond(() => Response.json(completion(text)));
     const result = await f.invoke("parseImage", input);
     assert.equal(result.text, text);
-    assert.equal(result.format, "text");
+    assert.equal(result.format, id === "deepseek-ocr" ? "text" : "markdown");
     assert.ok(result.items.every((item) => item.poly === null));
     const body = JSON.parse(f.calls[0].init.body);
     assert.equal(body.model, models[id]);

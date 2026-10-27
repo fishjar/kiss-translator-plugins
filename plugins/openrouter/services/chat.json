@@ -5,18 +5,72 @@
       "protocol": "openai-chat-completions",
       "task": "chat",
       "request": {
-        "baseUrl": { "$ref": "config.baseUrl" },
-        "model": { "$ref": "config.model" },
-        "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } }
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
       }
     },
     "translate": {
       "protocol": "openai-chat-completions",
       "task": "translate",
       "request": {
-        "baseUrl": { "$ref": "config.baseUrl" },
-        "model": { "$ref": "config.model" },
-        "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } }
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    },
+    "dictionary": {
+      "protocol": "openai-chat-completions",
+      "task": "dictionary",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    },
+    "segmentSubtitle": {
+      "protocol": "openai-chat-completions",
+      "task": "segmentSubtitle",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
       }
     }
   }

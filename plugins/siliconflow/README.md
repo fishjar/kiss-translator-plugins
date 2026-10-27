@@ -1,10 +1,13 @@
 # SiliconFlow 官方适配插件
 
+1.1.4：采用 SDK 2（apiVersion:"2"），优化翻译、AI 词典与字幕断句默认提示词；宿主发布版本号不作为 SDK 功能依赖。旧实例通过现有升级流程获取新快照，用户自定义提示词保持优先。
+
+
 1.1.3：能力统一在接口层声明，移除模型层重复声明；接口名称只区分 Qwen 与星辰，时间戳状态在支持能力中展示。
 
 1.1.1：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
 
-插件 ID：`siliconflow`，版本：`1.1.3`，要求宿主 SDK v1。由简约翻译项目维护，不代表 SiliconFlow 或模型提供商发布。
+插件 ID：`siliconflow`，版本：`1.1.4`，要求宿主支持 SDK 2。由简约翻译项目维护，不代表 SiliconFlow 或模型提供商发布。
 
 ## 安装与配置
 
@@ -12,9 +15,9 @@
 
 | 接口                    | 默认模型                           | 能力                                 |
 | ----------------------- | ---------------------------------- | ------------------------------------ |
-| chat-completions        | deepseek-ai/DeepSeek-V4.1-Flash    | 聊天、单句及批量翻译，完整和流式输出 |
-| transcriptions          | Qwen/Qwen3-ASR-1.7B                | 音频全文转写，不支持时间戳           |
-| xingchen-transcriptions | XingChenAGI/XingChenASR-V3.2-Ultra | 音频转写，支持分段时间戳             |
+| chat-completions        | deepseek-ai/DeepSeek-V4.1-Flash    | 对话、翻译、AI 词典（完整和流式），字幕断句（完整） |
+| transcriptions          | Qwen/Qwen3-ASR-1.7B                | 语音识别，不支持时间戳           |
+| xingchen-transcriptions | XingChenAGI/XingChenASR-V3.2-Ultra | 语音识别，支持分段时间戳             |
 | paddleocr               | PaddlePaddle/PaddleOCR-VL-1.5      | 图片／文档页面全文识别               |
 | deepseek-ocr            | deepseek-ai/DeepSeek-OCR           | 图片／文档页面全文识别               |
 
@@ -45,3 +48,5 @@ PaddleOCR 默认使用官方任务指令 `OCR:`；DeepSeek-OCR 使用 `Free OCR.
 1.1.2 升级：现有服务实例保留配置快照，不自动改名或切换接口。Qwen 继续使用 `transcriptions`；星辰请升级插件后新建 `xingchen-transcriptions` 服务，并在字幕设置选择它。插件详情的“支持能力”按声明显示时间戳支持状态；未声明的插件显示未知。
 
 时间戳不保证逐句：2026-10-27 使用实际 YouTube 英文音频补测，9.24 秒及 9.78 秒的两段录音均含多个句子，但星辰分别只返回一个 segment（0–7 秒、0–9.599 秒）。支持分段时间戳不等于每个句号都有边界；本插件不按字数伪造句内时间，未获得词级对齐时仍可能显示多句长字幕。
+
+当前 LLM 服务支持翻译、对话（LLM）、字幕断句和 AI 词典，共用模型与凭据配置。新增能力需要支持 SDK 2 的宿主；现有安装需更新插件包。

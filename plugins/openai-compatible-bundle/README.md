@@ -1,21 +1,24 @@
 # OpenAI 兼容协议 插件
 
+2.0.3：采用 SDK 2（apiVersion:"2"），优化翻译、AI 词典与字幕断句默认提示词；宿主发布版本号不作为 SDK 功能依赖。旧实例通过现有升级流程获取新快照，用户自定义提示词保持优先。
+
+
 2.0.2：插件改用 [MIT License](../../LICENSE)，发布 ZIP 附带许可证全文。
 
-2.0.1：移除未预置可用模型的带时间戳音频转写接口，保留聊天与翻译、普通音频转写、语音合成及图片全文识别四个服务，并统一接口功能名称。插件 ID 为 `openai-compatible-bundle`。
+2.0.1：移除未预置可用模型的带时间戳语音识别接口，保留聊天与翻译、普通语音识别、语音合成及图片全文识别四个服务，并统一接口功能名称。插件 ID 为 `openai-compatible-bundle`。
 
-这是 [SDK v1](../../docs/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。
+这是 [SDK 2](../../docs/plugin-development-guide.md) 的官方适配插件，可安装到包含 Provider 运行时的当前开发分支。不包含 API Key；创建实例后需填写并保存服务配置。
 
 包中有四个服务接口：
 
 | 接口              | 实现                          | 创建后实例能力                     |
 | ----------------- | ----------------------------- | ---------------------------------- |
-| chat-completions  | services/chat.js              | chat、translate（完整/流式）       |
+| chat-completions  | services/chat.js              | chat、translate、dictionary（完整/流式），segmentSubtitle（完整）       |
 | transcriptions    | services/transcription.json   | transcribe                         |
 | speech            | services/speech.json          | synthesizeSpeech                   |
 | vision            | services/vision.js            | parseImage（全文识别，无坐标）     |
 
-可以分别开关实例的 chat / translate；关闭 translate 隐藏“翻译采样温度”，重新开启保留其值。未启用能力不进入场景或测试候选，不能直接调用。
+可以分别开关实例的 chat / translate / dictionary / segmentSubtitle；关闭 translate 隐藏“翻译采样温度”，重新开启保留其值。未启用能力不进入场景或测试候选，不能直接调用。
 
 创建一个 chat-completions 实例就可以在翻译场景和聊天测试中复用；场景调用时分别指定 translate/chat，路由至对应 handler。无需按能力重复创建实例。需要不同模型/账号时再创建第二个实例。
 
@@ -92,3 +95,5 @@ ASR 使用 JSON 全文输出，不申请时间戳。TTS 保留 /audio/speech、M
 ```
 
 新模板版本为 1.6.1。已安装实例保留自己的快照，需先更新插件包，再创建升级实例、测试并替换场景引用。旧快照没有 protocol 声明时继续兼容 JSON；显式绑定宿主提示词时按该提示词的模式和协议执行。脚本若自行解析响应，需同步读取 translationMode/outputProtocol；使用 SDK helpers 的旧脚本可继承本次调用协议。
+
+当前 LLM 服务支持翻译、对话（LLM）、字幕断句和 AI 词典，共用模型与凭据配置。新增能力需要支持 SDK 2 的宿主；现有安装需更新插件包。
