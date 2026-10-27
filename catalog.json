@@ -14,25 +14,27 @@
         "vi": "DeepSeek",
         "ru": "DeepSeek"
       },
-      "description": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
+      "description": "DeepSeek 对话、翻译、字幕断句与 AI 词典，支持批量翻译、流式输出和思考模式。",
       "descriptionI18n": {
-        "zh": "DeepSeek 聊天与翻译，支持批量翻译、流式输出和思考模式。",
+        "zh": "DeepSeek 对话、翻译、字幕断句与 AI 词典，支持批量翻译、流式输出和思考模式。",
         "en": "DeepSeek chat and translation with batch translation, streaming output, and reasoning settings.",
-        "zh_TW": "DeepSeek 聊天與翻譯，支援批次翻譯、串流輸出與思考模式。",
+        "zh_TW": "DeepSeek 對話、翻譯、字幕斷句與 AI 詞典，支援批次翻譯、串流輸出與思考模式。",
         "ja": "DeepSeek のチャットと翻訳。一括翻訳、ストリーミング出力、推論設定に対応。",
         "ko": "DeepSeek 채팅 및 번역. 일괄 번역, 스트리밍 출력, 추론 설정을 지원합니다.",
         "tr": "DeepSeek sohbet ve çeviri; toplu çeviri, akış çıktısı ve akıl yürütme ayarları sunar.",
         "vi": "Trò chuyện và dịch với DeepSeek, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
         "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
-      "version": "1.2.4",
-      "apiVersion": "1",
+      "version": "1.2.5",
+      "apiVersion": "2",
       "capabilities": [
         "chat",
-        "translate"
+        "translate",
+        "dictionary",
+        "segmentSubtitle"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.4.zip",
-      "sha256": "a6cc37dc43a5cb2eef888411dba2af717041d62a4a6fb96a063e31da1e055964"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.5.zip",
+      "sha256": "d3603169a373364d09b3aa19893bb498e9fe92559f89903e804fcd7a6b01ef2e"
     },
     {
       "id": "openai-compatible-bundle",
@@ -47,28 +49,30 @@
         "vi": "OpenAI Compatible",
         "ru": "OpenAI Compatible"
       },
-      "description": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
+      "description": "OpenAI 兼容协议：对话、翻译、字幕断句与 AI 词典、语音识别、语音合成和图片全文识别。",
       "descriptionI18n": {
-        "zh": "OpenAI 兼容协议：聊天与翻译、音频转写、语音合成和图片全文识别。",
+        "zh": "OpenAI 兼容协议：对话、翻译、字幕断句与 AI 词典、语音识别、语音合成和图片全文识别。",
         "en": "OpenAI-compatible chat and translation, audio transcription, speech synthesis, and image text recognition.",
-        "zh_TW": "OpenAI 相容協定：聊天與翻譯、音訊轉寫、語音合成與圖片全文辨識。",
+        "zh_TW": "OpenAI 相容協定：對話、翻譯、字幕斷句與 AI 詞典、語音辨識、語音合成與圖片全文辨識。",
         "ja": "OpenAI 互換プロトコルによるチャットと翻訳、音声文字起こし、音声合成、画像の全文認識。",
         "ko": "OpenAI 호환 프로토콜을 통한 채팅 및 번역, 음성 전사, 음성 합성, 이미지 전체 텍스트 인식.",
         "tr": "OpenAI uyumlu sohbet ve çeviri, ses transkripsiyonu, konuşma sentezi ve görüntü metni tanıma.",
         "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.2",
-      "apiVersion": "1",
+      "version": "2.0.3",
+      "apiVersion": "2",
       "capabilities": [
         "chat",
         "translate",
+        "dictionary",
+        "segmentSubtitle",
         "transcribe",
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.2.zip",
-      "sha256": "b29458c927781bcbcc5b3d9481f375ca226352bfb0da1f36dea953547fe7cc76"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.3.zip",
+      "sha256": "1814857d6a00a23efc7a913c7274cd046dd21224c8520caeaa064a34cdbd09c8"
     },
     {
       "id": "openrouter",
@@ -76,26 +80,28 @@
       "nameI18n": {
         "en": "OpenRouter"
       },
-      "description": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+      "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
       "descriptionI18n": {
-        "zh": "OpenRouter 聊天与翻译，以及 Whisper、Qwen 音频转写。",
+        "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
         "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
-        "zh_TW": "OpenRouter 聊天與翻譯，以及 Whisper、Qwen 音訊轉寫。",
+        "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。",
         "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
         "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
         "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
         "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen.",
         "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen."
       },
-      "version": "1.1.2",
-      "apiVersion": "1",
+      "version": "1.1.3",
+      "apiVersion": "2",
       "capabilities": [
         "chat",
         "translate",
+        "dictionary",
+        "segmentSubtitle",
         "transcribe"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.1.2.zip",
-      "sha256": "6281a1ffe2ade1496b6d275e68caca018f298dc0d871947bd6189fd8d631c3d7"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.1.3.zip",
+      "sha256": "ecbc30ef9bb547a2dc460e0e67f4b0f6e6dc4eeec788657117b5f740528fee3e"
     },
     {
       "id": "siliconflow",
@@ -103,27 +109,29 @@
       "nameI18n": {
         "en": "SiliconFlow"
       },
-      "description": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
+      "description": "硅基流动：对话、翻译、字幕断句与 AI 词典、Qwen 和星辰语音识别，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
       "descriptionI18n": {
-        "zh": "硅基流动：聊天与翻译、Qwen 和星辰音频转写，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
+        "zh": "硅基流动：对话、翻译、字幕断句与 AI 词典、Qwen 和星辰语音识别，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
         "en": "SiliconFlow chat and translation, Qwen and XingChen audio transcription, and image text recognition with PaddleOCR and DeepSeek OCR.",
-        "zh_TW": "矽基流動：聊天與翻譯、Qwen 與星辰音訊轉寫，以及 PaddleOCR 與 DeepSeek OCR 圖片全文辨識。",
+        "zh_TW": "矽基流動：對話、翻譯、字幕斷句與 AI 詞典、Qwen 與星辰語音辨識，以及 PaddleOCR 與 DeepSeek OCR 圖片全文辨識。",
         "ja": "SiliconFlow のチャットと翻訳、Qwen と XingChen による音声文字起こし、PaddleOCR と DeepSeek OCR による画像の全文認識。",
         "ko": "SiliconFlow 채팅 및 번역, Qwen과 XingChen 음성 전사, PaddleOCR과 DeepSeek OCR 이미지 전체 텍스트 인식.",
         "tr": "SiliconFlow sohbet ve çeviri, Qwen ve XingChen ile ses transkripsiyonu, PaddleOCR ve DeepSeek OCR ile görüntü metni tanıma.",
         "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.1.3",
-      "apiVersion": "1",
+      "version": "1.1.4",
+      "apiVersion": "2",
       "capabilities": [
         "chat",
         "translate",
+        "dictionary",
+        "segmentSubtitle",
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.3.zip",
-      "sha256": "d2d67911e0ea4e0b768cb0b062bd20112d0abbc98ba31b2c0e9e35e8a097048d"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.4.zip",
+      "sha256": "c0d70f724fb19f05306eaac4c213b784c6dda3b9bace395138bcf3ee08bc7ed7"
     }
   ]
 }
