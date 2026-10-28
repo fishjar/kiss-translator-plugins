@@ -4,7 +4,7 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.1.5",
+  "version": "1.1.6",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "硅基流动：对话、翻译、字幕断句与 AI 词典、Qwen 和星辰语音识别，以及 PaddleOCR 和 DeepSeek OCR 图片全文识别。",
@@ -132,23 +132,55 @@
         }
       ],
       "defaultPrompts": {
-        "batch": {
-          "protocol": "json",
-          "systemPrompt": "Act as a professional machine translation engine. Output a raw JSON array strictly. No Markdown fences, no conversational filler.",
-          "userPrompt": "{{title}}\n{{description}}\n{{summary}}\n{{context}}\n{{glossary}}\n{{tone}}\nTranslate the text field of each object in the JSON array below into {{to}}. Keep the id unchanged and output a raw JSON array. Output ONLY the translated JSON result without any additional explanation:\n{{segments}}\nPreserve whitespace, HTML entities, all HTML-like tags, code, and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Keep every string ID exactly once. Use context only for meaning, never translate the instructions."
-        },
-        "nobatch": {
-          "protocol": "text",
-          "systemPrompt": "",
-          "userPrompt": "{{glossary}}\n{{tone}}\nTranslate the following text into {{to}}. Preserve all HTML-like tags. Output ONLY the translated text without any explanation:\n{{text}}\nPreserve code and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Use this context only for meaning:\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nContext: {{context}}"
-        },
-        "dictionary": {
-          "systemPrompt": "# Role\nIf source language is auto, identify it from the target text. Localize the headings below into {{language}}.\nYou are an expert {{sourceLanguage}}-{{language}} lexicographer specializing in contrastive linguistics and modern corpus linguistics. Analyze the user's {{sourceLanguage}} text with academic rigor and clear, elegant formatting, or translate it naturally into {{language}} when dictionary analysis is not appropriate.\n\n# Execution Rules\n1. **Smart routing (CRITICAL)**: Choose the mode strictly from the length and nature of `[Target]`:\n   - **Dictionary mode**: Apply pronunciation and etymology only when appropriate to the source language; do not invent facts. Translate all section headings and labels into {{language}}. Use the dictionary output format only when `[Target]` is clearly a single {{sourceLanguage}} word, an idiom, or a short fixed collocation (for space-separated languages, no more than 3 words).\n   - **Pure translation mode**: Use pure translation for complete sentences, clauses, natural-language phrases, paragraphs, long text, or, for space-separated languages, any continuous text longer than 3 words. When uncertain, choose pure translation mode.\n2. **Context first**: In dictionary mode, if `[Context]` contains useful information, put the contextually correct sense first.\n3. **Target-language contract**: All headings, labels, definitions, explanations, usage notes, and example translations in dictionary mode must be written in {{language}}. Keep {{sourceLanguage}} only for the entry, {{sourceLanguage}} examples, pronunciation, and {{sourceLanguage}} words being compared.\n4. **No extra framing**: Follow the selected format exactly. Do not add greetings, prefaces, or closing summaries.\n\n---\n\n# Pure Translation Output Contract (only for pure translation mode)\n\nYour entire response must contain only the {{language}} translation itself:\n- Do not output the source text, bilingual comparison, headings, labels, language names, quotation marks, Markdown, or explanations.\n- Do not add prefixes such as \"Translation:\" or include pronunciation, etymology, collocations, examples, or acknowledgements.\n- If the source has one paragraph, output one paragraph. Preserve paragraph breaks only when the source has multiple paragraphs.\n\nExample:\n- Input: The library for web and native user interfaces\n- Correct output: [Natural translation of the example into {{language}}]\n\n# Output Format (only for dictionary mode)\n\n## Entry: [original word or phrase]\n> [If the form is inflected in `[Context]`, provide its lemma in parentheses.]\n\n### 1. Forms and pronunciation\n- **Pronunciation**: [Standard pronunciation for {{sourceLanguage}}; US/UK IPA for English]\n- **Parts of speech and meanings**:\n  - `[part of speech]` ① [primary {{language}} definition] ② [secondary {{language}} definition]\n  - `[part of speech]` ① [primary {{language}} definition]\n\n### 2. Context analysis *[include only when useful Context exists]*\n- **Meaning in context**: State the part of speech and precise meaning in the given context.\n- **Register and tone**: Describe sentiment, register, formality, and tone.\n- **Contextual synonyms**: Give 1-2 {{sourceLanguage}} synonyms that can replace the entry in this context without changing the meaning.\n\n### 3. Etymology and usage\n- **Etymology and memory aids**: Explain roots, affixes, historical development, or provide a logical memory aid.\n- **Common collocations**:\n  * `[collocation 1]` ➔ [precise {{language}} translation]\n  * `[collocation 2]` ➔ [precise {{language}} translation]\n- **Synonym distinctions**:\n  * **[entry] vs [synonym 1] vs [synonym 2]**: Explain their differences in context, intensity, register, or collocation habits in 1-2 sentences.\n\n### 4. Examples\n[Provide 2-3 natural examples from publications, news, professional writing, or everyday {{sourceLanguage}}.]\n\n1. **[natural {{sourceLanguage}} example]**\n   - 💡 *Translation*: [accurate, idiomatic {{language}} translation]\n   - 📌 *Usage context*: `[localized scene label]`",
-          "userPrompt": "# Input Data\n\n## [Context] (Optional)\n> Use this information to identify the target text's meaning in context:\n- Document title: {{title}}\n- Document description: {{description}}\n- Document summary: {{summary}}\n- Surrounding paragraph: {{context}}\n\n## [Target] (Required)\n> Use this text to choose between dictionary mode and pure translation mode:\n{{text}}"
-        },
-        "subtitle": {
-          "systemPrompt": "# Context\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nTone: {{tone}}\n\n# Glossary (Terminology):\n{{glossary}}\n\n# Task\nGroup the input word-level JSON array into readable, well-paced bilingual subtitle segments. Target Language: {{to}}.\n\n# Output Contract\nReturn only JSON {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"exact merged source\",\"translation\":\"translation\"}]}. Keep string IDs unchanged. Cover all inputs exactly once in input order, without gaps or overlaps. Do not output timestamps.\n\n# Rules\n1. Hard Source Length Limit:\n   - For space-separated source languages, each source span MUST contain no more than 15 words; aim for 8-12 words when a natural boundary exists.\n   - For Chinese, Japanese, and other non-space-separated source languages, each source span MUST contain no more than 30 source characters.\n   - If a sentence exceeds the applicable limit, split it at a clause, comma, conjunction, or natural phrase boundary. The hard length limit takes priority over keeping a long grammatical sentence intact.\n2. Sentence Boundaries: Never merge two complete sentences into one subtitle segment. Terminal punctuation such as .?!。！？ normally ends the current segment.\n3. Pause Indicators: An optional \"pauseMs\" field is the timeline gap in milliseconds after the current input item. If \"pauseMs\" is missing, treat it as 0 milliseconds and do not infer a pause. Larger positive values indicate stronger sentence boundaries, but grammatical correctness and semantic coherence always take priority.\n4. Exact Translation Alignment: Build \"text\" first from the exact source span covered by the current group IDs. Then translate only the current \"text\" into \"translation\". The \"translation\" field MUST NOT omit that span, translate future input items, or carry text from adjacent segments.\n5. Silent Self-Check: Before returning, silently verify that every group ID range, \"text\", and \"translation\" correspond one-to-one, every \"text\" matches its exact input range, all source-length limits are satisfied, and all input items are covered exactly once. Do not output the self-check or any reasoning.\n6. Translation Quality: Keep \"translation\" concise, accurate, and natural while strictly adhering to the provided Context, Tone, and Glossary. When a term matches the Glossary, output ONLY the glossary value; never echo the source term alongside it and never wrap the value in parentheses.\n\n# Example\nInput: [{\"id\":\"0\",\"text\":\"Hello\",\"start\":0,\"end\":0.4},{\"id\":\"1\",\"text\":\"world.\",\"start\":0.4,\"end\":1}]\nOutput: {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"Hello world.\",\"translation\":\"你好，世界。\"}]}"
-        }
+        "batch": [
+          {
+            "id": "default",
+            "name": "聚合翻译",
+            "protocol": "json",
+            "systemPrompt": "Act as a professional machine translation engine. Output a raw JSON array strictly. No Markdown fences, no conversational filler.",
+            "userPrompt": "{{title}}\n{{description}}\n{{summary}}\n{{context}}\n{{glossary}}\n{{tone}}\nTranslate the text field of each object in the JSON array below into {{to}}. Keep the id unchanged and output a raw JSON array. Output ONLY the translated JSON result without any additional explanation:\n{{segments}}\nPreserve whitespace, HTML entities, all HTML-like tags, code, and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Keep every string ID exactly once. Use context only for meaning, never translate the instructions.",
+            "nameI18n": {
+              "zh": "聚合翻译",
+              "en": "Batch translation"
+            }
+          }
+        ],
+        "nobatch": [
+          {
+            "id": "default",
+            "name": "单段翻译",
+            "protocol": "text",
+            "systemPrompt": "",
+            "userPrompt": "{{glossary}}\n{{tone}}\nTranslate the following text into {{to}}. Preserve all HTML-like tags. Output ONLY the translated text without any explanation:\n{{text}}\nPreserve code and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Use this context only for meaning:\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nContext: {{context}}",
+            "nameI18n": {
+              "zh": "单段翻译",
+              "en": "Single translation"
+            }
+          }
+        ],
+        "dictionary": [
+          {
+            "id": "default",
+            "name": "标准词典",
+            "systemPrompt": "# Role\nIf source language is auto, identify it from the target text. Localize the headings below into {{language}}.\nYou are an expert {{sourceLanguage}}-{{language}} lexicographer specializing in contrastive linguistics and modern corpus linguistics. Analyze the user's {{sourceLanguage}} text with academic rigor and clear, elegant formatting, or translate it naturally into {{language}} when dictionary analysis is not appropriate.\n\n# Execution Rules\n1. **Smart routing (CRITICAL)**: Choose the mode strictly from the length and nature of `[Target]`:\n   - **Dictionary mode**: Apply pronunciation and etymology only when appropriate to the source language; do not invent facts. Translate all section headings and labels into {{language}}. Use the dictionary output format only when `[Target]` is clearly a single {{sourceLanguage}} word, an idiom, or a short fixed collocation (for space-separated languages, no more than 3 words).\n   - **Pure translation mode**: Use pure translation for complete sentences, clauses, natural-language phrases, paragraphs, long text, or, for space-separated languages, any continuous text longer than 3 words. When uncertain, choose pure translation mode.\n2. **Context first**: In dictionary mode, if `[Context]` contains useful information, put the contextually correct sense first.\n3. **Target-language contract**: All headings, labels, definitions, explanations, usage notes, and example translations in dictionary mode must be written in {{language}}. Keep {{sourceLanguage}} only for the entry, {{sourceLanguage}} examples, pronunciation, and {{sourceLanguage}} words being compared.\n4. **No extra framing**: Follow the selected format exactly. Do not add greetings, prefaces, or closing summaries.\n\n---\n\n# Pure Translation Output Contract (only for pure translation mode)\n\nYour entire response must contain only the {{language}} translation itself:\n- Do not output the source text, bilingual comparison, headings, labels, language names, quotation marks, Markdown, or explanations.\n- Do not add prefixes such as \"Translation:\" or include pronunciation, etymology, collocations, examples, or acknowledgements.\n- If the source has one paragraph, output one paragraph. Preserve paragraph breaks only when the source has multiple paragraphs.\n\nExample:\n- Input: The library for web and native user interfaces\n- Correct output: [Natural translation of the example into {{language}}]\n\n# Output Format (only for dictionary mode)\n\n## Entry: [original word or phrase]\n> [If the form is inflected in `[Context]`, provide its lemma in parentheses.]\n\n### 1. Forms and pronunciation\n- **Pronunciation**: [Standard pronunciation for {{sourceLanguage}}; US/UK IPA for English]\n- **Parts of speech and meanings**:\n  - `[part of speech]` ① [primary {{language}} definition] ② [secondary {{language}} definition]\n  - `[part of speech]` ① [primary {{language}} definition]\n\n### 2. Context analysis *[include only when useful Context exists]*\n- **Meaning in context**: State the part of speech and precise meaning in the given context.\n- **Register and tone**: Describe sentiment, register, formality, and tone.\n- **Contextual synonyms**: Give 1-2 {{sourceLanguage}} synonyms that can replace the entry in this context without changing the meaning.\n\n### 3. Etymology and usage\n- **Etymology and memory aids**: Explain roots, affixes, historical development, or provide a logical memory aid.\n- **Common collocations**:\n  * `[collocation 1]` ➔ [precise {{language}} translation]\n  * `[collocation 2]` ➔ [precise {{language}} translation]\n- **Synonym distinctions**:\n  * **[entry] vs [synonym 1] vs [synonym 2]**: Explain their differences in context, intensity, register, or collocation habits in 1-2 sentences.\n\n### 4. Examples\n[Provide 2-3 natural examples from publications, news, professional writing, or everyday {{sourceLanguage}}.]\n\n1. **[natural {{sourceLanguage}} example]**\n   - 💡 *Translation*: [accurate, idiomatic {{language}} translation]\n   - 📌 *Usage context*: `[localized scene label]`",
+            "userPrompt": "# Input Data\n\n## [Context] (Optional)\n> Use this information to identify the target text's meaning in context:\n- Document title: {{title}}\n- Document description: {{description}}\n- Document summary: {{summary}}\n- Surrounding paragraph: {{context}}\n\n## [Target] (Required)\n> Use this text to choose between dictionary mode and pure translation mode:\n{{text}}",
+            "nameI18n": {
+              "zh": "标准词典",
+              "en": "Standard dictionary"
+            }
+          }
+        ],
+        "subtitle": [
+          {
+            "id": "default",
+            "name": "字幕断句",
+            "systemPrompt": "# Context\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nTone: {{tone}}\n\n# Glossary (Terminology):\n{{glossary}}\n\n# Task\nGroup the input word-level JSON array into readable, well-paced bilingual subtitle segments. Target Language: {{to}}.\n\n# Output Contract\nReturn only JSON {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"exact merged source\",\"translation\":\"translation\"}]}. Keep string IDs unchanged. Cover all inputs exactly once in input order, without gaps or overlaps. Do not output timestamps.\n\n# Rules\n1. Hard Source Length Limit:\n   - For space-separated source languages, each source span MUST contain no more than 15 words; aim for 8-12 words when a natural boundary exists.\n   - For Chinese, Japanese, and other non-space-separated source languages, each source span MUST contain no more than 30 source characters.\n   - If a sentence exceeds the applicable limit, split it at a clause, comma, conjunction, or natural phrase boundary. The hard length limit takes priority over keeping a long grammatical sentence intact.\n2. Sentence Boundaries: Never merge two complete sentences into one subtitle segment. Terminal punctuation such as .?!。！？ normally ends the current segment.\n3. Pause Indicators: An optional \"pauseMs\" field is the timeline gap in milliseconds after the current input item. If \"pauseMs\" is missing, treat it as 0 milliseconds and do not infer a pause. Larger positive values indicate stronger sentence boundaries, but grammatical correctness and semantic coherence always take priority.\n4. Exact Translation Alignment: Build \"text\" first from the exact source span covered by the current group IDs. Then translate only the current \"text\" into \"translation\". The \"translation\" field MUST NOT omit that span, translate future input items, or carry text from adjacent segments.\n5. Silent Self-Check: Before returning, silently verify that every group ID range, \"text\", and \"translation\" correspond one-to-one, every \"text\" matches its exact input range, all source-length limits are satisfied, and all input items are covered exactly once. Do not output the self-check or any reasoning.\n6. Translation Quality: Keep \"translation\" concise, accurate, and natural while strictly adhering to the provided Context, Tone, and Glossary. When a term matches the Glossary, output ONLY the glossary value; never echo the source term alongside it and never wrap the value in parentheses.\n\n# Example\nInput: [{\"id\":\"0\",\"text\":\"Hello\",\"start\":0,\"end\":0.4},{\"id\":\"1\",\"text\":\"world.\",\"start\":0.4,\"end\":1}]\nOutput: {\"groups\":[{\"ids\":[\"0\",\"1\"],\"text\":\"Hello world.\",\"translation\":\"你好，世界。\"}]}",
+            "nameI18n": {
+              "zh": "字幕断句",
+              "en": "Subtitle segmentation"
+            }
+          }
+        ]
       }
     },
     {
@@ -315,9 +347,67 @@
         }
       ],
       "defaultPrompts": {
-        "vlm": {
-          "userPrompt": "OCR:"
-        }
+        "vlm": [
+          {
+            "id": "ocr",
+            "name": "文字识别",
+            "userPrompt": "OCR:",
+            "nameI18n": {
+              "zh": "文字识别",
+              "en": "Text recognition"
+            }
+          },
+          {
+            "id": "table",
+            "name": "表格识别",
+            "userPrompt": "Table Recognition:",
+            "nameI18n": {
+              "zh": "表格识别",
+              "en": "Table recognition"
+            }
+          },
+          {
+            "id": "formula",
+            "name": "公式识别",
+            "userPrompt": "Formula Recognition:",
+            "nameI18n": {
+              "zh": "公式识别",
+              "en": "Formula recognition"
+            }
+          },
+          {
+            "id": "chart",
+            "name": "图表识别",
+            "userPrompt": "Chart Recognition:",
+            "nameI18n": {
+              "zh": "图表识别",
+              "en": "Chart recognition"
+            }
+          },
+          {
+            "id": "seal",
+            "name": "印章识别",
+            "userPrompt": "Seal Recognition:",
+            "nameI18n": {
+              "zh": "印章识别",
+              "en": "Seal recognition"
+            }
+          },
+          {
+            "id": "spotting",
+            "name": "文字定位",
+            "userPrompt": "Spotting:",
+            "description": "返回原始定位结果，不自动解析。",
+            "nameI18n": {
+              "zh": "文字定位",
+              "en": "Text spotting"
+            },
+            "descriptionI18n": {
+              "zh": "返回原始定位结果，不自动解析。",
+              "en": "Returns raw text spotting results without parsing."
+            }
+          }
+        ]
       }
     },
     {
@@ -378,9 +468,82 @@
         }
       ],
       "defaultPrompts": {
-        "vlm": {
-          "userPrompt": "Free OCR."
-        }
+        "vlm": [
+          {
+            "id": "free-ocr",
+            "name": "无布局文字识别",
+            "userPrompt": "Free OCR.",
+            "description": "官方无布局识别指令，仍可能返回 Markdown。",
+            "nameI18n": {
+              "zh": "无布局文字识别",
+              "en": "OCR without layout"
+            },
+            "descriptionI18n": {
+              "zh": "官方无布局识别指令，仍可能返回 Markdown。",
+              "en": "Official OCR instruction without layout; Markdown may still be returned."
+            }
+          },
+          {
+            "id": "ocr",
+            "name": "文字识别（含定位标签）",
+            "userPrompt": "<|grounding|>OCR this image.",
+            "description": "可能返回原始定位标签，不自动解析。",
+            "nameI18n": {
+              "zh": "文字识别（含定位标签）",
+              "en": "OCR with grounding tags"
+            },
+            "descriptionI18n": {
+              "zh": "可能返回原始定位标签，不自动解析。",
+              "en": "May return raw grounding tags; tags are not parsed."
+            }
+          },
+          {
+            "id": "document",
+            "name": "文档转 Markdown",
+            "userPrompt": "<|grounding|>Convert the document to markdown.",
+            "description": "保留文档结构，可能返回原始定位标签。",
+            "nameI18n": {
+              "zh": "文档转 Markdown",
+              "en": "Document to Markdown"
+            },
+            "descriptionI18n": {
+              "zh": "保留文档结构，可能返回原始定位标签。",
+              "en": "Preserves document structure and may return raw grounding tags."
+            }
+          },
+          {
+            "id": "figure",
+            "name": "图表解析",
+            "userPrompt": "Parse the figure.",
+            "nameI18n": {
+              "zh": "图表解析",
+              "en": "Chart analysis"
+            }
+          },
+          {
+            "id": "description",
+            "name": "图片描述",
+            "userPrompt": "Describe this image in detail.",
+            "nameI18n": {
+              "zh": "图片描述",
+              "en": "Image description"
+            }
+          },
+          {
+            "id": "plain-ocr",
+            "name": "简短文字识别（实验）",
+            "userPrompt": "OCR this image.",
+            "description": "在示例截图上返回纯文本，不保证其他图片的输出格式。",
+            "nameI18n": {
+              "zh": "简短文字识别（实验）",
+              "en": "Simple OCR (experimental)"
+            },
+            "descriptionI18n": {
+              "zh": "在示例截图上返回纯文本，不保证其他图片的输出格式。",
+              "en": "Returned plain text on the sample screenshot; output format is not guaranteed on other images."
+            }
+          }
+        ]
       }
     }
   ]

@@ -10,6 +10,18 @@ const { buildPackage } = require("../scripts/build.cjs");
 const { readPackageZip } = require("../scripts/package-files.cjs");
 const { packagePaths } = require("../scripts/package-files.cjs");
 
+test("publisher requires prompt arrays with stable unique IDs and task-specific protocols", () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "../plugins/siliconflow/manifest.json"), "utf8"));
+  const service = manifest.services.find(entry => entry.id === "deepseek-ocr");
+  const prompt = service.defaultPrompts.vlm[0];
+  for (const vlm of [prompt, [], [prompt, prompt], [{ ...prompt, id: "" }], [{ ...prompt, protocol: "json" }]]) {
+    service.defaultPrompts.vlm = vlm;
+    assert.throws(() => packagePaths(manifest), /prompt/i);
+  }
+  service.defaultPrompts.vlm = [prompt];
+  assert.doesNotThrow(() => packagePaths(manifest));
+});
+
 test("publisher rejects model-level capability declarations", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "../plugins/siliconflow/manifest.json"), "utf8"));
   const service = manifest.services.find((entry) => entry.id === "transcriptions");

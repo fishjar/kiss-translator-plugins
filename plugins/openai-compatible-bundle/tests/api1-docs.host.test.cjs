@@ -78,19 +78,30 @@ for (const id of [
     const prompts = manifest.services.find(
       (service) => service.id === "chat-completions",
     ).defaultPrompts;
-    assert.deepEqual(prompts.batch, { protocol: "json", ...translation });
-    assert.deepEqual(prompts.nobatch, {
+    const content = ({
+      id,
+      name,
+      nameI18n,
+      description,
+      descriptionI18n,
+      ...body
+    }) => body;
+    assert.deepEqual(content(prompts.batch[0]), {
+      protocol: "json",
+      ...translation,
+    });
+    assert.deepEqual(content(prompts.nobatch[0]), {
       protocol: "text",
       ...TRANSLATION_PROTOCOL_PROMPTS.text,
     });
-    assert.deepEqual(prompts.dictionary, defaults.dictionary);
-    assert.deepEqual(prompts.subtitle, defaults.subtitle);
+    assert.deepEqual(content(prompts.dictionary[0]), defaults.dictionary);
+    assert.deepEqual(content(prompts.subtitle[0]), defaults.subtitle);
     assert.ok(
       !/"[eot]"\s*:|previous "e"|current "e"/.test(
-        prompts.subtitle.systemPrompt,
+        prompts.subtitle[0].systemPrompt,
       ),
     );
-    assert.match(prompts.dictionary.systemPrompt, /Pure translation mode/);
-    assert.match(prompts.subtitle.systemPrompt, /15 words/);
+    assert.match(prompts.dictionary[0].systemPrompt, /Pure translation mode/);
+    assert.match(prompts.subtitle[0].systemPrompt, /15 words/);
   });
 }

@@ -314,12 +314,12 @@ for (const id of ["paddleocr", "deepseek-ocr"]) {
     assert.equal(body.stream, false);
     assert.equal(body.temperature, 0);
     assert.equal(
-      f.instance.provider.defaultPrompts.vlm.userPrompt,
+      f.instance.provider.defaultPrompts.vlm[0].userPrompt,
       id === "paddleocr" ? "OCR:" : "Free OCR.",
     );
     assert.equal(
       body.messages[0].content[id === "deepseek-ocr" ? 1 : 0].text,
-      f.instance.provider.defaultPrompts.vlm.userPrompt,
+      f.instance.provider.defaultPrompts.vlm[0].userPrompt,
     );
     assert.equal(
       body.messages[0].content[id === "deepseek-ocr" ? 0 : 1].image_url.url,

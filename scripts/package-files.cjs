@@ -61,6 +61,76 @@ function packagePaths(manifest) {
       "System speech is native-only",
     );
     ids.add(service.id);
+    const promptCapabilities = {
+      batch: "translate",
+      nobatch: "translate",
+      dictionary: "dictionary",
+      subtitle: "segmentSubtitle",
+      vlm: "parseImage",
+      summary: "summarize",
+      detectLanguage: "detectLanguage",
+      suggest: "suggest",
+      evaluate: "evaluate",
+      recognizeText: "recognizeText",
+      analyzeLayout: "analyzeLayout",
+    };
+    if (service.defaultPrompts !== undefined) {
+      requireValue(
+        service.defaultPrompts &&
+          typeof service.defaultPrompts === "object" &&
+          !Array.isArray(service.defaultPrompts),
+        "Invalid defaultPrompts",
+      );
+      for (const [slot, prompts] of Object.entries(service.defaultPrompts)) {
+        requireValue(
+          service.capabilities[promptCapabilities[slot]] &&
+            Array.isArray(prompts) &&
+            prompts.length &&
+            new Set(prompts.map((p) => p?.id)).size === prompts.length,
+          "Invalid prompt array: " + slot,
+        );
+        for (const prompt of prompts) {
+          requireValue(
+            prompt &&
+              !Array.isArray(prompt) &&
+              typeof prompt.id === "string" &&
+              /^[A-Za-z][\w-]*$/.test(prompt.id) &&
+              typeof prompt.name === "string" &&
+              prompt.name.trim() &&
+              ["systemPrompt", "userPrompt"].some(
+                (key) => typeof prompt[key] === "string",
+              ) &&
+              Object.entries(prompt).every(
+                ([key, value]) =>
+                  [
+                    "id",
+                    "name",
+                    "nameI18n",
+                    "description",
+                    "descriptionI18n",
+                    "systemPrompt",
+                    "userPrompt",
+                    "protocol",
+                  ].includes(key) &&
+                  (key.endsWith("I18n")
+                    ? value &&
+                      typeof value === "object" &&
+                      !Array.isArray(value) &&
+                      Object.values(value).every((v) => typeof v === "string")
+                    : typeof value === "string"),
+              ),
+            "Invalid prompt preset: " + slot,
+          );
+          requireValue(
+            prompt.protocol === undefined ||
+              (slot === "batch"
+                ? ["json", "line", "xml"].includes(prompt.protocol)
+                : slot === "nobatch" && prompt.protocol === "text"),
+            "Invalid prompt protocol: " + slot,
+          );
+        }
+      }
+    }
     for (const model of service.models || [])
       requireValue(
         model?.capabilities === undefined,

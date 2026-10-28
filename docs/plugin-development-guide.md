@@ -1312,16 +1312,24 @@ ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返
 ```json
 {
   "defaultPrompts": {
-    "batch": {
-      "protocol": "json",
-      "systemPrompt": "Translate the input items from {{sourceLanguage}} to {{targetLanguage}}. Return only a JSON array of {id,text}, keeping every ID. Glossary: {{glossary}}. Context: {{context}}",
-      "userPrompt": "{{segments}}"
-    },
-    "nobatch": {
-      "protocol": "text",
-      "systemPrompt": "Translate the source text from {{sourceLanguage}} to {{targetLanguage}}. Output only the translated text, without explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}}",
-      "userPrompt": "{{text}}"
-    }
+    "batch": [
+      {
+        "id": "default",
+        "name": "Default",
+        "protocol": "json",
+        "systemPrompt": "Translate the input items from {{sourceLanguage}} to {{targetLanguage}}. Return only a JSON array of {id,text}, keeping every ID. Glossary: {{glossary}}. Context: {{context}}",
+        "userPrompt": "{{segments}}"
+      }
+    ],
+    "nobatch": [
+      {
+        "id": "default",
+        "name": "Default",
+        "protocol": "text",
+        "systemPrompt": "Translate the source text from {{sourceLanguage}} to {{targetLanguage}}. Output only the translated text, without explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}}",
+        "userPrompt": "{{text}}"
+      }
+    ]
   }
 }
 ```
@@ -1332,9 +1340,13 @@ ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返
 | batch      | translate       | 同上，protocol 为 json、line 或 xml；由聚合模式选择 |
 | dictionary | dictionary      | systemPrompt→instructions，userPrompt→userPrompt    |
 | subtitle   | segmentSubtitle | systemPrompt→instructions                           |
-| vlm        | parseImage      | 优先 systemPrompt，否则 userPrompt→prompt           |
+| vlm        | parseImage      | systemPrompt 与 userPrompt 合并后注入 prompt           |
 
-每个槽位至少声明一个字符串模板。protocol 仅用于翻译槽位；其他槽位仍只允许 systemPrompt/userPrompt。任务/场景的显式模板及协议优先，包括空模板。旧实例快照未声明 protocol 时保留 JSON 兼容，不重写已有配置；新包升级后才获得新的默认模板。
+每个 defaultPrompts 槽位都是非空对象数组，每项必须有稳定 id、name 和至少一个字符串 systemPrompt/userPrompt，可提供 nameI18n、description、descriptionI18n。首项就是默认项，无需单独指定；同一槽位 ID 不可重复。只接受数组，不兼容旧单对象。预设重排只改变默认项，不改变按 ID 保存的用户选择。
+
+复用现有 *PromptSlug 字段：宿主提示词保存原 slug；插件预设保存 plugin:插件ID:服务ID:槽位:预设ID，各段 URI 编码，不新增专用引用字段。选项仅含当前服务对应槽位的插件预设及对应类别的内置/用户提示词。场景空选项跟随服务，服务空选项使用插件首项。插件页只读展示各预设及默认标记；实例保存独立快照，升级后才获得新模板。
+
+翻译预设的 protocol 必须与所选提示词一起生效：batch 支持 json/line/xml，省略时 json；nobatch 支持 text，省略时 text。消息构造、完整响应及流式解析使用同一个 outputProtocol。脚本插件应向 translation.buildMessages、parseResult、createStreamParser 传入同一 input。任意自定义格式需要插件自行实现解析，预设不包含可执行解析器。其他任务的 wire 契约不变。
 
 ### 11.2 翻译变量
 
@@ -1383,6 +1395,8 @@ LINE 使用 ID | Text，内部换行编码为 <br>；XML 使用 root/t 和转义
 插件服务表格可以只读预览公开默认模板，不执行脚本或展开变量。未公开时显示“插件未公开默认提示词”。预览是当前模板的声明，不表示旧实例实际使用的内容。
 
 用户可复制模板到提示词管理创建实体，再回实例选择。“插件内部默认”使用实例快照，不会被模板更新覆盖。新 SDK 不提供 reqHook/resHook，当前服务配置也没有源码编辑框。修改协议应编辑源文件、提高版本、导入并升级实例，旧 Hook 的兼容逻辑不属于插件 SDK。
+
+VLM 预设采用各模型的任务指令，参考 [DeepSeek-OCR 官方示例](https://github.com/deepseek-ai/DeepSeek-OCR#prompts-examples)、[PaddleOCR-VL-1.5 官方任务映射](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.5)和 [OpenAI 视觉说明](https://developers.openai.com/api/docs/guides/images-vision)。OpenAI 兼容服务的通用模板由项目维护，不宣称对所有兼容模型最优。用途说明标识可能返回 Markdown 或定位标签的任务；宿主不新增清洗或解析。需要用户填写目标文字的定位模板不列为可执行预设。插件引用使用保留前缀 plugin:，用户提示词 slug 不使用该前缀。
 
 ## 12. 安装、更新和发布
 

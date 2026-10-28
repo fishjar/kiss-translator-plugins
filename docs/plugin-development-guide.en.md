@@ -1315,16 +1315,24 @@ Text services declare default prompts for different modes: single-item outputs `
 ```json
 {
   "defaultPrompts": {
-    "batch": {
-      "protocol": "json",
-      "systemPrompt": "Translate the input items from {{sourceLanguage}} to {{targetLanguage}}. Return only a JSON array of {id,text}, keeping every ID. Glossary: {{glossary}}. Context: {{context}}",
-      "userPrompt": "{{segments}}"
-    },
-    "nobatch": {
-      "protocol": "text",
-      "systemPrompt": "Translate the source text from {{sourceLanguage}} to {{targetLanguage}}. Output only the translated text, without explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}}",
-      "userPrompt": "{{text}}"
-    }
+    "batch": [
+      {
+        "id": "default",
+        "name": "Default",
+        "protocol": "json",
+        "systemPrompt": "Translate the input items from {{sourceLanguage}} to {{targetLanguage}}. Return only a JSON array of {id,text}, keeping every ID. Glossary: {{glossary}}. Context: {{context}}",
+        "userPrompt": "{{segments}}"
+      }
+    ],
+    "nobatch": [
+      {
+        "id": "default",
+        "name": "Default",
+        "protocol": "text",
+        "systemPrompt": "Translate the source text from {{sourceLanguage}} to {{targetLanguage}}. Output only the translated text, without explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}}",
+        "userPrompt": "{{text}}"
+      }
+    ]
   }
 }
 ```
@@ -1335,9 +1343,14 @@ Text services declare default prompts for different modes: single-item outputs `
 | `batch` | `translate` | Same, protocol is `json`, `line`, or `xml` (selected by aggregate mode) |
 | `dictionary` | `dictionary` | `systemPrompt` → `instructions`, `userPrompt` → `userPrompt` |
 | `subtitle` | `segmentSubtitle` | `systemPrompt` → `instructions` |
-| `vlm` | `parseImage` | Prioritizes `systemPrompt`, else `userPrompt` → `prompt` |
+| `vlm` | `parseImage` | Concatenates `systemPrompt` and `userPrompt` → `prompt` |
 
-Each slot must declare at least one string template. `protocol` is only valid on translation slots; other slots only allow `systemPrompt` and `userPrompt`. Explicit templates and protocols passed in tasks/scenarios take precedence, including empty templates. Legacy snapshots without `protocol` declarations maintain JSON compatibility without altering existing configurations; new default templates are applied only after upgrading to a new package.
+
+Every defaultPrompts slot is a non-empty array of prompt objects. Each preset requires a stable id and a display name; optional nameI18n, description and descriptionI18n describe its use. At least one of systemPrompt/userPrompt must be a string. The first item is the plugin default. IDs are unique within a slot; selecting by ID survives reordering. Single-object slots are invalid. There is no separate default ID or VLM reference field.
+
+The existing *PromptSlug fields store host prompt slugs or plugin:pluginId:serviceId:slot:presetId references (each segment URI-encoded). Choices only include the current service and matching prompt category. Empty scene selection follows the service; empty service selection follows the first plugin preset. Plugin-page previews are read-only. Instances keep independent snapshots until upgraded.
+
+For translation, protocol belongs to each preset: batch supports json/line/xml (json if omitted), nobatch supports text (text if omitted). The selected protocol must drive message construction, complete response parsing and streaming parsing together. Script plugins must pass the same input to translation.buildMessages, parseResult and createStreamParser. Arbitrary custom formats require a plugin implementation; presets cannot supply executable parsers. Other task wire contracts remain unchanged.
 
 ### 11.2 Translation Variables
 
@@ -1386,6 +1399,8 @@ LINE uses `ID | Text` with internal newlines encoded as `<br>`; XML uses `<root>
 The plugin services table displays read-only previews of public default templates without executing scripts or expanding variables. When undeclared, "Plugin does not expose default prompts" is shown. The preview reflects the current template declaration and does not represent what legacy instances actually use.
 
 Users can copy templates to Prompt Management to create entities and select them in instances. "Plugin internal default" uses the instance snapshot and is not overwritten by template updates. The modern SDK provides no `reqHook`/`resHook`, and service configurations lack source editor boxes. To modify protocols, edit source files, increment versions, and re-import and upgrade instances; legacy hook compatibility does not belong in the plugin SDK.
+
+VLM presets follow model-specific task instructions: [DeepSeek-OCR examples](https://github.com/deepseek-ai/DeepSeek-OCR#prompts-examples), [PaddleOCR-VL-1.5 task map](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.5), and [OpenAI vision guidance](https://developers.openai.com/api/docs/guides/images-vision). General-purpose OpenAI-compatible presets are project-maintained templates, not a claim of optimality for every compatible model. Task descriptions state when raw Markdown or grounding tags may be returned; the host does not clean or parse those outputs. Parameterized text-location templates are not executable presets.
 
 ## 12. Installation, Updating, and Publishing
 
