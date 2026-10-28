@@ -2,7 +2,7 @@
 
 [English](README.en.md) | [简体中文](README.md)
 
-Service adapter plugins maintained by the KISS Translator project. Plugins are installed over the network; using services typically requires an API key and internet connectivity.
+Service adapter plugins maintained by the [KISS Translator](https://github.com/fishjar/kiss-translator) project. Plugins are installed over the network; using services typically requires an API key and internet connectivity.
 
 ## Plugins
 
