@@ -2,6 +2,8 @@
 
 # OpenRouter 官方插件
 
+[English](README.en.md) | [简体中文](README.md)
+
 1.2.0（开发中）：统一为数字版插件 API 1，新增 Gemini / Qwen TTS 和 Jev 决策服务。
 
 1.1.3：采用 SDK 2（apiVersion:"2"），优化翻译、AI 词典与字幕断句默认提示词；宿主发布版本号不作为 SDK 功能依赖。旧实例通过现有升级流程获取新快照，用户自定义提示词保持优先。

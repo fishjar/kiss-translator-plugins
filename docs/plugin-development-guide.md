@@ -1,5 +1,7 @@
 # 网络服务插件开发指南（插件 API 1）
 
+[English](plugin-development-guide.en.md) | [简体中文](plugin-development-guide.md)
+
 本文面向官方及外部插件作者，说明创建、配置、执行、调试和发布插件所需的文件与接口。基础开发无需克隆宿主；新增官方插件按第 12.5 节在本仓库开发，可选运行真实宿主 SDK 集成测试时，才需要额外准备宿主源码和依赖。
 
 契约核对：2026-10-28。开发阶段统一使用数字 `apiVersion: 1`；它同时定义清单、声明式语法及 SDK 能力。只接受数字 1，不兼容旧 SDK、字符串版本或旧实例，不自动转换或迁移。清单不含 manifestVersion，声明式文件不含 rulesVersion；两种规则形式通过 format 区分。

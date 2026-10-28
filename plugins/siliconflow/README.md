@@ -2,6 +2,8 @@
 
 # SiliconFlow 官方适配插件
 
+[English](README.en.md) | [简体中文](README.md)
+
 1.1.4：采用 SDK 2（apiVersion:"2"），优化翻译、AI 词典与字幕断句默认提示词；宿主发布版本号不作为 SDK 功能依赖。旧实例通过现有升级流程获取新快照，用户自定义提示词保持优先。
 
 

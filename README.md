@@ -1,5 +1,7 @@
 # KISS Translator 官方插件
 
+[English](README.en.md) | [简体中文](README.md)
+
 由简约翻译项目维护的服务适配插件。插件通过网络安装，使用服务时通常还需要 API Key 和网络连接。
 
 ## 插件
