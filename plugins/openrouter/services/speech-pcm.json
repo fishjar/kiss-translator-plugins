@@ -1,0 +1,48 @@
+{
+  "format": "http",
+  "handlers": {
+    "synthesizeSpeech": {
+      "request": {
+        "url": {
+          "$url": {
+            "base": "config.baseUrl",
+            "path": "audio/speech"
+          }
+        },
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        },
+        "bodyType": "json",
+        "body": {
+          "model": {
+            "$ref": "config.model"
+          },
+          "voice": {
+            "$ref": "input.voice",
+            "fallbackRef": "config.voice"
+          },
+          "input": {
+            "$ref": "input.text"
+          },
+          "response_format": "pcm"
+        },
+        "responseType": "asset",
+        "responseAudio": {
+          "encoding": "pcm_s16le",
+          "sampleRate": 24000,
+          "channels": 1
+        }
+      },
+      "response": {
+        "kind": "asset"
+      }
+    }
+  }
+}

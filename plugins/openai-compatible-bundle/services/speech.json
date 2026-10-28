@@ -1,5 +1,5 @@
 {
-  "rulesVersion": 1,
+  "format": "http",
   "handlers": {
     "synthesizeSpeech": {
       "request": {
@@ -10,7 +10,7 @@
         "bodyType": "json",
         "body": {
           "model": { "$ref": "config.model" },
-          "voice": { "$ref": "config.voice" },
+          "voice": { "$ref": "input.voice", "fallbackRef": "config.voice" },
           "input": { "$ref": "input.text" },
           "speed": { "$ref": "input.speed", "omitIfEmpty": true },
           "response_format": "mp3"

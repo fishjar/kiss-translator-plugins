@@ -1,9 +1,8 @@
 {
-  "manifestVersion": 1,
   "id": "example-signed-dictionary",
   "name": "签名词典开发示例",
   "version": "1.0.0",
-  "apiVersion": "1",
+  "apiVersion": 1,
   "description": "仅供开发演示，需要自定义词典服务端。",
   "permissions": {
     "network": [

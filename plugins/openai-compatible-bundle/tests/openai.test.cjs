@@ -15,7 +15,7 @@ test("speech and transcription declare their request and result mappings", () =>
     const service = manifest.services.find((item) => item.id === id);
     assert.deepEqual(service.implementation, { kind: "declarative", entry });
     assert.equal(service.capabilities[handler].handler, handler);
-    assert.equal(rules.rulesVersion, 1);
+    assert.equal(rules.format, "http");
     assert.deepEqual(rules.handlers[handler].request.auth, { type: "bearer", secret: { $secret: "apiKey" } });
   }
   assert.deepEqual(speech.handlers.synthesizeSpeech.request, {
@@ -24,7 +24,7 @@ test("speech and transcription declare their request and result mappings", () =>
     auth: { type: "bearer", secret: { $secret: "apiKey" } },
     bodyType: "json", responseType: "asset",
     body: {
-      model: { $ref: "config.model" }, voice: { $ref: "config.voice" },
+      model: { $ref: "config.model" }, voice: { $ref: "input.voice", fallbackRef: "config.voice" },
       input: { $ref: "input.text" }, speed: { $ref: "input.speed", omitIfEmpty: true }, response_format: "mp3",
     },
   });

@@ -1,5 +1,5 @@
 {
-  "rulesVersion": 1,
+  "format": "http",
   "handlers": {
     "transcribe": {
       "request": {

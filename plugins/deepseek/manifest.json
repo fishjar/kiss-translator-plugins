@@ -1,9 +1,8 @@
 {
-  "manifestVersion": 1,
   "id": "deepseek",
   "name": "DeepSeek",
   "version": "1.2.5",
-  "apiVersion": "2",
+  "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "DeepSeek 对话、翻译、字幕断句与 AI 词典，支持批量翻译、流式输出和思考模式。",
   "permissions": {

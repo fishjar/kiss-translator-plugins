@@ -1,16 +1,18 @@
-# 网络服务插件开发指南（SDK 2，兼容 SDK 1）
+# 网络服务插件开发指南（插件 API 1）
 
 本文面向官方及外部插件作者，说明创建、配置、执行、调试和发布插件所需的文件与接口。基础开发无需克隆宿主；新增官方插件按第 12.5 节在本仓库开发，可选运行真实宿主 SDK 集成测试时，才需要额外准备宿主源码和依赖。
 
-契约核对：2026-10-27。当前开发分支支持 SDK 1 和 SDK 2。新插件使用 `apiVersion: "2"`；旧版宿主会在安装时拒绝 SDK 2。SDK 版本独立于宿主 package.json 发布版本，`rulesVersion` 则表示声明式规则格式。开发 SDK 新功能只升级 SDK 契约并重新构建宿主，无需提高宿主发布版本。已有 SDK 1 插件继续加载，不改写其 Manifest 或实例快照。
+契约核对：2026-10-28。开发阶段统一使用数字 `apiVersion: 1`；它同时定义清单、声明式语法及 SDK 能力。只接受数字 1，不兼容旧 SDK、字符串版本或旧实例，不自动转换或迁移。清单不含 manifestVersion，声明式文件不含 rulesVersion；两种规则形式通过 format 区分。
+
+当前自动测试、构建产物及真实浏览器验证边界见[插件 API 1 验收记录](plugin-api-1-acceptance.md)。
 
 ## 目录
 
 1. [概念与实现方式](#1-概念与实现方式)
 2. [从零创建首个插件](#2-从零创建首个插件)
 3. [Manifest 完整参考](#3-manifest-完整参考)
-4. [声明式协议规则 v2](#4-声明式协议规则-v2)
-5. [声明式请求映射规则 v1](#5-声明式请求映射规则-v1)
+4. [声明式协议规则 protocol](#4-声明式协议规则-protocol)
+5. [声明式请求映射规则 http](#5-声明式请求映射规则-http)
 6. [14 项能力的输入输出](#6-14-项能力的输入输出)
 7. [JavaScript 与 ctx SDK](#7-javascript-与-ctx-sdk)
 8. [HTTP、凭据和资产](#8-http凭据和资产)
@@ -38,13 +40,13 @@
 
 一个服务可实现多个能力，不必为每个能力复制账号、URL 和模型配置。能力统一在服务层声明，模型目录只提供 ID 和名称，不允许模型层声明 capabilities。同一服务内的模型必须支持相同的任务与特性，包括时间戳、坐标、流式和批量；能力不一致时必须拆分服务。能力、请求、结果解析和配置一致的模型可以放在同一目录；存在实际协议、默认提示词或消息排列差异时也应拆分服务。服务名称使用“对话与翻译（LLM）”“语音识别（ASR）”“语音合成（TTS）”“图片全文识别”等功能名，不含供应商或具体模型版本；独立 OCR 适配可加模型系列区分。需要独立模型或参数的端点可拆成不同服务。宿主不会自动将 chat 当作 translate，必须分别声明和实现。
 
-| 实现方式                     | 适合情况                                            | 执行方式                         |
-| ---------------------------- | --------------------------------------------------- | -------------------------------- |
-| declarative + rulesVersion 2 | Chat Completions 兼容的文本聊天、翻译、图片全文识别 | 宿主负责消息、协议解析和流式事件 |
-| declarative + rulesVersion 1 | 一次固定 HTTP 请求与固定 JSON 映射，或取得音频资产  | 宿主解析固定取值节点             |
-| script                       | 自定义协议、复杂分支、签名和特殊结果转换            | 单文件 JS 在 Sval Worker 中执行  |
+| 实现方式                        | 适合情况                                            | 执行方式                         |
+| ------------------------------- | --------------------------------------------------- | -------------------------------- |
+| declarative + format:"protocol" | Chat Completions 兼容的文本聊天、翻译、图片全文识别 | 宿主负责消息、协议解析和流式事件 |
+| declarative + format:"http"     | 一次固定 HTTP 请求与固定 JSON 映射，或取得音频资产  | 宿主解析固定取值节点             |
+| script                          | 自定义协议、复杂分支、签名和特殊结果转换            | 单文件 JS 在 Sval Worker 中执行  |
 
-外部包不能使用 native。v2 不是 v1 的字段超集，不能在同一 handler 中混用；一个包可让不同服务分别引用 v1、v2 和 JS 文件。
+外部包不能使用 native。protocol 不是 http 的字段超集，不能在同一 handler 中混用；一个包可让不同服务分别引用 http、protocol 和 JS 文件。
 
 场景保存实例 ID（apiSlug），作者不生成或管理它。可用能力由“服务声明 ∩ 用户启用能力”决定，还需满足场景坐标、时间戳等要求。声明能力不代表每个界面都有对应入口。
 
@@ -71,11 +73,10 @@ my-text-provider/
 
 ```json
 {
-  "manifestVersion": 1,
   "id": "my-text-provider",
   "name": "我的文本服务",
   "version": "1.0.0",
-  "apiVersion": "2",
+  "apiVersion": 1,
   "permissions": { "endpointFields": ["baseUrl"] },
   "sharedSettings": [
     {
@@ -126,7 +127,7 @@ my-text-provider/
 
 ```json
 {
-  "rulesVersion": 2,
+  "format": "protocol",
   "handlers": {
     "chat": {
       "protocol": "openai-chat-completions",
@@ -162,7 +163,7 @@ chat 使用任务 messages；translate 由 SDK 生成默认翻译消息、解析
 6. 再选 translate，输入 Hello，应显示中文译文，测试默认目标语言 zh-CN。
 7. 分别关闭/开启流式测试，再到网页翻译等实际场景选择实例验证。
 
-服务不支持流式时，两项 outputModes 改为 ["complete"]。翻译只返回普通文本时，v2 的 JSON 解析不适用，应改用 script 自定义转换。
+服务不支持流式时，两项 outputModes 改为 ["complete"]。翻译只返回普通文本时，protocol 的 JSON 解析不适用，应改用 script 自定义转换。
 
 ZIP 根部必须为 manifest.json 和 services/，不能额外套 my-text-provider/。PowerShell 示例（在父目录，输出 ZIP 尚不存在）：
 
@@ -178,18 +179,17 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 
 ### 3.1 顶层字段
 
-| 字段            | 类型 / 必需    | 规则                                                |
-| --------------- | -------------- | --------------------------------------------------- |
-| manifestVersion | 整数，必需     | 固定 1                                              |
-| id              | 字符串，必需   | 稳定 ID，匹配 `^[a-z][a-z0-9-]{1,100}$`，2–101 字符 |
-| name            | 字符串         | 插件显示名，发布时填写                              |
-| version         | 字符串，必需   | 三段数字，如 1.0.0，无 v 前缀、预发布或构建后缀     |
-| apiVersion      | 字符串，必需   | "1" 或 "2"；新插件使用 "2"，不是整数                                  |
-| services        | 非空数组，必需 | 服务定义                                            |
-| sharedSettings  | 可选字段数组   | 共用字段定义，实例值各自独立                        |
-| permissions     | 可选对象       | network 和 endpointFields                           |
-| icon            | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
-| resources       | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
+| 字段           | 类型 / 必需    | 规则                                                |
+| -------------- | -------------- | --------------------------------------------------- |
+| id             | 字符串，必需   | 稳定 ID，匹配 `^[a-z][a-z0-9-]{1,100}$`，2–101 字符 |
+| name           | 字符串         | 插件显示名，发布时填写                              |
+| version        | 字符串，必需   | 三段数字，如 1.0.0，无 v 前缀、预发布或构建后缀     |
+| apiVersion     | 数字，必需     | 固定为整数 1；不接受字符串、缺失值或旧格式          |
+| services       | 非空数组，必需 | 服务定义                                            |
+| sharedSettings | 可选字段数组   | 共用字段定义，实例值各自独立                        |
+| permissions    | 可选对象       | network 和 endpointFields                           |
+| icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
+| resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
 图标只存本机、不复制到实例；缺模板、卸载或解码失败时使用默认图标，不影响执行。不要依赖未定义的额外字段控制行为。
 
@@ -229,7 +229,7 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | outputModes     | 非空数组 complete / stream，省略按完整结果                                            |
 | inputModalities | 非空数组 text / image / audio，聊天省略仅文本                                         |
 | coordinates     | 布尔值，true 必须返回有效文字坐标                                                     |
-| timestamps      | 布尔值，转写默认按声明要求 segments；调用明确传 requireTimestamps 时以调用为准                                                   |
+| timestamps      | 布尔值，转写默认按声明要求 segments；调用明确传 requireTimestamps 时以调用为准        |
 | taskModes       | 非空数组 doc / table / formula，图片省略仅 doc                                        |
 
 批量、流式、坐标、时间戳是特性，不是能力名。仅声明真实实现的特性，执行器额外限制见第 4、5 节。流式也必须返回完整结果。
@@ -315,59 +315,95 @@ kind 是分类，不授予权限。当前仅支持 provider；script/declarative
 
 默认模型优先采用字段默认值，否则取目录第一项；没有目录时由用户填写。切换模型不改变用户启用的能力，包括全部关闭的状态。更新目录仅影响新实例，旧实例保留原目录快照。
 
-## 4. 声明式协议规则 v2
+## 4. 声明式协议规则 protocol
 
-v2 的每个 handler 只允许 protocol、task 和 request 三个字段，没有 response 映射。宿主负责生成消息、选择完整或流式请求，并将协议结果转换为标准结果。
+protocol 的每个 handler 只允许 protocol、task 和 request 三个字段，没有 response 映射。宿主负责生成消息、选择完整或流式请求，并将协议结果转换为标准结果。
 
 ### 4.1 字段与能力限制
 
-| 字段               | 规则                                                    |
-| ------------------ | ------------------------------------------------------- |
-| rulesVersion       | 整数 2                                                  |
-| handlers           | handler 映射，覆盖 Manifest 引用                        |
+| 字段               | 规则                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| format             | 固定为 "protocol"                                                           |
+| handlers           | handler 映射，覆盖 Manifest 引用                                            |
 | protocol           | openai-chat-completions / openai-audio-transcriptions / openai-audio-speech |
-| task               | 下表 13 种网络任务，与能力名及协议匹配；speak 仅内置 |
-| request.baseUrl    | 必需字符串或取值节点，包含 /v1 等前缀                   |
-| request.model      | 必需字符串或取值节点                                    |
-| request.auth       | 必需 Bearer，secret 为 `{"$secret":"已声明秘密字段键"}` |
-| request.parameters | 可选普通对象，厂家额外请求体参数                        |
+| task               | 下表 13 种网络任务，与能力名及协议匹配；speak 仅内置                        |
+| request.baseUrl    | 必需字符串或取值节点，包含 /v1 等前缀                                       |
+| request.model      | 必需字符串或取值节点                                                        |
+| request.auth       | 必需 Bearer，secret 为 `{"$secret":"已声明秘密字段键"}`                     |
+| request.parameters | 可选普通对象，厂家额外请求体参数                                            |
 
 request 不接受 url/method/headers/bodyType/responseType/streamFormat。parameters 不覆盖 baseUrl/auth/model/messages/stream，不含原型属性或 $ 开头键。
 
-| protocol | task | 标准支持 |
-| --- | --- | --- |
-| openai-chat-completions | chat | complete/stream，text/image/audio 输入 |
-| openai-chat-completions | translate | complete/stream，可批量，text/JSON/LINE/XML |
-| openai-chat-completions | summarize、dictionary | complete/stream |
-| openai-chat-completions | detectLanguage、suggest、segmentSubtitle、evaluate | complete，结构化结果 |
-| openai-chat-completions | recognizeText、parseImage、analyzeLayout | image，complete；OCR 可声明 coordinates，布局返回区域 |
-| openai-audio-transcriptions | transcribe | audio，complete，可声明 timestamps |
-| openai-audio-speech | synthesizeSpeech | text，complete，返回任务音频资产 |
+| protocol                    | task                                               | 标准支持                                              |
+| --------------------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| openai-chat-completions     | chat                                               | complete/stream，text/image/audio 输入                |
+| openai-chat-completions     | translate                                          | complete/stream，可批量，text/JSON/LINE/XML           |
+| openai-chat-completions     | summarize、dictionary                              | complete/stream                                       |
+| openai-chat-completions     | detectLanguage、suggest、segmentSubtitle、evaluate | complete，结构化结果                                  |
+| openai-chat-completions     | recognizeText、parseImage、analyzeLayout           | image，complete；OCR 可声明 coordinates，布局返回区域 |
+| openai-audio-transcriptions | transcribe                                         | audio，complete，可声明 timestamps                    |
+| openai-audio-speech         | synthesizeSpeech                                   | text，complete，返回任务音频资产                      |
 
 以上 13 项均可用 script 实现；公共 SDK 负责通用协议，脚本自行适配厂家差异并返回第 6 节的标准结果。speak 是宿主系统朗读，仅内置实现可以使用，外部包、实例恢复和执行会拒绝它。声明某项能力不意味着模型支持它，必须用实际模型验证。coordinates 仅适用于图像识别/布局，timestamps 仅适用于 ASR，batch 仅用于翻译。
 
-声明式只允许 chat/translate/summarize/dictionary 声明 stream，其他任务会在安装及执行时拒绝；v1 无流式路径，任何 stream 声明均拒绝。脚本自行实现声明的流式事件与完整结果，不能只返回完整响应却声称已经输出增量。
+声明式只允许 chat/translate/summarize/dictionary 声明 stream，其他任务会在安装及执行时拒绝；http 无流式路径，任何 stream 声明均拒绝。脚本自行实现声明的流式事件与完整结果，不能只返回完整响应却声称已经输出增量。
 
-图片支持 PNG/JPEG/WebP/GIF。Chat 音频标准转换支持 WAV/MP3，不会把 M4A 字节伪装成 WAV；其他音频协议由 script 适配。AssetRef 的真实 MIME 和任务所有权必须匹配，单资产及 HTTP 体积上限为 8 MiB。SDK 2 无坐标 OCR 返回 Markdown 与 poly=null 行项；SDK 1 声明式无坐标 OCR 保留 format:text。声明 coordinates 时模型必须返回真实文字多边形，布局必须返回真实像素区域，宿主只验证，不生成坐标。
+图片支持 PNG/JPEG/WebP/GIF。Chat 音频标准转换支持 WAV/MP3，不会把 M4A 字节伪装成 WAV；其他音频协议由 script 适配。AssetRef 的真实 MIME 和任务所有权必须匹配，单资产及 HTTP 体积上限为 8 MiB。无坐标 OCR 返回 Markdown 与 poly=null 行项。声明 coordinates 时模型必须返回真实文字多边形，布局必须返回真实像素区域，宿主只验证，不生成坐标。
 
 音频协议复用第 8 节 HTTP Broker。ASR 发送 multipart file/model，按 requireTimestamps（未传时按能力声明）选择 JSON/verbose_json，解析真实 segments/words；TTS 发送 input/model/voice/speed，返回 MP3 资产。TTS 的 voice/speed 优先使用任务输入，其次使用实例同名配置，voice 必填。parameters 只补充厂家选项，不能覆盖 file/input/audio/language/voice/speed/response_format/timestamp_granularities[] 或模型、鉴权等绑定字段。OpenRouter 的 Base64 ASR 等非标准协议继续使用 script。
 
-以下示例的 capabilities 是服务字段，rules 保存为该服务的 implementation.entry；还需在 Manifest 声明 apiVersion:"2"、baseUrl/model/apiKey 配置和网络权限。
+以下示例的 capabilities 是服务字段，rules 保存为该服务的 implementation.entry；还需在 Manifest 声明 apiVersion:1、baseUrl/model/apiKey 配置和网络权限。
 
-<!-- sdk2-example -->
+<!-- api1-example -->
+
 ```json
 {
   "capabilities": {
-    "summarize": {"handler":"summarize","outputModes":["complete","stream"]},
-    "transcribe": {"handler":"transcribe","inputModalities":["audio"],"timestamps":true,"outputModes":["complete"]},
-    "synthesizeSpeech": {"handler":"synthesizeSpeech","outputModes":["complete"]}
+    "summarize": {
+      "handler": "summarize",
+      "outputModes": ["complete", "stream"]
+    },
+    "transcribe": {
+      "handler": "transcribe",
+      "inputModalities": ["audio"],
+      "timestamps": true,
+      "outputModes": ["complete"]
+    },
+    "synthesizeSpeech": {
+      "handler": "synthesizeSpeech",
+      "outputModes": ["complete"]
+    }
   },
   "rules": {
-    "rulesVersion": 2,
+    "format": "protocol",
     "handlers": {
-      "summarize": {"protocol":"openai-chat-completions","task":"summarize","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}},
-      "transcribe": {"protocol":"openai-audio-transcriptions","task":"transcribe","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}},
-      "synthesizeSpeech": {"protocol":"openai-audio-speech","task":"synthesizeSpeech","request":{"baseUrl":{"$ref":"config.baseUrl"},"model":{"$ref":"config.model"},"auth":{"type":"bearer","secret":{"$secret":"apiKey"}}}}
+      "summarize": {
+        "protocol": "openai-chat-completions",
+        "task": "summarize",
+        "request": {
+          "baseUrl": { "$ref": "config.baseUrl" },
+          "model": { "$ref": "config.model" },
+          "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } }
+        }
+      },
+      "transcribe": {
+        "protocol": "openai-audio-transcriptions",
+        "task": "transcribe",
+        "request": {
+          "baseUrl": { "$ref": "config.baseUrl" },
+          "model": { "$ref": "config.model" },
+          "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } }
+        }
+      },
+      "synthesizeSpeech": {
+        "protocol": "openai-audio-speech",
+        "task": "synthesizeSpeech",
+        "request": {
+          "baseUrl": { "$ref": "config.baseUrl" },
+          "model": { "$ref": "config.model" },
+          "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } }
+        }
+      }
     }
   }
 }
@@ -411,7 +447,7 @@ parameters 示例（字段先在 settings 声明）：
 
 `equals` 仅接受引用字段声明的选项值，比较不会转换类型，不能引用秘密字段。设置清单须声明上述模式、强度及默认选项；不支持思考的服务无需声明这些字段。已安装插件由用户手动更新模板和实例，不自动迁移。
 
-v2 普通节点仅支持 `$ref`（含省略选项）和 `$if`，不支持 transform、`$url` 或 `$asset`；`$secret` 仅用于规定的 auth.secret 位置。
+protocol 普通节点支持 `$ref`（含字段回退、省略选项和 languages.toIso6391 转换）和 `$if`，不支持 `$url` 或 `$asset`；`$secret` 仅用于规定的 auth.secret 位置。
 
 ### 4.3 完整图片服务
 
@@ -441,7 +477,7 @@ v2 普通节点仅支持 `$ref`（含省略选项）和 `$if`，不支持 transf
 
 ```json
 {
-  "rulesVersion": 2,
+  "format": "protocol",
   "handlers": {
     "parseImage": {
       "protocol": "openai-chat-completions",
@@ -456,11 +492,11 @@ v2 普通节点仅支持 `$ref`（含省略选项）和 `$if`，不支持 transf
 }
 ```
 
-默认提示词要求忠实提取可见文字，明确传入的 input.prompt 优先。taskModes 只声明已验证模式；v2 不根据 input.mode 自动生成表格或公式专用提示词，需要场景传入合适的 prompt。SDK 2 声明 coordinates:true 时采用结构化 OCR 契约；厂家特殊结果结构仍使用 script。
+默认提示词要求忠实提取可见文字，明确传入的 input.prompt 优先。taskModes 只声明已验证模式；protocol 不根据 input.mode 自动生成表格或公式专用提示词，需要场景传入合适的 prompt。插件 API 1 声明 coordinates:true 时采用结构化 OCR 契约；厂家特殊结果结构仍使用 script。
 
-## 5. 声明式请求映射规则 v1
+## 5. 声明式请求映射规则 http
 
-v1 适合一次固定请求和结果映射，不自动生成消息，也不输出流事件，应声明 complete。复杂分支、逐项转换、签名和轮询使用 script。
+http 适合一次固定请求和结果映射，不自动生成消息，也不输出流事件，应声明 complete。复杂分支、逐项转换、签名和轮询使用 script。
 
 ### 5.1 完整转写服务
 
@@ -482,7 +518,12 @@ v1 适合一次固定请求和结果映射，不自动生成消息，也不输�
     }
   },
   "settings": [
-    { "key": "model", "label": "语音识别模型 ID", "type": "text", "required": true }
+    {
+      "key": "model",
+      "label": "语音识别模型 ID",
+      "type": "text",
+      "required": true
+    }
   ]
 }
 ```
@@ -491,7 +532,7 @@ v1 适合一次固定请求和结果映射，不自动生成消息，也不输�
 
 ```json
 {
-  "rulesVersion": 1,
+  "format": "http",
   "handlers": {
     "transcribe": {
       "request": {
@@ -539,7 +580,7 @@ v1 适合一次固定请求和结果映射，不自动生成消息，也不输�
 
 请求根 config/input/resources，响应 map 根 response。路径支持固定属性/数字索引如 response.choices[0].message.content，无表达式/过滤器/递归查询/任意 JS。
 
-普通字符串不进行插值，`"{{config.model}}"` 是字面量。最大嵌套深度为 32。v1 的省略选项用于对象字段，不用于过滤数组，也不接受 `$if`。
+普通字符串不进行插值，`"{{config.model}}"` 是字面量。最大嵌套深度为 32。http 的省略选项用于对象字段，不用于过滤数组，也不接受 `$if`。
 
 response.kind=json 时先解析正文，按相对于响应根的 errorPath 检查业务错误，再按 map 生成标准结果。缺失字段不会自动变成空成功。kind=asset 将 responseType=asset 的引用转换为 `{audio,mimeType}`，适用于 synthesizeSpeech。
 
@@ -574,7 +615,7 @@ services 添加：
 
 ```json
 {
-  "rulesVersion": 1,
+  "format": "http",
   "handlers": {
     "synthesizeSpeech": {
       "request": {
@@ -584,7 +625,7 @@ services 添加：
         "bodyType": "json",
         "body": {
           "model": { "$ref": "config.model" },
-          "voice": { "$ref": "config.voice" },
+          "voice": { "$ref": "input.voice", "fallbackRef": "config.voice" },
           "input": { "$ref": "input.text" },
           "speed": { "$ref": "input.speed", "omitIfEmpty": true },
           "response_format": "mp3"
@@ -597,7 +638,13 @@ services 添加：
 }
 ```
 
-该规则使用实例配置的 voice。若要让本次 input.voice 优先于实例默认值，应使用 script；v1 没有通用的默认值回退运算符。
+该规则优先使用本次 input.voice，缺省时读取实例配置的 voice。
+
+### 字段默认值回退
+
+两种格式的请求取值节点支持 `{ "$ref": "input.voice", "fallbackRef": "config.voice" }`。主值仅在 undefined 或 null 时读取回退值，空字符串、0、false 保留。先选择值，再应用 omitIfEmpty / omitValues，最后执行 transform；最终 undefined 且未省略时报错。最终 null 沿用普通引用的空值语义。
+
+使用回退的两条路径均限于固定 input/config 属性和数字数组索引，不接受表达式、原型属性、秘密配置读取、回退对象或回退链。秘密值只通过 $secret 访问。响应映射和 $if 条件不支持 fallbackRef；未知字段或旧版本标记在加载和执行时拒绝。
 
 ## 6. 14 项能力的输入输出
 
@@ -693,7 +740,13 @@ messages 必须非空，没有推理正文时返回 reasoning 空字符串。多
 
 ```ts
 type Input = {
-  items: Array<{ id: string; text: string; start: number; end: number; pauseMs?: number }>;
+  items: Array<{
+    id: string;
+    text: string;
+    start: number;
+    end: number;
+    pauseMs?: number;
+  }>;
   sourceLanguage?: string;
   targetLanguage?: string;
   instructions?: string;
@@ -711,7 +764,11 @@ groups 和各组 ids 必须非空，所有组的 ID 串联后与输入顺序完�
 ### 6.6 transcribe
 
 ```ts
-type Input = { audio: AssetRef; language?: string; requireTimestamps?: boolean };
+type Input = {
+  audio: AssetRef;
+  language?: string;
+  requireTimestamps?: boolean;
+};
 type Result = {
   text: string;
   segments?: Array<{ start: number; end: number; text: string }>;
@@ -757,7 +814,7 @@ type Question =
   | {
       type: "choice";
       instructions: Json;
-      criteria: string[] | Record<string, Json>;
+      criteria: Record<string, Json>;
     }
   | { type: "score"; instructions: Json; criteria: Json[] }
   | {
@@ -773,24 +830,24 @@ type Action = { act_probability: number };
 type Answer =
   | {
       type: "choice";
-      confidence: number;
-      action: Action;
+      confidence?: number;
+      action?: Action;
       choice: string;
       probabilities: Record<string, number>;
     }
   | {
       type: "score";
-      confidence: number;
-      action: Action;
+      confidence?: number;
+      action?: Action;
       score: number;
       legend: Record<string, Json>;
       probabilities: Record<string, number>;
     }
-  | { type: "noul"; confidence: number; action: Action; noul: number };
+  | { type: "noul"; confidence?: number; action?: Action; noul: number };
 type Result = {
-  model: "laya-rl-agent";
+  model: string;
   answers: Record<string, Answer>;
-  usage: { input_tokens: number; output_tokens: 0 };
+  usage: { input_tokens?: number; output_tokens?: number; cost?: number };
   timing?: {
     tokenizeMs?: number;
     onnxMs?: number;
@@ -800,7 +857,7 @@ type Result = {
 };
 ```
 
-这是当前 JEV 类型化决策契约，不是普通聊天 JSON。questions 非空，每 ID 一个相同 type 答案，概率/置信度 [0,1]，score 有限数值，仅真实支持契约时声明。
+这是插件 evaluate 的类型化决策契约，不是普通聊天 JSON。Choice criteria 必须是非空对象且键非空白，返回 choice 必须属于该对象的自有键。questions 非空，每 ID 一个相同 type 答案；存在的概率/置信度在 [0,1]，score 为有限数值。本地 Jev 引擎的内部协议独立维护。
 
 ### 6.10 synthesizeSpeech 与 speak
 
@@ -835,7 +892,7 @@ async function complete(messages, config, ctx) {
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
   });
   return ctx.helpers.openai.chatCompletions.parseResponse(
-    await ctx.http.request(request)
+    await ctx.http.request(request),
   );
 }
 
@@ -847,7 +904,7 @@ exports.translate = async function (input, config, ctx) {
   var result = await complete(
     ctx.helpers.translation.buildMessages(input),
     config,
-    ctx
+    ctx,
   );
   return ctx.helpers.translation.parseResult(result.text, input);
 };
@@ -960,7 +1017,7 @@ exports.translate = async function (input, config, ctx) {
 
 ## 8. HTTP、凭据和资产
 
-请求描述符供 script/v1，v2 用第 4 节协议结构。
+请求描述符供 script/v1，protocol 用第 4 节协议结构。
 
 ### 8.1 请求参考
 
@@ -1059,7 +1116,7 @@ exports.parseImage = async function (input, config, ctx) {
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
   });
   var result = ctx.helpers.openai.chatCompletions.parseResponse(
-    await ctx.http.request(request)
+    await ctx.http.request(request),
   );
   return { text: result.text, format: "text" };
 };
@@ -1144,11 +1201,11 @@ JSON `[{"id":"a","text":"你好"}]`；XML `<root><t id="a">你好</t></root>`；
 
 ### 9.3 音频
 
-| 调用                                                                          | 约定                                                             |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 调用                                                                                             | 约定                                                                                                               |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | openai.audio.buildTranscriptionRequest({baseUrl,model,audio,language?,requireTimestamps?,auth?}) | /audio/transcriptions multipart；默认 json，requireTimestamps=true 时使用 verbose_json + segment 时间戳；auto 省略 |
-| openai.audio.parseTranscription(response)                                     | `{text,segments?}`，校验时间/文本                                |
-| openai.audio.buildSpeechRequest({baseUrl,model,text,voice,speed?,auth?})      | /audio/speech JSON，mp3，responseType=asset                      |
+| openai.audio.parseTranscription(response)                                                        | `{text,segments?}`，校验时间/文本                                                                                  |
+| openai.audio.buildSpeechRequest({baseUrl,model,text,voice,speed?,auth?})                         | /audio/speech JSON，mp3，responseType=asset                                                                        |
 
 默认转写请求不保证返回 segments；需要时间戳时按厂家协议修改请求并验证，再声明 timestamps。helper 不播放音频。
 
@@ -1172,7 +1229,7 @@ JSON `[{"id":"a","text":"你好"}]`；XML `<root><t id="a">你好</t></root>`；
 
 ### 10.1 选择与事件
 
-规则 v2 自动处理 chat/translate/summarize/dictionary 流式，script 则需自行实现。能力和当前模型支持时默认开启，实例 useStream=false 明确关闭；ctx.options.streaming 是本次实际选择。只等待最终结果的场景也可能采用流式传输。
+规则 protocol 自动处理 chat/translate/summarize/dictionary 流式，script 则需自行实现。能力和当前模型支持时默认开启，实例 useStream=false 明确关闭；ctx.options.streaming 是本次实际选择。只等待最终结果的场景也可能采用流式传输。
 
 | 事件            | 结构                                                            |
 | --------------- | --------------------------------------------------------------- |
@@ -1200,7 +1257,7 @@ async function complete(messages, config, ctx, translationInput) {
   });
   if (!streaming) {
     return ctx.helpers.openai.chatCompletions.parseResponse(
-      await ctx.http.request(request)
+      await ctx.http.request(request),
     );
   }
   var chatParser = ctx.helpers.openai.chatCompletions.createStreamParser();
@@ -1231,7 +1288,7 @@ exports.translate = async function (input, config, ctx) {
     ctx.helpers.translation.buildMessages(input),
     config,
     ctx,
-    input
+    input,
   );
   if (ctx.options.streaming) return result;
   return ctx.helpers.translation.parseResult(result.text, input);
@@ -1242,7 +1299,7 @@ chatParser 接收单帧的 data，finish 要求正常结束原因和 [DONE]。�
 
 ### 10.3 SSE / NDJSON
 
-ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返回 `{type:"sse",event,data}`；streamFormat=ndjson 时返回已解析的 `{type:"json",value}`。当前没有任意 bytes 流接口。NDJSON 的厂家字段由 script 转换、累计完整结果并检查业务终止，不交给 SSE Chat parser，也不假定 EOF 就表示成功。规则 v2 固定使用兼容 Chat Completions SSE。
+ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返回 `{type:"sse",event,data}`；streamFormat=ndjson 时返回已解析的 `{type:"json",value}`。当前没有任意 bytes 流接口。NDJSON 的厂家字段由 script 转换、累计完整结果并检查业务终止，不交给 SSE Chat parser，也不假定 EOF 就表示成功。规则 protocol 固定使用兼容 Chat Completions SSE。
 
 ## 11. 提示词与场景参数
 
@@ -1279,7 +1336,7 @@ ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返
 
 ### 11.2 翻译变量
 
-v2 translate/translation.buildMessages 支持 `{{变量名}}`：
+protocol translate/translation.buildMessages 支持 `{{变量名}}`：
 
 | 变量                                | 内容                                                        |
 | ----------------------------------- | ----------------------------------------------------------- |
@@ -1329,13 +1386,13 @@ LINE 使用 ID | Text，内部换行编码为 <br>；XML 使用 root/t 和转义
 
 ### 12.1 来源
 
-| 来源        | 准备                           | 更新                      |
-| ----------- | ------------------------------ | ------------------------- |
-| 官方目录    | CI 发布的目录与独立版本化 ZIP   | 从远程目录读取版本及 SHA-256 |
-| 文件夹      | 选中根部有 manifest.json       | 选择更新文件夹或 ZIP      |
-| 本地 ZIP    | ZIP 根部有 manifest.json       | 选择更新 ZIP 或文件夹     |
-| HTTPS ZIP   | 直连、无需鉴权/重定向          | 记录地址检查              |
-| 公开 GitHub | 仓库根部 Manifest 和可执行文件 | 查默认分支、确定 SHA 归档 |
+| 来源        | 准备                           | 更新                         |
+| ----------- | ------------------------------ | ---------------------------- |
+| 官方目录    | CI 发布的目录与独立版本化 ZIP  | 从远程目录读取版本及 SHA-256 |
+| 文件夹      | 选中根部有 manifest.json       | 选择更新文件夹或 ZIP         |
+| 本地 ZIP    | ZIP 根部有 manifest.json       | 选择更新 ZIP 或文件夹        |
+| HTTPS ZIP   | 直连、无需鉴权/重定向          | 记录地址检查                 |
+| 公开 GitHub | 仓库根部 Manifest 和可执行文件 | 查默认分支、确定 SHA 归档    |
 
 GitHub 使用项目根地址，例如 https://github.com/owner/repo，支持末尾 / 或 .git，不支持 tree/blob、子目录、私有仓库或令牌。安装器不运行 npm 或构建，仅提供 TypeScript 源码不足以执行。归档只去掉一层包装目录，不搜索子项目，应避免大型开发依赖进入归档。
 
@@ -1369,7 +1426,7 @@ GitHub 使用项目根地址，例如 https://github.com/owner/repo，支持末�
 官方插件由简约翻译维护，与外部插件在宿主页上下分列展示，无需切换 Tab。列表只加载元数据，不自动安装；官方和外部插件均需点击联网安装。官方身份表示由本项目维护，不代表服务商背书。
 
 1. 在 `plugins/<plugin-id>/` 创建 `manifest.json`、`services/` 和 `README.md`，初始版本一般为 `1.0.0`。文件夹名与稳定插件 ID 保持一致；一个目录对应一个独立安装包。教学样例放 `examples/`，不进入官方目录。
-2. 按模型和端点划分服务，声明真实能力；优先使用规则 v2，固定单次 HTTP 映射用 v1，文件名处理、消息排列或结果转换需要逻辑时用 script。模型目录、默认提示词及中英文名称/字段说明随插件维护，不需要修改宿主公共接口。
+2. 按模型和端点划分服务，声明真实能力；优先使用规则 protocol，固定单次 HTTP 映射用 http，文件名处理、消息排列或结果转换需要逻辑时用 script。模型目录、默认提示词及中英文名称/字段说明随插件维护，不需要修改宿主公共接口。
 3. 在 `plugins/<plugin-id>/tests/` 添加独立的 `*.test.cjs` 适配测试，使用 SDK 测试替身验证供应商参数、消息排列、资产转换和错误处理。可参考 [SiliconFlow 测试](../plugins/siliconflow/tests/siliconflow.test.cjs)。需要真实宿主 SDK 的测试命名为 `*.host.test.cjs`，由可选 `npm run test:host` 执行；不能让默认测试间接导入宿主源码。独立单元测试不证明 SDK 或浏览器行为。
 4. 在仓库根目录执行基础检查与打包：
 
@@ -1416,7 +1473,7 @@ npm run build
 
 可选运行 `npm run test:host` 验证真实 SDK：通过 `KISS_TRANSLATOR_ROOT` 指定已安装依赖的宿主源码，未指定时查找相邻的 kiss-translator。仅这一命令及显式使用它的测试需要宿主。集成测试不覆盖真实 Worker/RPC 隔离，仍需浏览器验收；它不是打包、CI 或发布的前置条件。
 
-两个仓库主要通过 `apiVersion` 约定 SDK 兼容性。SDK 2 功能不依赖宿主发布版本号；`minHostVersion` 仅用于 SDK 之外的宿主功能依赖，仍按原规则检查。目录和同步模板索引保留显式 apiVersion；旧索引不自动补写版本默认值。宿主刷新列表时展示是否兼容，安装、恢复和执行时再复核；插件仓库独立发布，不需先合并宿主代码。
+两个仓库通过数字 apiVersion 约定契约。目录保留显式 apiVersion，正的安全整数但尚不支持的版本显示为不兼容；字符串属于非法目录数据。安装和执行再次检查。发布器独立校验，不依赖宿主源码。
 
 ### 13.2 扩展验证
 
@@ -1428,29 +1485,29 @@ npm run build
 6. 正常、凭据无效、业务错误、取消、超时、缺字段/ID、重复 ID、流缺终止。
 7. 两配置实例隔离，模板更新旧实例不变新版生效。
 
-规则 v2 由宿主处理协议，但供应商兼容性与模型参数仍需作者实测。mock 通过不证明安装器、Broker、安全隔离或真实厂家调用已经通过。
+规则 protocol 由宿主处理协议，但供应商兼容性与模型参数仍需作者实测。mock 通过不证明安装器、Broker、安全隔离或真实厂家调用已经通过。
 
 ### 13.3 故障表
 
-| 现象/码                                  | 排查                                                                 |
-| ---------------------------------------- | -------------------------------------------------------------------- |
-| INVALID_PACKAGE                          | 根目录/包装层/路径/数量体积                                          |
-| INVALID_MANIFEST/INVALID_RULE            | 版本类型、v1/v2 混用、保留参数、handler/task、boolean 条件和秘密字段 |
-| SETTING_CONFLICT/INVALID_CONFIG          | 类型秘密冲突、必填、数值、select、启用专属字段                       |
-| HANDLER_MISSING/Script handler not found | exports/handlers 大小写                                              |
-| SCRIPT_ERROR                             | 全局/ES module/依赖/Sval 语法，Node 通过不代表 Sval                  |
-| SECRET_UNAVAILABLE                       | 声明、非空保存、ref 键                                               |
-| NETWORK_DENIED                           | origin 声明范围、远程 HTTP/重定向                              |
-| HTTP_ERROR                               | 地址模型账号参数，无厂家错误正文                                     |
-| INVALID_RESPONSE/INCOMPLETE_RESPONSE     | 标准结构/JSON/拒答/缺重复 ID/截断                                    |
-| CAPABILITY_DISABLED/SERVICE_UNAVAILABLE  | 启用/服务声明/停用/配置完整                                          |
-| BATCH_UNSUPPORTED/INPUT_LIMIT_EXCEEDED   | batch 与 maxItems                                                    |
-| MODALITY_UNSUPPORTED/TASK_UNSUPPORTED    | 模态/图片模式与模型                                                  |
-| STREAM_UNSUPPORTED/STREAM_ENDED          | 流支持、协议混用、终止后数据                                         |
-| INVALID_ASSET/ASSET_UNAVAILABLE          | MIME/格式/跨任务                                                     |
-| RESOURCE_BUDGET_EXCEEDED                 | 体积/事件/待完成操作/流数                                            |
-| SCRIPT_TIMEOUT/REQUEST_TIMEOUT           | 同步计算/网络停滞/全程期限                                           |
-| 更新后行为不变                           | 是否旧快照，是否新版实例                                             |
+| 现象/码                                  | 排查                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
+| INVALID_PACKAGE                          | 根目录/包装层/路径/数量体积                                            |
+| INVALID_MANIFEST/INVALID_RULE            | 版本类型、http/v2 混用、保留参数、handler/task、boolean 条件和秘密字段 |
+| SETTING_CONFLICT/INVALID_CONFIG          | 类型秘密冲突、必填、数值、select、启用专属字段                         |
+| HANDLER_MISSING/Script handler not found | exports/handlers 大小写                                                |
+| SCRIPT_ERROR                             | 全局/ES module/依赖/Sval 语法，Node 通过不代表 Sval                    |
+| SECRET_UNAVAILABLE                       | 声明、非空保存、ref 键                                                 |
+| NETWORK_DENIED                           | origin 声明范围、远程 HTTP/重定向                                      |
+| HTTP_ERROR                               | 地址模型账号参数，无厂家错误正文                                       |
+| INVALID_RESPONSE/INCOMPLETE_RESPONSE     | 标准结构/JSON/拒答/缺重复 ID/截断                                      |
+| CAPABILITY_DISABLED/SERVICE_UNAVAILABLE  | 启用/服务声明/停用/配置完整                                            |
+| BATCH_UNSUPPORTED/INPUT_LIMIT_EXCEEDED   | batch 与 maxItems                                                      |
+| MODALITY_UNSUPPORTED/TASK_UNSUPPORTED    | 模态/图片模式与模型                                                    |
+| STREAM_UNSUPPORTED/STREAM_ENDED          | 流支持、协议混用、终止后数据                                           |
+| INVALID_ASSET/ASSET_UNAVAILABLE          | MIME/格式/跨任务                                                       |
+| RESOURCE_BUDGET_EXCEEDED                 | 体积/事件/待完成操作/流数                                              |
+| SCRIPT_TIMEOUT/REQUEST_TIMEOUT           | 同步计算/网络停滞/全程期限                                             |
+| 更新后行为不变                           | 是否旧快照，是否新版实例                                               |
 
 ### 13.4 宿主 SDK 回归（可选）
 
@@ -1498,32 +1555,35 @@ pnpm test --watchAll=false --runInBand src/providers/declarative.test.js src/pro
 
 语言代码为 `en`、`zh`、`zh_TW`、`ja`、`ko`、`tr`、`vi`、`ru`，翻译值须为字符串。界面优先使用当前语言，其次使用 `en`，最后使用基础文案。名称翻译随插件快照和同步索引保留；已安装旧版示例包的常见中文标签也有显示兼容，无需重写配置。用户修改过的服务名称按用户原值显示。
 
-
 ### 官方 LLM 服务的基础能力
 
 官方 DeepSeek、OpenAI 兼容、OpenRouter、SiliconFlow 的 LLM 服务均明确提供 translate、chat、segmentSubtitle、dictionary。宿主不会自动为第三方 chat 服务补齐能力；插件必须声明并实现对应处理器。
 
-SDK 2 补齐标准网络任务，官方插件使用 apiVersion:"2"，不通过宿主发布版本号判断这些能力。dictionary 将 instructions/userPrompt 中的 {{text}}、{{sourceLanguage}}、{{language}}、{{context}} 及 {{from}}/{{to}} 等语言别名替换后构造消息，返回 {text,format:"markdown"}，支持完整及流式响应。segmentSubtitle 使用 items、语言和上下文构造消息，只支持完整响应，返回 {groups:[{ids,text,translation?}]}；所有 ID 必须按输入顺序恰好覆盖一次。任务指令中的分组、措辞等要求保留，输出格式由宿主的 groups 契约固定。
+插件 API 1 补齐标准网络任务，官方插件使用 apiVersion:1，不通过宿主发布版本号判断这些能力。dictionary 将 instructions/userPrompt 中的 {{text}}、{{sourceLanguage}}、{{language}}、{{context}} 及 {{from}}/{{to}} 等语言别名替换后构造消息，返回 {text,format:"markdown"}，支持完整及流式响应。segmentSubtitle 使用 items、语言和上下文构造消息，只支持完整响应，返回 {groups:[{ids,text,translation?}]}；所有 ID 必须按输入顺序恰好覆盖一次。任务指令中的分组、措辞等要求保留，输出格式由宿主的 groups 契约固定。
 
 脚本插件可使用 ctx.helpers.textTasks.buildMessages(task,input) 和 parseResult(task,text,input) 复用同一消息与结果校验；默认提示词通过 defaultPrompts.dictionary/subtitle 声明，场景或用户提供的指令优先。
 
-
-## SDK 2 公共任务工具与兼容维护
+## 插件 API 1 公共任务工具与兼容维护
 
 `ctx.helpers.textTasks.buildMessages(task,input,descriptor?)` 支持 summarize、dictionary、detectLanguage、suggest、segmentSubtitle、evaluate、recognizeText、parseImage、analyzeLayout，返回标准消息。`parseResult(task,text,input,descriptor?)` 校验完整结果；descriptor.coordinates 决定 OCR 是否使用 JSON 坐标契约，evaluate 的 descriptor.model/usage 由实际请求模型和响应元数据提供。未知任务、空结果、非法 JSON、缺失或乱序字幕 ID、候选外语言均报错，不当作成功写入缓存。无坐标 OCR 不尝试从任意输出中猜测区域。
 
 `ctx.helpers.openai.chatCompletions.prepareMessages(messages,readAsset)` 是异步工具，将标准消息的 image/audio AssetRef 转为 image_url/input_audio；readAsset 使用 `ctx.assets.read`。纯文字消息保持原值。图片/音频 MIME、资产权限和大小均检查；模型是否接受多模态须另行验证。
 
-<!-- sdk2-script-example -->
+<!-- api1-script-example -->
+
 ```javascript
-exports.summarize = async function(input, config, ctx) {
+exports.summarize = async function (input, config, ctx) {
   var sdk = ctx.helpers.openai.chatCompletions;
   var messages = ctx.helpers.textTasks.buildMessages("summarize", input);
-  var response = await ctx.http.request(sdk.buildRequest({
-    baseUrl: config.baseUrl, model: config.model,
-    auth: {type: "bearer", secret: ctx.secrets.ref("apiKey")},
-    messages: messages, stream: false
-  }));
+  var response = await ctx.http.request(
+    sdk.buildRequest({
+      baseUrl: config.baseUrl,
+      model: config.model,
+      auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
+      messages: messages,
+      stream: false,
+    }),
+  );
   var result = sdk.parseResponse(response);
   return ctx.helpers.textTasks.parseResult("summarize", result.text, input);
 };
@@ -1533,10 +1593,22 @@ exports.summarize = async function(input, config, ctx) {
 
 默认提示词槽新增 summary→summarize、detectLanguage、suggest、evaluate、recognizeText、analyzeLayout；原有 batch/nobatch/dictionary/subtitle/vlm 保留。文字任务支持 instructions/userPrompt，图片任务使用 prompt。显式输入优先于插件默认值；选择插件内部默认时使用实例快照，不读取远端新模板。textTasks 支持 text、transcript（text 的摘要场景别名）、sourceLanguage、targetLanguage、language、from/fromLang、to/toLang、context、title、description、summary、url、tone、glossary、items；缺失文字变量为空，语言默认 auto，glossary 为 `- term: value` 列表。翻译 helper 的 glossary 继续使用 JSON 对象文本。结构化任务的输入载荷与输出契约由 SDK 固定，用户只能调整任务要求，不能改变 wire 输出格式。
 
-SDK 版本表示功能契约，不是插件版本或宿主发布版本。SDK 2 宿主接受 apiVersion:"1" 和 "2"；旧宿主只接受 "1"。新插件依赖上述新 helper/协议时声明 "2"。后续 SDK 2 内的模型、厂家参数、端点和提示词调整只提高插件版本；确实需要新增宿主接口时才升级 SDK。保留已有 helper 名称和输入输出语义，不静默改变旧快照。minHostVersion 仅用于 SDK 外的宿主功能依赖，普通 SDK 适配不设置它。
+插件 API 1 使用数字 `apiVersion: 1` 作为唯一契约版本。厂家端点、模型和提示词调整通常只升级插件 version；新增旧宿主无法正确处理的契约时升级 apiVersion。宿主只接受数字 1，不支持旧契约或自动实例迁移。minHostVersion 只用于契约以外的宿主功能依赖，普通适配不设置它。
 
-安装新包只更新模板。用户通过现有实例升级流程创建或升级快照，原账号、模型、显式提示词和能力选择按现有预览处理，不自动改写。模板与实例支持的 SDK 均在执行边界复核。SDK 2 的通用提示词与文档示例进入宿主集成回归；新增能力必须补齐支持矩阵、输入输出、非法声明及两种执行方式的测试。
+安装新包只更新模板。用户通过现有实例升级流程创建或升级快照，原账号、模型、显式提示词和能力选择按现有预览处理，不自动改写。模板与实例支持的 SDK 均在执行边界复核。插件 API 1 的通用提示词与文档示例进入宿主集成回归；新增能力必须补齐支持矩阵、输入输出、非法声明及两种执行方式的测试。
 
-验收分别记录：静态打包与语法检查、模拟厂家 HTTP 的协议测试、生产 SDK/解释器集成、真实浏览器 Worker/RPC、真实厂家请求。前几项通过不能代替后两项；真实模型输出品质需要具体任务样例验证。运行 npm run check、npm test、npm run test:host 和 npm run build，宿主运行 providers/相关场景测试及 Chrome 构建。开发时重新构建并加载包含 SDK 2 的宿主即可，不必修改宿主发布版本号。
+验收分别记录：静态打包与语法检查、模拟厂家 HTTP 的协议测试、生产 SDK/解释器集成、真实浏览器 Worker/RPC、真实厂家请求。前几项通过不能代替后两项；真实模型输出品质需要具体任务样例验证。运行 npm run check、npm test、npm run test:host 和 npm run build，宿主运行 providers/相关场景测试及 Chrome 构建。开发时重新构建并加载支持插件 API 1 的宿主即可，不必修改宿主发布版本号。
 
-本次 SDK 2 的具体测试数量、浏览器安装/实例创建和 Worker/RPC 验收结果见 [SDK 2 验证记录](sdk-2-acceptance.md)。
+当前测试、构建及真实浏览器／厂家验收边界见[插件 API 1 验收记录](plugin-api-1-acceptance.md)。
+
+## 插件 API 1 音频资产与远程决策
+
+音频、远程决策、标准任务和提示词工具均属于插件 API 1；外部字幕时间统一使用秒。
+
+HTTP 请求可在 `responseType: "asset"` 时指定 `responseAudio: { encoding: "pcm_s16le", sampleRate: 24000, channels: 1 }`。该字段属于插件 API 1，编码固定为 signed 16-bit little-endian PCM，sampleRate 为 8000–192000 的整数，channels 为 1–8 的整数。宿主将裸 PCM 封装为 WAV，返回 audio/wav 资产；已有 RIFF/WAVE 在校验容器长度、chunk 边界、fmt 与非空 data 后保留原始字节，允许附加 chunk。这是有限的容器校验，不执行解码或保证浏览器可播放。空响应、采样帧未对齐、非 PCM 内容会拒绝。转换后的文件（包含 44 字节 WAV 头）在创建输出 Blob 前计入任务 8 文件 / 8 MiB 限制；此预算不等于进程峰值内存上限，HTTP 读取缓冲区仍会占用内存。未指定该字段的资产保持原样。
+
+声明式 `$url.path` 必须为相对路径，禁止绝对地址、反斜杠、控制字符、非法百分号编码及解码后为 `..` 的路径段。宿主规范化基础目录后构造 URL，清除基础地址的 query/fragment，并确认最终 origin 相同、pathname 仍在该目录内；失败在 HTTP 请求前报 INVALID_RULE。该检查限制 URL 解析结果，服务端如何解释重复编码等路径仍取决于服务端。
+
+远程 evaluate 的结果不再绑定本地引擎模型名称。model 为厂家模型 ID，answers 必须恰好覆盖问题且类型对应，usage 保留厂家数据。confidence 与 action 为可选元数据，存在时仍校验有效概率；不得为满足契约伪造数值。本地 Jev 结果保持不变。首版公共问题仍为 choice / score / noul，不含 box 或图片输入。插件 Choice 条件只允许非空对象，所有选项键必须非空白；键是返回标识，值是判断描述（Json），结果 choice 必须属于条件对象的自有键。例如 `{"en":"English text","zh":"Chinese text"}` 返回 en 或 zh。数组输入直接拒绝，不做转换或按 SDK 版本兼容。本地推理引擎内部格式独立维护，不因此更改。
+
+OpenRouter 的适配和真实 API / 浏览器验收见 [OpenRouter 验收记录](../plugins/openrouter/ACCEPTANCE.md)。

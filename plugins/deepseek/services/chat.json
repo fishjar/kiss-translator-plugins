@@ -1,5 +1,5 @@
 {
-  "rulesVersion": 2,
+  "format": "protocol",
   "handlers": {
     "chat": {
       "protocol": "openai-chat-completions",

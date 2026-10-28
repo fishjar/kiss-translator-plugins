@@ -4,10 +4,12 @@
 
 ## 插件
 
-- [DeepSeek](plugins/deepseek/README.md)：对话、翻译、AI 词典、字幕断句、流式输出与思考模式。
-- [OpenAI 兼容协议](plugins/openai-compatible-bundle/README.md)：对话、翻译、AI 词典、字幕断句、语音识别、语音合成和图片全文识别。
-- [OpenRouter](plugins/openrouter/README.md)：对话、翻译、AI 词典、字幕断句，以及 Whisper/Qwen 语音识别。
-- [SiliconFlow](plugins/siliconflow/README.md)：对话、翻译、AI 词典、字幕断句、Qwen 和星辰语音识别、PaddleOCR 和 DeepSeek OCR 全文识别。
+| 插件                                                          | 支持能力                                                                                     |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [DeepSeek](plugins/deepseek/README.md)                        | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式。                                          |
+| [OpenAI 兼容协议](plugins/openai-compatible-bundle/README.md) | 对话、翻译、AI 词典、字幕断句、语音识别、语音合成和图片全文识别。                            |
+| [OpenRouter](plugins/openrouter/README.md)                    | 对话、翻译、AI 词典、字幕断句，以及 Whisper/Qwen 语音识别、Gemini/Qwen 语音合成和 Jev 决策。 |
+| [SiliconFlow](plugins/siliconflow/README.md)                  | 对话、翻译、AI 词典、字幕断句、Qwen 和星辰语音识别、PaddleOCR 和 DeepSeek OCR 全文识别。     |
 
 这些适配插件由简约翻译维护，不代表对应服务商发布或背书。
 
@@ -21,7 +23,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 可在简约翻译的“接口插件”页面安装，也可下载 ZIP 后导入。官方仓库包含多个插件，不能使用仓库根地址作为单插件安装地址。
 
-需要支持 SDK 2 的宿主（apiVersion:"2"）。安装与更新仅修改模板，不改变既有服务实例；请通过宿主的实例升级流程更新已有实例。
+当前全部官方插件使用数字 `apiVersion: 1`，需要新版插件 API 1 宿主。开发阶段不兼容旧契约；请重新导入包并创建实例。
 
 新增官方插件的目录结构、协议测试与 CI 发布步骤，以及协议和 SDK 契约，见[插件开发指南](docs/plugin-development-guide.md)。[签名词典](examples/signed-dictionary/README.md)仅为开发教学示例，不作为官方服务分发。
 
@@ -43,4 +45,6 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 模型参数分支是插件的适配策略；独立测试证明请求构造逻辑，宿主集成证明指定源码版本下的执行行为，两者都不能证明所有真实模型接受这些参数。真实服务与浏览器验收需要有效凭据和实际调用，单独记录验证版本及结果。
 
-当前官方插件声明 `apiVersion: "2"`，需要支持 SDK 2 的宿主；SDK 版本独立于宿主发布版本。旧 SDK 1 插件继续受支持。`minHostVersion` 仅用于 SDK 之外的宿主功能依赖。插件在 Manifest 和目录中保留这些声明。宿主加载列表时判断兼容性，并在安装和执行边界复核；发布器只校验版本格式，不根据某台机器上的宿主版本限制发布。静态检查、适配单元测试、宿主集成、真实厂家调用与浏览器验收分别记录。
+`apiVersion: 1` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
+
+当前验证结果及浏览器验收边界见[插件 API 1 验收记录](docs/plugin-api-1-acceptance.md)。

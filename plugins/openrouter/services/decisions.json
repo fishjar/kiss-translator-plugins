@@ -1,0 +1,31 @@
+{
+  "format": "http",
+  "handlers": {
+    "evaluate": {
+      "request": {
+        "url": {
+          "$url": { "base": "config.decisionsBaseUrl", "path": "decisions" }
+        },
+        "method": "POST",
+        "headers": { "Content-Type": "application/json" },
+        "auth": { "type": "bearer", "secret": { "$secret": "apiKey" } },
+        "bodyType": "json",
+        "body": {
+          "model": { "$ref": "config.model" },
+          "state": { "$ref": "input.state" },
+          "questions": { "$ref": "input.questions" }
+        },
+        "responseType": "text"
+      },
+      "response": {
+        "kind": "json",
+        "errorPath": "error.message",
+        "map": {
+          "model": { "$ref": "response.model" },
+          "answers": { "$ref": "response.answers" },
+          "usage": { "$ref": "response.usage" }
+        }
+      }
+    }
+  }
+}

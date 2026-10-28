@@ -1,31 +1,26 @@
 {
-  "manifestVersion": 1,
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.1.3",
-  "apiVersion": "2",
+  "version": "1.2.0",
+  "apiVersion": 1,
   "icon": "assets/logo.png",
-  "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
+  "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",
   "nameI18n": {
     "en": "OpenRouter"
   },
   "descriptionI18n": {
-    "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
-    "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
-    "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。",
-    "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
-    "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
-    "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
-    "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen.",
-    "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen."
+    "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",
+    "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen. Includes Gemini and Qwen speech synthesis and Jev decisions.",
+    "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。 支援 Gemini、Qwen 語音合成和 Jev 決策。",
+    "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。 Gemini・Qwen 音声合成と Jev 意思決定に対応。",
+    "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사. Gemini 및 Qwen 음성 합성과 Jev 의사 결정을 지원합니다.",
+    "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu. Gemini ve Qwen ses sentezi ile Jev kararlarını destekler.",
+    "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen. Hỗ trợ tổng hợp giọng nói Gemini, Qwen và quyết định Jev.",
+    "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen. Поддерживает синтез речи Gemini и Qwen и решения Jev."
   },
   "permissions": {
-    "network": [
-      "https://openrouter.ai"
-    ],
-    "endpointFields": [
-      "baseUrl"
-    ]
+    "network": ["https://openrouter.ai"],
+    "endpointFields": ["baseUrl", "decisionsBaseUrl"]
   },
   "sharedSettings": [
     {
@@ -51,6 +46,23 @@
       "type": "password",
       "isSecret": true,
       "required": true
+    },
+    {
+      "key": "decisionsBaseUrl",
+      "label": "决策 API 基础地址",
+      "labelI18n": {
+        "zh": "决策 API 基础地址",
+        "en": "Decisions API base URL",
+        "zh_TW": "決策 API 基礎地址",
+        "ja": "意思決定APIベースURL",
+        "ko": "의사 결정 API 기본 URL",
+        "tr": "Karar API temel URL'si",
+        "vi": "URL gốc API quyết định",
+        "ru": "Базовый URL API решений"
+      },
+      "type": "text",
+      "defaultValue": "https://openrouter.ai/api/alpha",
+      "required": true
     }
   ],
   "services": [
@@ -74,36 +86,23 @@
       "capabilities": {
         "chat": {
           "handler": "chat",
-          "inputModalities": [
-            "text"
-          ],
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "inputModalities": ["text"],
+          "outputModes": ["complete", "stream"]
         },
         "translate": {
           "handler": "translate",
           "batch": {
             "supported": true
           },
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "outputModes": ["complete", "stream"]
         },
         "dictionary": {
           "handler": "dictionary",
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "outputModes": ["complete", "stream"]
         },
         "segmentSubtitle": {
           "handler": "segmentSubtitle",
-          "outputModes": [
-            "complete"
-          ]
+          "outputModes": ["complete"]
         }
       },
       "settings": [
@@ -173,9 +172,7 @@
         "transcribe": {
           "handler": "transcribe",
           "timestamps": true,
-          "outputModes": [
-            "complete"
-          ]
+          "outputModes": ["complete"]
         }
       },
       "settings": [
@@ -206,6 +203,403 @@
         {
           "id": "qwen/qwen3-asr-0.6b",
           "name": "Qwen3 ASR 0.6B"
+        }
+      ]
+    },
+    {
+      "id": "speech-gemini",
+      "name": "语音合成（Gemini）",
+      "nameI18n": {
+        "zh": "语音合成（Gemini）",
+        "en": "Speech synthesis (Gemini)",
+        "zh_TW": "語音合成（Gemini）",
+        "ja": "音声合成（Gemini）",
+        "ko": "음성 합성 (Gemini)",
+        "tr": "Ses sentezi (Gemini)",
+        "vi": "Tổng hợp giọng nói (Gemini)",
+        "ru": "Синтез речи (Gemini)"
+      },
+      "implementation": {
+        "kind": "declarative",
+        "entry": "services/speech-pcm.json"
+      },
+      "capabilities": {
+        "synthesizeSpeech": {
+          "handler": "synthesizeSpeech",
+          "outputModes": ["complete"]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "defaultValue": "google/gemini-3.8-flash-tts",
+          "required": true
+        },
+        {
+          "key": "voice",
+          "label": "音色",
+          "labelI18n": {
+            "zh": "音色",
+            "en": "Voice",
+            "zh_TW": "音色",
+            "ja": "音声",
+            "ko": "음성",
+            "tr": "Ses",
+            "vi": "Giọng nói",
+            "ru": "Голос"
+          },
+          "type": "select",
+          "defaultValue": "Zephyr",
+          "required": true,
+          "options": [
+            {
+              "value": "Zephyr",
+              "label": "Zephyr"
+            },
+            {
+              "value": "Puck",
+              "label": "Puck"
+            },
+            {
+              "value": "Charon",
+              "label": "Charon"
+            },
+            {
+              "value": "Kore",
+              "label": "Kore"
+            },
+            {
+              "value": "Fenrir",
+              "label": "Fenrir"
+            },
+            {
+              "value": "Leda",
+              "label": "Leda"
+            },
+            {
+              "value": "Orus",
+              "label": "Orus"
+            },
+            {
+              "value": "Aoede",
+              "label": "Aoede"
+            },
+            {
+              "value": "Callirrhoe",
+              "label": "Callirrhoe"
+            },
+            {
+              "value": "Autonoe",
+              "label": "Autonoe"
+            },
+            {
+              "value": "Enceladus",
+              "label": "Enceladus"
+            },
+            {
+              "value": "Iapetus",
+              "label": "Iapetus"
+            },
+            {
+              "value": "Umbriel",
+              "label": "Umbriel"
+            },
+            {
+              "value": "Algieba",
+              "label": "Algieba"
+            },
+            {
+              "value": "Despina",
+              "label": "Despina"
+            },
+            {
+              "value": "Erinome",
+              "label": "Erinome"
+            },
+            {
+              "value": "Algenib",
+              "label": "Algenib"
+            },
+            {
+              "value": "Rasalgethi",
+              "label": "Rasalgethi"
+            },
+            {
+              "value": "Laomedeia",
+              "label": "Laomedeia"
+            },
+            {
+              "value": "Achernar",
+              "label": "Achernar"
+            },
+            {
+              "value": "Alnilam",
+              "label": "Alnilam"
+            },
+            {
+              "value": "Schedar",
+              "label": "Schedar"
+            },
+            {
+              "value": "Gacrux",
+              "label": "Gacrux"
+            },
+            {
+              "value": "Pulcherrima",
+              "label": "Pulcherrima"
+            },
+            {
+              "value": "Achird",
+              "label": "Achird"
+            },
+            {
+              "value": "Zubenelgenubi",
+              "label": "Zubenelgenubi"
+            },
+            {
+              "value": "Vindemiatrix",
+              "label": "Vindemiatrix"
+            },
+            {
+              "value": "Sadachbia",
+              "label": "Sadachbia"
+            },
+            {
+              "value": "Sadaltager",
+              "label": "Sadaltager"
+            },
+            {
+              "value": "Sulafat",
+              "label": "Sulafat"
+            }
+          ]
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "google/gemini-3.8-flash-tts",
+          "name": "Gemini 3.8 Flash TTS"
+        },
+        {
+          "id": "google/gemini-3.8-flash-lite-tts",
+          "name": "Gemini 3.8 Flash Lite TTS"
+        }
+      ]
+    },
+    {
+      "id": "speech-qwen-plus",
+      "name": "语音合成（Qwen Plus）",
+      "nameI18n": {
+        "zh": "语音合成（Qwen Plus）",
+        "en": "Speech synthesis (Qwen Plus)",
+        "zh_TW": "語音合成（Qwen Plus）",
+        "ja": "音声合成（Qwen Plus）",
+        "ko": "음성 합성 (Qwen Plus)",
+        "tr": "Ses sentezi (Qwen Plus)",
+        "vi": "Tổng hợp giọng nói (Qwen Plus)",
+        "ru": "Синтез речи (Qwen Plus)"
+      },
+      "implementation": {
+        "kind": "declarative",
+        "entry": "services/speech-mp3.json"
+      },
+      "capabilities": {
+        "synthesizeSpeech": {
+          "handler": "synthesizeSpeech",
+          "outputModes": ["complete"]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "defaultValue": "qwen/qwen-audio-3.0-tts-plus",
+          "required": true
+        },
+        {
+          "key": "voice",
+          "label": "音色",
+          "labelI18n": {
+            "zh": "音色",
+            "en": "Voice",
+            "zh_TW": "音色",
+            "ja": "音声",
+            "ko": "음성",
+            "tr": "Ses",
+            "vi": "Giọng nói",
+            "ru": "Голос"
+          },
+          "type": "select",
+          "defaultValue": "longanlingxin",
+          "required": true,
+          "options": [
+            {
+              "value": "longanlingxin",
+              "label": "longanlingxin"
+            },
+            {
+              "value": "longanlufeng",
+              "label": "longanlufeng"
+            }
+          ]
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "qwen/qwen-audio-3.0-tts-plus",
+          "name": "Qwen Audio 3.0 TTS Plus"
+        }
+      ]
+    },
+    {
+      "id": "speech-qwen-flash",
+      "name": "语音合成（Qwen Flash）",
+      "nameI18n": {
+        "zh": "语音合成（Qwen Flash）",
+        "en": "Speech synthesis (Qwen Flash)",
+        "zh_TW": "語音合成（Qwen Flash）",
+        "ja": "音声合成（Qwen Flash）",
+        "ko": "음성 합성 (Qwen Flash)",
+        "tr": "Ses sentezi (Qwen Flash)",
+        "vi": "Tổng hợp giọng nói (Qwen Flash)",
+        "ru": "Синтез речи (Qwen Flash)"
+      },
+      "implementation": {
+        "kind": "declarative",
+        "entry": "services/speech-mp3.json"
+      },
+      "capabilities": {
+        "synthesizeSpeech": {
+          "handler": "synthesizeSpeech",
+          "outputModes": ["complete"]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "defaultValue": "qwen/qwen-audio-3.0-tts-flash",
+          "required": true
+        },
+        {
+          "key": "voice",
+          "label": "音色",
+          "labelI18n": {
+            "zh": "音色",
+            "en": "Voice",
+            "zh_TW": "音色",
+            "ja": "音声",
+            "ko": "음성",
+            "tr": "Ses",
+            "vi": "Giọng nói",
+            "ru": "Голос"
+          },
+          "type": "select",
+          "defaultValue": "loongjohn",
+          "required": true,
+          "options": [
+            {
+              "value": "loongjohn",
+              "label": "loongjohn"
+            },
+            {
+              "value": "longanhuan_v3.6",
+              "label": "longanhuan_v3.6"
+            }
+          ]
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "qwen/qwen-audio-3.0-tts-flash",
+          "name": "Qwen Audio 3.0 TTS Flash"
+        }
+      ]
+    },
+    {
+      "id": "decisions",
+      "name": "决策服务（Jev）",
+      "nameI18n": {
+        "zh": "决策服务（Jev）",
+        "en": "Decisions (Jev)",
+        "zh_TW": "決策服務（Jev）",
+        "ja": "意思決定（Jev）",
+        "ko": "의사 결정 (Jev)",
+        "tr": "Kararlar (Jev)",
+        "vi": "Quyết định (Jev)",
+        "ru": "Решения (Jev)"
+      },
+      "implementation": {
+        "kind": "declarative",
+        "entry": "services/decisions.json"
+      },
+      "capabilities": {
+        "evaluate": {
+          "handler": "evaluate",
+          "outputModes": ["complete"]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "defaultValue": "typesafe/jev-1.14",
+          "required": true
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "typesafe/jev-1.14",
+          "name": "Jev 1.14"
         }
       ]
     }

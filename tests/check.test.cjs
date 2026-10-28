@@ -25,7 +25,7 @@ test("injected LICENSE counts towards the final archive file and size limits", (
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const source = "exports.chat = () => ({ text: 'ok' });";
   const manifest = {
-    manifestVersion: 1, apiVersion: "1", id: "license-test", version: "1.0.0",
+    apiVersion: 1, id: "license-test", version: "1.0.0",
     services: [{ id: "chat", implementation: { kind: "script", entry: "chat.js" }, capabilities: { chat: { handler: "chat" } } }],
     resources: Array.from({ length: 98 }, (_, index) => ({ path: `resource-${index}.txt` })),
   };
@@ -45,8 +45,7 @@ test("standalone directory and ZIP checks do not execute scripts or require a ho
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kiss-check-"));
   try {
     const manifest = {
-      manifestVersion: 1,
-      apiVersion: "1",
+      apiVersion: 1,
       id: "check-test",
       version: "1.0.0",
       services: [

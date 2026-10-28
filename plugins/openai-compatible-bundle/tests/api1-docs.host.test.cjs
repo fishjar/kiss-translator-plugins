@@ -15,9 +15,9 @@ const guide = fs.readFileSync(
   "utf8",
 );
 
-test("SDK 2 declarative documentation uses installable protocol/task combinations", () => {
+test("Plugin API 1 declarative documentation uses installable protocol/task combinations", () => {
   const example = JSON.parse(
-    guide.match(/<!-- sdk2-example -->\s*```json\s*([\s\S]*?)```/)[1],
+    guide.match(/<!-- api1-example -->\s*```json\s*([\s\S]*?)```/)[1],
   );
   validateDeclarativeRules(example.rules, example.capabilities, [
     { key: "apiKey", type: "password" },
@@ -26,9 +26,9 @@ test("SDK 2 declarative documentation uses installable protocol/task combination
     assert.equal(example.rules.handlers[task].task, task);
 });
 
-test("SDK 2 script documentation runs through the real interpreter and helpers", async () => {
+test("Plugin API 1 script documentation runs through the real interpreter and helpers", async () => {
   const code = guide.match(
-    /<!-- sdk2-script-example -->\s*```javascript\s*([\s\S]*?)```/,
+    /<!-- api1-script-example -->\s*```javascript\s*([\s\S]*?)```/,
   )[1];
   const interpreter = new Sval({ ecmaVer: "latest", sandBox: true });
   interpreter.run(code);
@@ -73,7 +73,7 @@ for (const id of [
     const manifest = JSON.parse(
       fs.readFileSync(path.join(root, "plugins", id, "manifest.json")),
     );
-    assert.equal(manifest.apiVersion, "2");
+    assert.equal(manifest.apiVersion, 1);
     assert.equal(Object.hasOwn(manifest, "minHostVersion"), false);
     const prompts = manifest.services.find(
       (service) => service.id === "chat-completions",

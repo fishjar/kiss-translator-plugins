@@ -4,7 +4,7 @@ const manifest = require("../manifest.json");
 const rules = require("../services/chat.json");
 
 test("DeepSeek declares the actual conditional chat and translation rules", () => {
-  assert.equal(rules.rulesVersion, 2);
+  assert.equal(rules.format, "protocol");
   const service = manifest.services.find((item) => item.id === "chat-completions");
   assert.deepEqual(service.implementation, { kind: "declarative", entry: "services/chat.json" });
   for (const task of ["chat", "translate"]) {

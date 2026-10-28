@@ -100,10 +100,10 @@ function stream(f, text, terminal = true) {
   };
 }
 
-test("ZIP parses with the production loader; two service definitions expose the intended capabilities", () => {
+test("ZIP parses with the production loader; six service definitions expose the intended capabilities", () => {
   assert.equal(pack.manifest.id, "openrouter");
   assert.equal(pack.manifest.version, manifest.version);
-  assert.equal(pack.manifest.services.length, 2);
+  assert.equal(pack.manifest.services.length, 6);
   for (const id of [
     "chat-completions",
     "transcriptions",
@@ -313,13 +313,16 @@ test("packaging is deterministic, produces an installable ZIP and matching offic
   const installed = readProviderPackage(new Uint8Array(bytes));
   assert.equal(installed.manifest.id, "openrouter");
   assert.equal(installed.manifest.version, manifest.version);
-  assert.equal(installed.manifest.services.length, 2);
+  assert.equal(installed.manifest.services.length, 6);
   const { unzipSync } = hostRequire("fflate");
   assert.deepEqual(Object.keys(unzipSync(bytes)).sort(), [
     "LICENSE",
     "assets/logo.png",
     "manifest.json",
     "services/chat.json",
+    "services/decisions.json",
+    "services/speech-mp3.json",
+    "services/speech-pcm.json",
     "services/transcribe.js",
   ]);
   assert.equal(

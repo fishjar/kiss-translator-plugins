@@ -21,6 +21,24 @@ test("speech maps voice, speed and text to a real request and returns an audio a
   }
 });
 
+test("speech uses input voice before the saved configuration without mutating it", async () => {
+  const f = fixture("openai-compatible-bundle", "speech", { voice: "alloy" });
+  f.respond(
+    () =>
+      new Response(Uint8Array.of(0, 0), {
+        headers: { "Content-Type": "audio/mpeg" },
+      }),
+  );
+  for (const voice of ["nova", undefined]) {
+    await f.invoke("synthesizeSpeech", {
+      text: "Hello",
+      ...(voice !== undefined && { voice }),
+    });
+    assert.equal(JSON.parse(f.calls.at(-1).init.body).voice, voice ?? "alloy");
+    assert.equal(f.config.voice, "alloy");
+  }
+});
+
 test("transcription sends binary multipart, maps language and returns the response text", async () => {
   const f = fixture("openai-compatible-bundle", "transcriptions");
   const bytes = Uint8Array.of(0, 127, 128, 255);

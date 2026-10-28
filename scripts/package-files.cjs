@@ -20,8 +20,9 @@ const requireValue = (valid, message) => {
 // This is the publisher's package check, not a copy of the host SDK/runtime.
 function packagePaths(manifest) {
   requireValue(
-    manifest.manifestVersion === 1 &&
-      ["1", "2"].includes(manifest.apiVersion) &&
+    !Object.hasOwn(manifest, "manifestVersion") &&
+      !Object.hasOwn(manifest, "rulesVersion") &&
+      manifest.apiVersion === 1 &&
       /^[a-z][a-z0-9-]{1,100}$/.test(manifest.id) &&
       validVersion(manifest.version),
     "Invalid manifest identity/version",
@@ -101,22 +102,28 @@ function validatePackageFiles(files) {
     } else {
       const rules = JSON.parse(source);
       requireValue(
-        [1, 2].includes(rules.rulesVersion) &&
+        ["http", "protocol"].includes(rules.format) &&
+          !Object.hasOwn(rules, "rulesVersion") &&
+          !Object.hasOwn(rules, "manifestVersion") &&
           rules.handlers &&
           typeof rules.handlers === "object",
         "Invalid declarative rules: " + service.id,
       );
+      require("./declarative-rules.cjs")(rules, [
+        ...(manifest.sharedSettings || []),
+        ...(service.settings || []),
+      ]);
       for (const [name, descriptor] of Object.entries(service.capabilities)) {
         requireValue(
           Object.hasOwn(rules.handlers, descriptor.handler),
           `Missing handler: ${service.id}/${name}`,
         );
-        if (rules.rulesVersion === 1)
+        if (rules.format === "http")
           requireValue(
             !(descriptor.outputModes || []).includes("stream"),
-            "Rules v1 do not support streaming",
+            "HTTP rules do not support streaming",
           );
-        if (rules.rulesVersion === 2) {
+        if (rules.format === "protocol") {
           requireValue(
             (rules.handlers[descriptor.handler].protocol ===
               "openai-chat-completions" &&
