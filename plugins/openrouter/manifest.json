@@ -1,7 +1,7 @@
 {
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",
@@ -20,7 +20,7 @@
   },
   "permissions": {
     "network": ["https://openrouter.ai"],
-    "endpointFields": ["baseUrl", "decisionsBaseUrl"]
+    "endpointFields": ["baseUrl"]
   },
   "sharedSettings": [
     {
@@ -45,23 +45,6 @@
       "label": "OpenRouter API Key",
       "type": "password",
       "isSecret": true,
-      "required": true
-    },
-    {
-      "key": "decisionsBaseUrl",
-      "label": "决策 API 基础地址",
-      "labelI18n": {
-        "zh": "决策 API 基础地址",
-        "en": "Decisions API base URL",
-        "zh_TW": "決策 API 基礎地址",
-        "ja": "意思決定APIベースURL",
-        "ko": "의사 결정 API 기본 URL",
-        "tr": "Karar API temel URL'si",
-        "vi": "URL gốc API quyết định",
-        "ru": "Базовый URL API решений"
-      },
-      "type": "text",
-      "defaultValue": "https://openrouter.ai/api/alpha",
       "required": true
     }
   ],
@@ -577,6 +560,23 @@
         }
       },
       "settings": [
+        {
+          "key": "baseUrl",
+          "label": "API 基础地址",
+          "labelI18n": {
+            "zh": "API 基础地址",
+            "en": "API base URL",
+            "zh_TW": "API 基礎地址",
+            "ja": "APIベースURL",
+            "ko": "API 기본 URL",
+            "tr": "API temel URL'si",
+            "vi": "URL gốc API",
+            "ru": "Базовый URL API"
+          },
+          "type": "text",
+          "defaultValue": "https://openrouter.ai/api/alpha",
+          "required": true
+        },
         {
           "key": "model",
           "label": "模型 ID",

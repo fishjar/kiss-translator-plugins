@@ -200,7 +200,7 @@ test("decisions pass Choice objects unchanged and preserve native answer metadat
 
 test("decision endpoints are independently configurable and cancellation propagates", async () => {
   const f = fixture("openrouter", "decisions", {
-    decisionsBaseUrl: "https://decisions.invalid/custom/",
+    baseUrl: "https://decisions.invalid/custom/",
   });
   const controller = new AbortController();
   const { createTransportBroker } = load("providers/transport.js");
@@ -220,7 +220,7 @@ test("decision endpoints are independently configurable and cancellation propaga
       questions: { q: { type: "noul", instructions: "Hello?" } },
     }),
   );
-  assert.equal(f.config.baseUrl, "https://openrouter.ai/api/v1");
+  assert.equal(f.config.baseUrl, "https://decisions.invalid/custom/");
 });
 
 test("the production registry rejects invalid Choice conditions before network and rejects unknown result keys", async () => {

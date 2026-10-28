@@ -44,7 +44,7 @@ Qwen 在实际视频样本中只返回一个分段，但提供 30 个词时间�
 Gemini TTS 的两个模型共用 30 种预置音色，默认 Zephyr；Qwen Plus 使用 longanlingxin / longanlufeng，Qwen Flash 使用 loongjohn / longanhuan_v3.6，各自默认第一种。
 TTS 调用 `/audio/speech`，只返回完整音频，不发送 speed。通过声明式字段回退优先使用本次调用的 `input.voice`，未提供时使用实例配置的音色。Gemini 显式请求 PCM，由 宿主按 24 kHz、单声道、16-bit little-endian 封装为浏览器可播放的 WAV；Qwen 显式请求 MP3。不提供流式播放、多说话人或声音克隆。
 
-Jev 使用专用 `/api/alpha/decisions` 端点，不使用聊天补全或提示词模拟决策。`decisionsBaseUrl` 默认 `https://openrouter.ai/api/alpha`，独立于普通 API 基础地址；该字段是插件共享设置，各实例独立保存，仅决策服务读取它。
+Jev 使用专用 `/api/alpha/decisions` 端点，不使用聊天补全或提示词模拟决策。各服务仅显示一个 API 基础地址（`baseUrl`），各实例独立保存；决策服务默认 `https://openrouter.ai/api/alpha`，其他服务默认 `https://openrouter.ai/api/v1`。
 使用声明式规则直接发送 state 和 questions；Choice 只接受非空对象条件，例如 `{"en":"内容主要使用英语","zh":"内容主要使用中文"}`；键是稳定的选项标识，值是判断描述，结果 choice 必须为 en 或 zh。数组、空对象和空白选项键在联网前拒绝，不提供自动转换。Score 和 Noul 保持原结构。首版不支持 Box 或图片决策。
 返回厂家 model、answers 和 usage，不补造缺失的 confidence 或 action。宿主需要支持插件 API 1；更新模板不自动改写已有实例。
 
