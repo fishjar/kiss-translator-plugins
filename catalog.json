@@ -26,7 +26,7 @@
         "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
       "version": "1.2.5",
-      "apiVersion": "2",
+      "apiVersion": 1,
       "capabilities": [
         "chat",
         "translate",
@@ -34,7 +34,7 @@
         "segmentSubtitle"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.5.zip",
-      "sha256": "d3603169a373364d09b3aa19893bb498e9fe92559f89903e804fcd7a6b01ef2e"
+      "sha256": "03ecd56d24098a998506d8f2d6bfce094ff42ebd5c55be19724b5ee26dc19130"
     },
     {
       "id": "openai-compatible-bundle",
@@ -61,7 +61,7 @@
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
       "version": "2.0.3",
-      "apiVersion": "2",
+      "apiVersion": 1,
       "capabilities": [
         "chat",
         "translate",
@@ -72,7 +72,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.3.zip",
-      "sha256": "1814857d6a00a23efc7a913c7274cd046dd21224c8520caeaa064a34cdbd09c8"
+      "sha256": "442f59bf22c642f3d36b9e65e87dd4cd0e99c4a6201c72213142a1e3f8d1ba34"
     },
     {
       "id": "openrouter",
@@ -80,28 +80,30 @@
       "nameI18n": {
         "en": "OpenRouter"
       },
-      "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
+      "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",
       "descriptionI18n": {
-        "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。",
-        "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen.",
-        "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。",
-        "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。",
-        "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사.",
-        "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu.",
-        "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen.",
-        "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen."
+        "zh": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",
+        "en": "OpenRouter chat and translation, plus audio transcription with Whisper and Qwen. Includes Gemini and Qwen speech synthesis and Jev decisions.",
+        "zh_TW": "OpenRouter 對話、翻譯、字幕斷句與 AI 詞典，以及 Whisper、Qwen 語音辨識。 支援 Gemini、Qwen 語音合成和 Jev 決策。",
+        "ja": "OpenRouter のチャットと翻訳、および Whisper と Qwen による音声文字起こし。 Gemini・Qwen 音声合成と Jev 意思決定に対応。",
+        "ko": "OpenRouter 채팅 및 번역과 Whisper, Qwen을 이용한 음성 전사. Gemini 및 Qwen 음성 합성과 Jev 의사 결정을 지원합니다.",
+        "tr": "OpenRouter sohbet ve çeviri; Whisper ve Qwen ile ses transkripsiyonu. Gemini ve Qwen ses sentezi ile Jev kararlarını destekler.",
+        "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen. Hỗ trợ tổng hợp giọng nói Gemini, Qwen và quyết định Jev.",
+        "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen. Поддерживает синтез речи Gemini и Qwen и решения Jev."
       },
-      "version": "1.1.3",
-      "apiVersion": "2",
+      "version": "1.2.0",
+      "apiVersion": 1,
       "capabilities": [
         "chat",
         "translate",
         "dictionary",
         "segmentSubtitle",
-        "transcribe"
+        "transcribe",
+        "synthesizeSpeech",
+        "evaluate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.1.3.zip",
-      "sha256": "ecbc30ef9bb547a2dc460e0e67f4b0f6e6dc4eeec788657117b5f740528fee3e"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.0.zip",
+      "sha256": "728468da0614bdd5780f2877d9092aec5afb639e64eed38c686b45c95b152582"
     },
     {
       "id": "siliconflow",
@@ -121,7 +123,7 @@
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
       "version": "1.1.4",
-      "apiVersion": "2",
+      "apiVersion": 1,
       "capabilities": [
         "chat",
         "translate",
@@ -131,7 +133,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.4.zip",
-      "sha256": "c0d70f724fb19f05306eaac4c213b784c6dda3b9bace395138bcf3ee08bc7ed7"
+      "sha256": "c7755575fc3d6c197d7f36da457c28fcc00ca5e0318813a7faa24e955c671813"
     }
   ]
 }
