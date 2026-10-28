@@ -25,7 +25,7 @@
         "vi": "Trò chuyện và dịch với DeepSeek, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
         "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
-      "version": "1.2.6",
+      "version": "1.2.7",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -33,8 +33,8 @@
         "dictionary",
         "segmentSubtitle"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.6.zip",
-      "sha256": "7b1d52fda2ff376ac22c567d3e9615022ad5b36c5e7e8918d7cad2bdaa80f21c"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.2.7.zip",
+      "sha256": "dc753e61d4fe0d24da98850c881830f45e705a0932a23067ac64a1aa8efc1b9f"
     },
     {
       "id": "openai-compatible-bundle",
@@ -60,7 +60,7 @@
         "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.4",
+      "version": "2.0.5",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -71,8 +71,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.4.zip",
-      "sha256": "ff86fcd1bb06451da713f3ab8746612748e525305ec5d4ec1780c7019c047547"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.5.zip",
+      "sha256": "3d7c5d05e49b8d0dab8254fc8f9c482aae761d7e52de751859951176556825c3"
     },
     {
       "id": "openrouter",
@@ -91,7 +91,7 @@
         "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen. Hỗ trợ tổng hợp giọng nói Gemini, Qwen và quyết định Jev.",
         "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen. Поддерживает синтез речи Gemini и Qwen и решения Jev."
       },
-      "version": "1.2.0",
+      "version": "1.2.1",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -102,8 +102,8 @@
         "synthesizeSpeech",
         "evaluate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.0.zip",
-      "sha256": "728468da0614bdd5780f2877d9092aec5afb639e64eed38c686b45c95b152582"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.1.zip",
+      "sha256": "1fced9931a04162fdcbeac478439ecd6610da9f042de89574a4ccc2e89b68018"
     },
     {
       "id": "siliconflow",
@@ -122,7 +122,7 @@
         "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.1.5",
+      "version": "1.1.6",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -132,8 +132,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.5.zip",
-      "sha256": "83bb3a7165de880bb22858edfeb1582bea7e2f841dc5eff3ab05cec6793847b7"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.6.zip",
+      "sha256": "61bed575c643dc25457736be2684401bc4c6e2a55ea6492e9ec38962c918dc89"
     }
   ]
 }
