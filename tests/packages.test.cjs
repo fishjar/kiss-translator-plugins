@@ -5,6 +5,26 @@ const path = require("node:path");
 const { unzipSync } = require("fflate");
 const { buildPackage, build } = require("../scripts/build.cjs");
 const root = path.resolve(__dirname, "..");
+test("package bytes are independent of source line endings", () => {
+  const project = fs.mkdtempSync(path.join(require("node:os").tmpdir(), "kiss-plugin-eol-"));
+  try {
+    for (const folder of fs.readdirSync(path.join(root, "plugins"))) {
+      const target = path.join(project, folder);
+      fs.cpSync(path.join(root, "plugins", folder), target, { recursive: true });
+      const original = buildPackage(target);
+      const files = unzipSync(original.bytes);
+      for (const eol of ["\n", "\r\n"]) {
+        for (const [name, bytes] of Object.entries(files)) {
+          if (/\.(json|js)$/.test(name)) {
+            fs.writeFileSync(path.join(target, name), Buffer.from(bytes).toString("utf8").replace(/\r\n/g, "\n").replace(/\n/g, eol));
+          }
+        }
+        assert.deepEqual(buildPackage(target).bytes, original.bytes, `${folder}: ${JSON.stringify(eol)}`);
+      }
+    }
+  } finally { fs.rmSync(project, { recursive: true, force: true }); }
+});
+
 test("package bytes are independent of the builder timezone", () => {
   const { execFileSync } = require("node:child_process");
   const source = `const { buildPackage } = require(${JSON.stringify(path.join(root, "scripts/build.cjs"))}); console.log(buildPackage(${JSON.stringify(path.join(root, "plugins/deepseek"))}).item.sha256);`;

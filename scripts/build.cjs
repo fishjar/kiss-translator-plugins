@@ -14,7 +14,10 @@ function buildPackage(folder) {
   const manifest = validatePackageFiles(content);
   const files = {};
   for (const entry of Object.keys(content).sort()) {
-    files[entry] = [content[entry], { mtime: new Date(2000, 0, 1) }];
+    const bytes = /\.(json|js)$/.test(entry)
+      ? Buffer.from(content[entry].toString("utf8").replace(/\r\n/g, "\n"))
+      : content[entry];
+    files[entry] = [bytes, { mtime: new Date(2000, 0, 1) }];
   }
   const bytes = Buffer.from(zipSync(files, { level: 9 }));
   if (bytes.length > 5 * 1024 * 1024) throw new Error("Package exceeds 5 MiB");
