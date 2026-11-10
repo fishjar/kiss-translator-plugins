@@ -1,0 +1,28 @@
+{
+  "format": "protocol",
+  "handlers": {
+    "parseImage": {
+      "protocol": "openai-chat-completions",
+      "task": "parseImage",
+      "request": {
+        "baseUrl": {
+          "$ref": "config.baseUrl"
+        },
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        },
+        "parameters": {
+          "thinking": {
+            "type": "disabled"
+          }
+        }
+      }
+    }
+  }
+}

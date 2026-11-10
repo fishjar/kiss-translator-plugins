@@ -1,7 +1,7 @@
 {
   "id": "deepseek",
   "name": "DeepSeek",
-  "version": "1.2.7",
+  "version": "1.3.3",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "DeepSeek 对话、翻译、字幕断句与 AI 词典，支持批量翻译、流式输出和思考模式。",
@@ -327,6 +327,107 @@
         "tr": "Sohbet ve çeviri",
         "vi": "Trò chuyện và dịch",
         "ru": "Чат и перевод"
+      }
+    },
+    {
+      "id": "vision",
+      "name": "图片全文识别（VLM）",
+      "nameI18n": {
+        "zh": "图片全文识别（VLM）",
+        "en": "Image Text Extraction (VLM)",
+        "zh_TW": "圖片全文辨識（VLM）",
+        "ja": "画像の全文認識（VLM）",
+        "ko": "이미지 전체 텍스트 인식 (VLM)",
+        "tr": "Görüntüden metin çıkarma (VLM)",
+        "vi": "Trích xuất văn bản từ ảnh (VLM)",
+        "ru": "Извлечение текста из изображений (VLM)"
+      },
+      "implementation": {
+        "kind": "declarative",
+        "entry": "services/vision.json"
+      },
+      "capabilities": {
+        "parseImage": {
+          "handler": "parseImage",
+          "inputModalities": ["image"],
+          "taskModes": ["doc"],
+          "coordinates": false,
+          "outputModes": ["complete"]
+        }
+      },
+      "models": [
+        {
+          "id": "deepseek-flash",
+          "name": "deepseek-flash"
+        }
+      ],
+      "settings": [
+        {
+          "key": "model",
+          "label": "DeepSeek 模型",
+          "type": "text",
+          "required": true,
+          "defaultValue": "deepseek-flash",
+          "labelI18n": {
+            "zh": "DeepSeek 模型",
+            "en": "DeepSeek model",
+            "zh_TW": "DeepSeek 模型",
+            "ja": "DeepSeekモデル",
+            "ko": "DeepSeek 모델",
+            "tr": "DeepSeek modeli",
+            "vi": "Mô hình DeepSeek",
+            "ru": "Модель DeepSeek"
+          }
+        }
+      ],
+      "defaultPrompts": {
+        "vlm": [
+          {
+            "id": "plain-text",
+            "name": "纯文本识别",
+            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "nameI18n": {
+              "zh": "纯文本识别",
+              "en": "Plain text recognition"
+            }
+          },
+          {
+            "id": "document",
+            "name": "文档转 Markdown",
+            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "nameI18n": {
+              "zh": "文档转 Markdown",
+              "en": "Document to Markdown"
+            }
+          },
+          {
+            "id": "table",
+            "name": "表格提取",
+            "userPrompt": "Extract the visible tables as Markdown. Preserve cell contents, rows, and columns. Do not translate or infer missing values. Return only the extracted tables.",
+            "nameI18n": {
+              "zh": "表格提取",
+              "en": "Table extraction"
+            }
+          },
+          {
+            "id": "chart",
+            "name": "图表解析",
+            "userPrompt": "Describe the chart and transcribe its visible labels, legends, axes, and data values in the original language. Do not infer unreadable or absent values.",
+            "nameI18n": {
+              "zh": "图表解析",
+              "en": "Chart analysis"
+            }
+          },
+          {
+            "id": "description",
+            "name": "图片描述",
+            "userPrompt": "Describe this image in detail. Distinguish directly visible details from uncertain interpretations.",
+            "nameI18n": {
+              "zh": "图片描述",
+              "en": "Image description"
+            }
+          }
+        ]
       }
     }
   ],

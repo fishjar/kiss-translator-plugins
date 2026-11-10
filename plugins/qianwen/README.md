@@ -13,4 +13,8 @@
 
 对话、图片和 Omni 使用 OpenAI 兼容 Chat Completions。带时间戳的 ASR 使用千问的原生 HTTP 接口。WAV 和宿主重新封装的 AAC-LC M4A 已实测。专用 ASR 遇到纯静音可能返回 HTTP 400，Omni 在本次静音样本中返回空转写。 [专用 ASR](https://platform.qianwenai.com/docs/api-reference/speech-recognition/qwen-audio-asr/http-api) · [Omni](https://platform.qianwenai.com/docs/developer-guides/speech/multimodal-speech)
 
+四个服务均可手填模型 ID。自定义模型需支持所选服务的接口和能力。
+
+图片全文识别和多模态识别均可在插件列表预览提示词，并在服务配置中切换。默认是「纯文本识别」，两者都可选文档转 Markdown 和表格提取。专用 OCR 另有公式提取（LaTeX），Omni 另有图表解析和图片描述。已有服务实例可升级到新版模板。
+
 图片服务接收单张图片并返回全文，扫描 PDF 由宿主逐页转图后提交。发布范围为按量 API、图片全文识别和短音频转写。详见[验收记录](ACCEPTANCE.md)。

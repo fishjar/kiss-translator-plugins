@@ -11,7 +11,7 @@
     "vi": "Qianwen AI",
     "ru": "Qianwen AI"
   },
-  "version": "1.0.0",
+  "version": "1.0.3",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "通过千问 AI 平台进行对话、翻译、语音识别和图片全文识别。",
@@ -321,6 +321,46 @@
           ]
         }
       },
+      "defaultPrompts": {
+        "vlm": [
+          {
+            "id": "plain-text",
+            "name": "纯文本识别",
+            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "nameI18n": {
+              "zh": "纯文本识别",
+              "en": "Plain text recognition"
+            }
+          },
+          {
+            "id": "document",
+            "name": "文档转 Markdown",
+            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "nameI18n": {
+              "zh": "文档转 Markdown",
+              "en": "Document to Markdown"
+            }
+          },
+          {
+            "id": "table",
+            "name": "表格提取",
+            "userPrompt": "Extract only the visible table as raw Markdown table rows, including the header and separator row. Preserve the original cell contents, rows, and columns. Leave empty cells empty. Omit text outside the table, explanations, and code fences.",
+            "nameI18n": {
+              "zh": "表格提取",
+              "en": "Table extraction"
+            }
+          },
+          {
+            "id": "formula",
+            "name": "公式提取",
+            "userPrompt": "Extract the visible mathematical formulas as LaTeX. Do not translate, solve, or explain them. Return only the formulas.",
+            "nameI18n": {
+              "zh": "公式提取",
+              "en": "Formula extraction"
+            }
+          }
+        ]
+      },
       "models": [
         {
           "id": "qwen3.5-ocr",
@@ -388,6 +428,55 @@
             "complete"
           ]
         }
+      },
+      "defaultPrompts": {
+        "vlm": [
+          {
+            "id": "plain-text",
+            "name": "纯文本识别",
+            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "nameI18n": {
+              "zh": "纯文本识别",
+              "en": "Plain text recognition"
+            }
+          },
+          {
+            "id": "document",
+            "name": "文档转 Markdown",
+            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "nameI18n": {
+              "zh": "文档转 Markdown",
+              "en": "Document to Markdown"
+            }
+          },
+          {
+            "id": "table",
+            "name": "表格提取",
+            "userPrompt": "Extract only the visible table as raw Markdown table rows, including the header and separator row. Preserve the original cell contents, rows, and columns. Leave empty cells empty. Omit titles, captions, notes, and all other text outside the table. Do not use code fences.",
+            "nameI18n": {
+              "zh": "表格提取",
+              "en": "Table extraction"
+            }
+          },
+          {
+            "id": "chart",
+            "name": "图表解析",
+            "userPrompt": "Transcribe the visible chart title, axis labels, legend, category labels, and printed data values in the original language. List the data for each category in chart order. Use [unreadable] for an obscured or illegible label, even if a nearby sequence suggests what it could be. Never guess missing labels or values.",
+            "nameI18n": {
+              "zh": "图表解析",
+              "en": "Chart analysis"
+            }
+          },
+          {
+            "id": "description",
+            "name": "图片描述",
+            "userPrompt": "In at most two sentences, describe the main visible objects, their colors, and their clearly visible positions relative to each other. Use the viewer's left and right. Do not identify people by name or infer the setting, hidden parts, background patterns, or other minor details. If you mention a tentative object identification, label it Uncertain.",
+            "nameI18n": {
+              "zh": "图片描述",
+              "en": "Image description"
+            }
+          }
+        ]
       },
       "models": [
         {

@@ -4,6 +4,10 @@
 
 [English](README.en.md) | [简体中文](README.md)
 
+1.3.2 adds presets for plain text recognition, table extraction, chart analysis, and image description.
+
+1.3.0 adds a separate Image Text Extraction (VLM) service.
+
 1.2.5: Adopt SDK 2 (`apiVersion: "2"`), optimizing default prompts for translation, AI dictionary, and subtitle segmentation; host release versions are not treated as SDK capability dependencies. Existing instances obtain new snapshots via the existing upgrade flow; user-customized prompts maintain precedence.
 
 1.2.4: Switched to [MIT License](../../LICENSE); release ZIP includes the full license text.
@@ -29,11 +33,19 @@ This is a standalone JSON declarative example for [Plugin API 1](../../docs/plug
 | Thinking Effort | `high`; options: Service Default / `low` / `high` / `max`; sent only when thinking mode is enabled and a specific effort is selected |
 | Translation Temperature | `0`; displayed only when translation is enabled, sent only when thinking mode is disabled; not set for chat |
 
-This example is implemented for text input and does not declare image, audio, or tool-calling capabilities. The model catalog only represents the capability scope of this example, not the vendor's full capability list. Complete chat results retain `reasoning_content` as `reasoning`, streaming chat outputs `reasoning.delta` and `text.delta`; translation only parses final content text to prevent reasoning tokens from mixing into translations.
+The chat and translation service accepts text input. Complete chat results retain `reasoning_content` as `reasoning`, and streaming chat emits `reasoning.delta` and `text.delta`. Translation uses only the final content text.
 
 Translation reuses the SDK's mode-mapped prompts and encoding/decoding without forcing `response_format=json_object`. Non-aggregated translation outputs plain text; aggregated translation uses JSON, LINE, or XML according to the selected prompt. Manifest exposes default single-item text and aggregated JSON prompts, verified by tests to match SDK default templates. Streaming translation converts content to `item.delta` / `item.complete`; final validation verifies normal completion and all input IDs; missing items, duplicate IDs, API errors, and stream aborts will cause failure.
 
 JSON selects `openai-chat-completions` protocol and `chat` / `translate` tasks; the host constructs requests, expands prompts, and parses complete or streaming responses. `$if` supports boolean configurations and `equals` comparisons on select configs; branches are omitted when unmatched. Network passes through host Broker, credentials are referenced via `$secret`, and no user scripts are executed. Instances retain independent configuration and implementation snapshots; existing instances must first manually update the 1.2.1 template, then upgrade via the standard workflow; old instances are not modified automatically. ZIP only includes Manifest and JSON, which are local build artifacts not committed to Git.
+
+## Image Text Extraction (VLM)
+
+After importing the updated plugin ZIP, select DeepSeek's Image Text Extraction (VLM) under Service Configuration → Add → Plugin Service. Enter your DeepSeek API key, save, and select the instance for image recognition. Each instance has its own API base URL and credentials.
+
+The service defaults to `deepseek-flash` with thinking disabled. You can enter a compatible model ID that supports image input. Preview the default Plain text recognition prompt in the plugin list. The service extracts visible text from screenshots and scanned pages in document mode, without coordinates. [DeepSeek Vision guide](https://api-docs.deepseek.com/guides/vision/)
+
+Choose a preset under the image recognition prompt in the service settings. Plain text recognition preserves visible text and line breaks. Other presets include Document to Markdown, Table extraction, Chart analysis, and Image description. Existing instances can be upgraded to the new template snapshot.
 
 ## Installation and Verification
 
