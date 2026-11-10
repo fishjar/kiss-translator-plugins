@@ -1,0 +1,21 @@
+{
+  "format": "protocol",
+  "handlers": {
+    "parseImage": {
+      "protocol": "openai-chat-completions",
+      "task": "parseImage",
+      "request": {
+        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "model": {
+          "$ref": "config.model"
+        },
+        "auth": {
+          "type": "bearer",
+          "secret": {
+            "$secret": "apiKey"
+          }
+        }
+      }
+    }
+  }
+}

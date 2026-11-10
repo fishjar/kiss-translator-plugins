@@ -40,7 +40,7 @@ test("build removes only retired packages after validation and preserves every a
   build(folder);
   for (const id of retired) assert.ok(!fs.existsSync(path.join(dist, id)));
   const catalog = JSON.parse(fs.readFileSync(path.join(dist, "catalog.json")));
-  assert.deepEqual(catalog.plugins.map((item) => item.id), ["deepseek", "openai-compatible-bundle", "openrouter", "siliconflow"]);
+  assert.deepEqual(catalog.plugins.map((item) => item.id), ["deepseek", "openai-compatible-bundle", "openrouter", "qianwen", "siliconflow"]);
   for (const { id } of catalog.plugins) assert.equal(fs.readFileSync(path.join(dist, id, "0.0.1.zip"), "utf8"), id);
   for (const file of ["example-unrelated/keep.txt", "unrelated.txt"])
     assert.equal(fs.readFileSync(path.join(dist, file), "utf8"), "historical bytes");
