@@ -56,6 +56,8 @@
 
 ## 2. 从零创建首个插件
 
+也可以从 [OpenAI 兼容外部插件 demo](https://github.com/fishjar/kiss-translator-plugins-openai-demo) 开始：该独立仓库可直接通过仓库 URL 安装，也可克隆作为开发起点，无需构建。安装与配置见 [demo README](https://github.com/fishjar/kiss-translator-plugins-openai-demo/blob/main/README.md)。改作自己的插件时，请更换插件 ID 和名称，按服务商协议调整服务适配内容，使用数字 `apiVersion: 1`，并测试所声明的能力。
+
 以下两个文件就是完整插件，提供文本聊天、批量翻译与流式输出。假设服务使用 Chat Completions 兼容协议，能按提示词输出带 ID 的翻译 JSON；其他协议见第 5、7 节。开发前只需准备文本编辑器、提供“接口插件”功能的扩展，以及服务地址和测试凭据；Node.js 仅用于可选自检。
 
 ### 2.1 目录
