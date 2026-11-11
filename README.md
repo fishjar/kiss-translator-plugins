@@ -9,6 +9,7 @@
 | 插件                                                          | 支持能力                                                                                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [DeepSeek](plugins/deepseek/README.md)                        | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式。                                          |
+| [Kimi](plugins/kimi/README.md)                                | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式，支持 Kimi Code 会员接口和开放平台。       |
 | [OpenAI 兼容协议](plugins/openai-compatible-bundle/README.md) | 对话、翻译、AI 词典、字幕断句、语音识别、语音合成和图片全文识别。                            |
 | [OpenRouter](plugins/openrouter/README.md)                    | 对话、翻译、AI 词典、字幕断句，以及 Whisper/Qwen 语音识别、Gemini/Qwen 语音合成和 Jev 决策。 |
 | [千问 AI](plugins/qianwen/README.md)                         | 对话、翻译、AI 词典、字幕断句、带时间戳语音识别和图片全文识别。                              |
@@ -34,7 +35,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 本项目采用 [MIT License](LICENSE)。部分源码迁自 fishjar/kiss-translator，保留原项目及贡献者署名；宿主仓库的许可证独立维护。发布 ZIP 包含许可证全文。
 
-官方插件通过 Manifest 的 `icon` 引用包内 `assets/logo.png`，安装后从本机读取，离线也可显示。服务实例与本机模板版本不一致、缺少模板或图标解码失败时回退默认图标；已有实例需通过宿主现有升级流程匹配新模板。图标不随实例同步到其他设备。DeepSeek、OpenRouter、千问和 SiliconFlow 品牌图形归各自所有者，代码的 MIT 许可证不重新授权品牌资产；来源与原始素材见各插件的 `assets/SOURCES.md`。OpenAI 兼容协议采用中性的接口连接图标。
+官方插件通过 Manifest 的 `icon` 引用包内 `assets/logo.png`，安装后从本机读取，离线也可显示。服务实例与本机模板版本不一致、缺少模板或图标解码失败时回退默认图标；已有实例需通过宿主现有升级流程匹配新模板。图标不随实例同步到其他设备。DeepSeek、Kimi、OpenRouter、千问和 SiliconFlow 品牌图形归各自所有者，代码的 MIT 许可证不重新授权品牌资产；来源与原始素材见各插件的 `assets/SOURCES.md`。OpenAI 兼容协议采用中性的接口连接图标。
 
 构建和发布仅清理停用的 `example-deepseek`、`example-openai-compatible-bundle` 分发目录，保留现役插件的历史 ZIP 和其他文件。清理生效后，两个旧示例的直接下载链接不可用；已有实例快照不会被删除，但不能再通过旧链接恢复模板。远端清理随正常发布提交生效，不重写分支历史。
 
