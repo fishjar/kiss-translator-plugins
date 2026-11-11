@@ -56,6 +56,8 @@ Instances clone implementations, settings fields, capabilities, model catalogs, 
 
 ## 2. Creating Your First Plugin from Scratch
 
+You can also start from the [OpenAI-compatible external plugin demo](https://github.com/fishjar/kiss-translator-plugins-openai-demo). This standalone repository can be installed directly by repository URL or cloned as a development starting point, with no build required. See the [demo README](https://github.com/fishjar/kiss-translator-plugins-openai-demo/blob/main/README.en.md) for installation and configuration. When adapting it into your own plugin, replace the plugin ID and name, adapt the services to your provider's protocol, use numeric `apiVersion: 1`, and test the capabilities you declare.
+
 The following two files form a complete plugin providing text chat, batch translation, and streaming output. Assuming the service uses a Chat Completions-compatible protocol capable of outputting ID-mapped translation JSON according to prompts; for other protocols, see Sections 5 and 7. Prior to development, you only need a text editor, a browser extension supporting "Service Plugins", service endpoints, and test credentials; Node.js is only needed for optional self-checks.
 
 ### 2.1 Directory Structure
