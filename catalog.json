@@ -38,6 +38,41 @@
       "sha256": "c75e2e1d263e4610c3424a579660f4e954abe2c3e1e10f54c2571f9e76bacc44"
     },
     {
+      "id": "kimi",
+      "name": "Kimi",
+      "nameI18n": {
+        "zh": "Kimi",
+        "en": "Kimi",
+        "zh_TW": "Kimi",
+        "ja": "Kimi",
+        "ko": "Kimi",
+        "tr": "Kimi",
+        "vi": "Kimi",
+        "ru": "Kimi"
+      },
+      "description": "Kimi 对话、翻译、字幕断句与 AI 词典，支持 Kimi Code 会员接口和开放平台，提供批量翻译、流式输出和思考模式。",
+      "descriptionI18n": {
+        "zh": "Kimi 对话、翻译、字幕断句与 AI 词典，支持 Kimi Code 会员接口和开放平台，提供批量翻译、流式输出和思考模式。",
+        "en": "Kimi chat and translation for Kimi Code and the open platform, with batch translation, streaming output, and reasoning settings.",
+        "zh_TW": "Kimi 對話、翻譯、字幕斷句與 AI 詞典，支援 Kimi Code 會員介面和開放平台，提供批次翻譯、串流輸出與思考模式。",
+        "ja": "Kimi Code とオープンプラットフォームに対応した Kimi のチャットと翻訳。一括翻訳、ストリーミング出力、推論設定に対応。",
+        "ko": "Kimi Code 및 오픈 플랫폼을 지원하는 Kimi 채팅 및 번역. 일괄 번역, 스트리밍 출력, 추론 설정을 지원합니다.",
+        "tr": "Kimi Code ve açık platform için Kimi sohbet ve çeviri; toplu çeviri, akış çıktısı ve akıl yürütme ayarları sunar.",
+        "vi": "Trò chuyện và dịch với Kimi cho Kimi Code và nền tảng mở, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
+        "ru": "Чат и перевод Kimi для Kimi Code и открытой платформы с пакетным переводом, потоковым выводом и настройками рассуждений."
+      },
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "capabilities": [
+        "chat",
+        "translate",
+        "dictionary",
+        "segmentSubtitle"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/kimi/1.0.0.zip",
+      "sha256": "ef8278178479596435c1afd57b4a5f725af2f706899783cc9dfd229fad6c957a"
+    },
+    {
       "id": "openai-compatible-bundle",
       "name": "OpenAI 兼容协议",
       "nameI18n": {
