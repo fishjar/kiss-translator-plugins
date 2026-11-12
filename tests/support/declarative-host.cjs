@@ -6,6 +6,7 @@ const { createServiceInstance, projectInstanceConfig } = load("providers/instanc
 const { createAssetStore, createTransportBroker } = load("providers/transport.js");
 const { runDeclarative } = load("providers/declarative.js");
 const runScript = require("./script-runner.cjs");
+const { withDefaultPromptInput } = load("providers/defaultPrompts.js");
 const { providerHelpers } = load("providers/sdk/index.js");
 
 // Real package loader, rule executor, SDK and transport; only fetch is injected.
@@ -38,8 +39,11 @@ module.exports = function fixture(plugin, service, config = {}) {
   return {
     instance, ctx, assets, calls, config: ctx.config,
     respond: (value) => { respond = value; },
-    invoke: (handler, input) => instance.provider.implementation.kind === "script"
-      ? runScript(instance.provider, handler, input, ctx)
-      : runDeclarative(instance.provider, handler, input, ctx),
+    invoke: (handler, input) => {
+      const selected = withDefaultPromptInput(instance, handler, input);
+      return instance.provider.implementation.kind === "script"
+        ? runScript(instance.provider, handler, selected, ctx)
+        : runDeclarative(instance.provider, handler, selected, ctx);
+    },
   };
 };
