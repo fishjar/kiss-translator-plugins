@@ -34,7 +34,12 @@ test("Plugin API 1 script documentation runs through the real interpreter and he
   interpreter.run(code);
   let request;
   const result = await interpreter.exports.summarize(
-    { text: "A river geography article", language: "zh" },
+    {
+      text: "A river geography article",
+      language: "zh",
+      instructions: defaults.summarize.systemPrompt,
+      userPrompt: defaults.summarize.userPrompt,
+    },
     { model: "test", baseUrl: "https://example.invalid/v1" },
     {
       helpers: providerHelpers,
