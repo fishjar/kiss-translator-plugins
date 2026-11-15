@@ -25,7 +25,7 @@
         "vi": "Trò chuyện và dịch với DeepSeek, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
         "ru": "Чат и перевод DeepSeek с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
-      "version": "1.3.4",
+      "version": "1.3.5",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -34,8 +34,8 @@
         "segmentSubtitle",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.3.4.zip",
-      "sha256": "4850529b78ef3d960eedab354e17d5f0e43e103f2c7a8fbff86e2179625e57be"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.3.5.zip",
+      "sha256": "d607daa27ef37a4eaeed83d057c64a67316a153a3f2f065a22fed97a9396615a"
     },
     {
       "id": "kimi",
@@ -61,7 +61,7 @@
         "vi": "Trò chuyện và dịch với Kimi cho Kimi Code và nền tảng mở, hỗ trợ dịch hàng loạt, xuất luồng và thiết lập suy luận.",
         "ru": "Чат и перевод Kimi для Kimi Code и открытой платформы с пакетным переводом, потоковым выводом и настройками рассуждений."
       },
-      "version": "1.0.1",
+      "version": "1.0.2",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -69,8 +69,80 @@
         "dictionary",
         "segmentSubtitle"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/kimi/1.0.1.zip",
-      "sha256": "de2c60e9188edd21d7b4f3e0a73ef421ab9fb2ed40e8684c4738ac19be38f17e"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/kimi/1.0.2.zip",
+      "sha256": "cd1ab7fe7ea851c8efea5847d63bf42a4c4a9e9290dc2e6e09766b6a104dbe00"
+    },
+    {
+      "id": "llama-cpp",
+      "name": "LLaMA.cpp",
+      "nameI18n": {
+        "zh": "LLaMA.cpp",
+        "en": "LLaMA.cpp",
+        "zh_TW": "LLaMA.cpp",
+        "ja": "LLaMA.cpp",
+        "ko": "LLaMA.cpp",
+        "tr": "LLaMA.cpp",
+        "vi": "LLaMA.cpp",
+        "ru": "LLaMA.cpp"
+      },
+      "description": "LLaMA.cpp：对话、翻译、AI 词典、字幕断句和图片全文识别。",
+      "descriptionI18n": {
+        "zh": "LLaMA.cpp：对话、翻译、AI 词典、字幕断句和图片全文识别。",
+        "en": "LLaMA.cpp chat, translation, AI dictionary, subtitle segmentation, and image text recognition.",
+        "zh_TW": "LLaMA.cpp：對話、翻譯、AI 詞典、字幕斷句與圖片全文辨識。",
+        "ja": "LLaMA.cppによるチャット、翻訳、AI辞書、字幕分割、画像の全文認識。",
+        "ko": "LLaMA.cpp 채팅, 번역, AI 사전, 자막 분할 및 이미지 전체 텍스트 인식.",
+        "tr": "LLaMA.cpp sohbet, çeviri, AI sözlüğü, altyazı bölümlendirme ve görüntü metni tanıma.",
+        "vi": "LLaMA.cpp: trò chuyện, dịch, từ điển AI, phân đoạn phụ đề và nhận dạng văn bản trong ảnh.",
+        "ru": "LLaMA.cpp: чат, перевод, AI-словарь, сегментация субтитров и распознавание текста на изображениях."
+      },
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "capabilities": [
+        "chat",
+        "translate",
+        "dictionary",
+        "segmentSubtitle",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/llama-cpp/1.0.0.zip",
+      "sha256": "cbe45f6702541f2d224ff0a4dafd7ee8bd5741acd00565bb4841df568a8fe1f4"
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "nameI18n": {
+        "zh": "Ollama",
+        "en": "Ollama",
+        "zh_TW": "Ollama",
+        "ja": "Ollama",
+        "ko": "Ollama",
+        "tr": "Ollama",
+        "vi": "Ollama",
+        "ru": "Ollama"
+      },
+      "description": "Ollama：对话、翻译、AI 词典、字幕断句和图片全文识别。",
+      "descriptionI18n": {
+        "zh": "Ollama：对话、翻译、AI 词典、字幕断句和图片全文识别。",
+        "en": "Ollama chat, translation, AI dictionary, subtitle segmentation, and image text recognition.",
+        "zh_TW": "Ollama：對話、翻譯、AI 詞典、字幕斷句與圖片全文辨識。",
+        "ja": "Ollamaによるチャット、翻訳、AI辞書、字幕分割、画像の全文認識。",
+        "ko": "Ollama 채팅, 번역, AI 사전, 자막 분할 및 이미지 전체 텍스트 인식.",
+        "tr": "Ollama sohbet, çeviri, AI sözlüğü, altyazı bölümlendirme ve görüntü metni tanıma.",
+        "vi": "Ollama: trò chuyện, dịch, từ điển AI, phân đoạn phụ đề và nhận dạng văn bản trong ảnh.",
+        "ru": "Ollama: чат, перевод, AI-словарь, сегментация субтитров и распознавание текста на изображениях."
+      },
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "capabilities": [
+        "chat",
+        "translate",
+        "dictionary",
+        "segmentSubtitle",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/ollama/1.0.0.zip",
+      "sha256": "04650dca9904da05c1f0cbb2ebe57b29979c7395f75c7c458b86fb99520e39ce"
     },
     {
       "id": "openai-compatible-bundle",
@@ -96,7 +168,7 @@
         "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.6",
+      "version": "2.0.7",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -107,8 +179,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.6.zip",
-      "sha256": "93d46cf6493c0dc3c91a8fda55eb7fa25d1383963eb84e47ac0be649779ee8d9"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.7.zip",
+      "sha256": "ff4da7ad29f9ece6e3b195058e6ffa98228d0047a1f575faba3a2c60c470f097"
     },
     {
       "id": "openrouter",
@@ -127,7 +199,7 @@
         "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen. Hỗ trợ tổng hợp giọng nói Gemini, Qwen và quyết định Jev.",
         "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen. Поддерживает синтез речи Gemini и Qwen и решения Jev."
       },
-      "version": "1.2.2",
+      "version": "1.2.3",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -138,8 +210,8 @@
         "synthesizeSpeech",
         "evaluate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.2.zip",
-      "sha256": "28bd9d0d79132f4eb6f8504490a2dcb292fb03233755ab81bc4356617f069d03"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.3.zip",
+      "sha256": "8837e930d616f1a9c217925bae5cd700a50a742407cc02306bf3bc2ce12579b5"
     },
     {
       "id": "qianwen",
@@ -165,7 +237,7 @@
         "vi": "Trò chuyện, dịch, nhận dạng giọng nói và trích xuất văn bản từ ảnh qua nền tảng Qianwen AI.",
         "ru": "Чат, перевод, распознавание речи и извлечение текста из изображений на платформе Qianwen AI."
       },
-      "version": "1.0.4",
+      "version": "1.0.5",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -175,8 +247,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.4.zip",
-      "sha256": "beb0b745bdd7f0798bc28d603cf319b63fb167d21bed1a4be73431c54f864487"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.5.zip",
+      "sha256": "f58d156488de8a4a7a3bebe752e9ccb3ad464135409e0d413ad5cf3221f2708c"
     },
     {
       "id": "siliconflow",
@@ -195,7 +267,7 @@
         "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.1.7",
+      "version": "1.1.8",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -205,8 +277,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.7.zip",
-      "sha256": "ec27fe77bebe0879ce96805cbd1545006881e4bf8b5b795f15b0b0719a13d824"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.8.zip",
+      "sha256": "1eef83e079a2970592d3ac8c636551f3dfb01670eeb9d05a9b8c1c2e8b79859a"
     }
   ]
 }
