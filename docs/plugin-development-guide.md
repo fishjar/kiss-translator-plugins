@@ -281,7 +281,7 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 ```
 
 - network 为完整 origin：协议、主机、可选端口，无路径、尾斜线、查询、账号或通配符。
-- 必须 HTTPS，仅 localhost、127.0.0.1、[::1] 可用 HTTP，普通局域网 HTTP 不支持。
+- network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
@@ -934,6 +934,8 @@ exports.translate = async function (input, config, ctx) {
 | ctx.emit(event)               | Promise<void>，逐个 await             |
 | ctx.helpers                   | 第 9 节公开工具，不自动请求网络       |
 
+Bearer auth 引用未设置 required 的秘密字段时，若值未填写或为空字符串，宿主省略 Authorization 头。必填凭据、签名和 secretBindings 仍要求有效的非空秘密值。此行为需要宿主支持，旧版宿主仍会拒绝空凭据。
+
 脚本 ctx 不暴露 AbortSignal、资产写入、持久存储或任意 RPC。将参数视为只读，需要修改时创建副本。不要使用模块变量作为跨调用存储。
 
 禁止 DOM/window/document/chrome/browser/GM、fetch/XHR/WebSocket、其他 Worker、宿主存储、eval/Function、动态 import、无限循环、嵌套解释器。SDK 唯一宿主入口，编写约束不代替安全隔离。
@@ -1517,7 +1519,7 @@ npm run build
 | HANDLER_MISSING/Script handler not found | exports/handlers 大小写                                                |
 | SCRIPT_ERROR                             | 全局/ES module/依赖/Sval 语法，Node 通过不代表 Sval                    |
 | SECRET_UNAVAILABLE                       | 声明、非空保存、ref 键                                                 |
-| NETWORK_DENIED                           | origin 声明范围、远程 HTTP/重定向                                      |
+| NETWORK_DENIED                           | origin 声明范围、非 HTTP/HTTPS 协议、URL 内嵌凭据或重定向              |
 | HTTP_ERROR                               | 地址模型账号参数，无厂家错误正文                                       |
 | INVALID_RESPONSE/INCOMPLETE_RESPONSE     | 标准结构/JSON/拒答/缺重复 ID/截断                                      |
 | CAPABILITY_DISABLED/SERVICE_UNAVAILABLE  | 启用/服务声明/停用/配置完整                                            |

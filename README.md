@@ -10,10 +10,14 @@
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [DeepSeek](plugins/deepseek/README.md)                        | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式。                                          |
 | [Kimi](plugins/kimi/README.md)                                | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式，支持 Kimi Code 会员接口和开放平台。       |
+| [LLaMA.cpp](plugins/llama-cpp/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
+| [Ollama](plugins/ollama/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
 | [OpenAI 兼容协议](plugins/openai-compatible-bundle/README.md) | 对话、翻译、AI 词典、字幕断句、语音识别、语音合成和图片全文识别。                            |
 | [OpenRouter](plugins/openrouter/README.md)                    | 对话、翻译、AI 词典、字幕断句，以及 Whisper/Qwen 语音识别、Gemini/Qwen 语音合成和 Jev 决策。 |
 | [千问 AI](plugins/qianwen/README.md)                         | 对话、翻译、AI 词典、字幕断句、带时间戳语音识别和图片全文识别。                              |
 | [SiliconFlow](plugins/siliconflow/README.md)                  | 对话、翻译、AI 词典、字幕断句、Qwen 和星辰语音识别、PaddleOCR 和 DeepSeek OCR 全文识别。     |
+
+全部官方插件的 API Key 均可留空，留空时不发送 Bearer 鉴权头。API 基础地址支持 HTTP/HTTPS，可指向协议兼容的局域网服务；这些功能需要支持 HTTP 和可选凭据的新版宿主，并升级已有服务实例。
 
 这些适配插件由简约翻译维护，不代表对应服务商发布或背书。
 
@@ -52,3 +56,5 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 `apiVersion: 1` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
 
 当前验证结果及浏览器验收边界见[插件 API 1 验收记录](docs/plugin-api-1-acceptance.md)。
+
+VLM 默认使用「纯文本识别」：合并段内视觉折行，以空行区分真实段落，保留标题、列表、表格、代码和诗歌的结构换行。「文档转 Markdown」为独立可选项。已有实例需升级服务快照；自定义提示词和显式选择的预设保持有效。 SiliconFlow 的 PaddleOCR 和 DeepSeek OCR 保留专用任务指令及默认项。

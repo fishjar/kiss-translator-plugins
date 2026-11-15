@@ -70,6 +70,8 @@ test("Plugin API 1 script documentation runs through the real interpreter and he
 
 for (const id of [
   "deepseek",
+  "llama-cpp",
+  "ollama",
   "openai-compatible-bundle",
   "openrouter",
   "siliconflow",

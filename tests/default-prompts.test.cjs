@@ -5,6 +5,8 @@ const path = require("node:path");
 
 for (const plugin of [
   "deepseek",
+  "llama-cpp",
+  "ollama",
   "openai-compatible-bundle",
   "openrouter",
   "qianwen",

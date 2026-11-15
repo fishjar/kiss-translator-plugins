@@ -11,7 +11,7 @@
     "vi": "Qianwen AI",
     "ru": "Qianwen AI"
   },
-  "version": "1.0.4",
+  "version": "1.0.5",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "通过千问 AI 平台进行对话、翻译、语音识别和图片全文识别。",
@@ -28,15 +28,32 @@
   "permissions": {
     "network": [
       "https://maas.qianwenaiapi.com"
-    ]
+    ],
+    "endpointFields": ["baseUrl"]
   },
   "sharedSettings": [
+    {
+      "key": "baseUrl",
+      "label": "API 基础地址",
+      "type": "text",
+      "defaultValue": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+      "required": true,
+      "labelI18n": {
+        "zh": "API 基础地址",
+        "en": "API base URL",
+        "zh_TW": "API 基礎地址",
+        "ja": "APIベースURL",
+        "ko": "API 기본 URL",
+        "tr": "API temel URL'si",
+        "vi": "URL gốc API",
+        "ru": "Базовый URL API"
+      }
+    },
     {
       "key": "apiKey",
       "label": "API Key",
       "type": "password",
-      "isSecret": true,
-      "required": true
+      "isSecret": true
     }
   ],
   "services": [
@@ -271,6 +288,23 @@
       ],
       "settings": [
         {
+          "key": "baseUrl",
+          "label": "API 基础地址",
+          "type": "text",
+          "defaultValue": "https://maas.qianwenaiapi.com/api/v1",
+          "required": true,
+          "labelI18n": {
+            "zh": "API 基础地址",
+            "en": "API base URL",
+            "zh_TW": "API 基礎地址",
+            "ja": "APIベースURL",
+            "ko": "API 기본 URL",
+            "tr": "API temel URL'si",
+            "vi": "URL gốc API",
+            "ru": "Базовый URL API"
+          }
+        },
+        {
           "key": "model",
           "label": "模型 ID",
           "labelI18n": {
@@ -326,7 +360,7 @@
           {
             "id": "plain-text",
             "name": "纯文本识别",
-            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted text as plain text paragraphs, without adding Markdown formatting, explanations, or code fences.",
             "nameI18n": {
               "zh": "纯文本识别",
               "en": "Plain text recognition"
@@ -335,7 +369,7 @@
           {
             "id": "document",
             "name": "文档转 Markdown",
-            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
             "nameI18n": {
               "zh": "文档转 Markdown",
               "en": "Document to Markdown"
@@ -434,7 +468,7 @@
           {
             "id": "plain-text",
             "name": "纯文本识别",
-            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted text as plain text paragraphs, without adding Markdown formatting, explanations, or code fences.",
             "nameI18n": {
               "zh": "纯文本识别",
               "en": "Plain text recognition"
@@ -443,7 +477,7 @@
           {
             "id": "document",
             "name": "文档转 Markdown",
-            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
             "nameI18n": {
               "zh": "文档转 Markdown",
               "en": "Document to Markdown"

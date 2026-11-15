@@ -1,7 +1,7 @@
 {
   "id": "deepseek",
   "name": "DeepSeek",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "DeepSeek 对话、翻译、字幕断句与 AI 词典，支持批量翻译、流式输出和思考模式。",
@@ -35,8 +35,7 @@
       "key": "apiKey",
       "label": "API Key",
       "type": "password",
-      "isSecret": true,
-      "required": true
+      "isSecret": true
     }
   ],
   "services": [
@@ -385,7 +384,7 @@
           {
             "id": "plain-text",
             "name": "纯文本识别",
-            "userPrompt": "Extract all visible text in the original language and reading order. Preserve visible numbering, URLs, punctuation, and line breaks. Return only the transcribed text without adding Markdown formatting, explanations, translations, or text not visible in the image.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted text as plain text paragraphs, without adding Markdown formatting, explanations, or code fences.",
             "nameI18n": {
               "zh": "纯文本识别",
               "en": "Plain text recognition"
@@ -394,7 +393,7 @@
           {
             "id": "document",
             "name": "文档转 Markdown",
-            "userPrompt": "Extract all visible text from the image in its original language. Preserve reading order, paragraph breaks, and table structure. Do not translate, summarize, or invent missing or unreadable content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted content in Markdown, without explanations or Markdown code fences.",
             "nameI18n": {
               "zh": "文档转 Markdown",
               "en": "Document to Markdown"

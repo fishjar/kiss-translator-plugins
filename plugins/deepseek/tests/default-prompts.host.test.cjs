@@ -9,6 +9,8 @@ const { resolveApiPromptSettings } = load("config/prompt.js");
 
 for (const [plugin, service] of [
   ["deepseek", "chat-completions"],
+  ["llama-cpp", "chat-completions"],
+  ["ollama", "chat-completions"],
   ["openai-compatible-bundle", "chat-completions"],
   ["openrouter", "chat-completions"],
   ["qianwen", "chat"],

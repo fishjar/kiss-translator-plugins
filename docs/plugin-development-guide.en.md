@@ -281,7 +281,7 @@ Shared fields and permissions are validated per service, and shared capability-s
 ```
 
 - `network` must be full origins: scheme, host, optional port, without paths, trailing slashes, queries, credentials, or wildcards.
-- Must use HTTPS, except `localhost`, `127.0.0.1`, and `[::1]` which may use HTTP. Plain LAN HTTP is unsupported.
+- Fixed addresses in `network` and user-configured addresses in `endpointFields` support HTTP/HTTPS, including LAN services; origin scope checks still apply.
 - `endpointFields` references merged non-secret `text` fields, granting access to the origin of the instance's saved value without restricting paths.
 - Requests may only access declared fixed origins and origins from configured endpoint fields; requests outside these scopes are blocked.
 - When endpoint fields are modified, new requests use the new address while active tasks continue using their original snapshot. Never declare unrelated endpoint fields.
@@ -936,6 +936,8 @@ Each execution runs in an isolated Sval Worker in script mode, supporting plain 
 | `ctx.emit(event)` | `Promise<void>`, must be awaited sequentially |
 | `ctx.helpers` | Public utilities in Section 9; does not make network calls |
 
+When Bearer auth references a secret field without `required`, an unset value or empty string causes the host to omit the Authorization header. Required credentials, signing, and `secretBindings` still require valid non-empty secrets. This behavior requires host support; older hosts still reject empty credentials.
+
 The script `ctx` does not expose `AbortSignal`, asset writes, persistent storage, or arbitrary RPC. Treat arguments as read-only; clone objects if mutations are needed. Never use module-level variables for storage across calls.
 
 Forbidden APIs: DOM (`window`, `document`), extension APIs (`chrome`, `browser`, `GM`), network APIs (`fetch`, `XMLHttpRequest`, `WebSocket`), spawning Workers, host storage, `eval`/`Function`, dynamic `import`, infinite loops, and nested interpreters. The SDK is the sole host entry point; authoring constraints do not substitute for security isolation.
@@ -1519,7 +1521,7 @@ Declarative `protocol` delegates protocol handling to the host, but vendor compa
 | `HANDLER_MISSING` / `Script handler not found` | Check handler name casing between `exports` and `handlers` |
 | `SCRIPT_ERROR` | Check globals, ES modules, dependencies, and Sval syntax; passing in Node.js does not guarantee Sval compatibility |
 | `SECRET_UNAVAILABLE` | Check secret declarations, non-empty saved values, and `$secret`/`ref` keys |
-| `NETWORK_DENIED` | Check declared `origin` scopes, plain remote HTTP, or redirects |
+| `NETWORK_DENIED` | Check declared `origin` scopes, non-HTTP/HTTPS schemes, embedded URL credentials, or redirects |
 | `HTTP_ERROR` | Check URL, model, credentials, and parameters; vendor error bodies are omitted |
 | `INVALID_RESPONSE` / `INCOMPLETE_RESPONSE` | Check standard schemas, JSON formatting, refusals, missing/duplicate IDs, and stream truncation |
 | `CAPABILITY_DISABLED` / `SERVICE_UNAVAILABLE` | Check user-enabled capabilities, service declarations, disabled services, and complete configs |
