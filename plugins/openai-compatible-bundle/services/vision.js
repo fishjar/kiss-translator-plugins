@@ -1,3 +1,4 @@
+
 // OpenAI-compatible vision demonstrates task-owned binary reads, not fabricated OCR boxes.
 exports.parseImage = async function (input, config, ctx) {
   var bytes = await ctx.assets.read(input.image);
@@ -6,6 +7,9 @@ exports.parseImage = async function (input, config, ctx) {
     input.image.mimeType +
     ";base64," +
     ctx.helpers.encoding.bytesToBase64(bytes);
+
+  var streaming = Boolean(ctx.options.streaming);
+
   var request = ctx.helpers.openai.chatCompletions.buildRequest({
     baseUrl: config.baseUrl,
     model: config.model,
@@ -17,6 +21,7 @@ exports.parseImage = async function (input, config, ctx) {
         }
       : {}),
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
+    stream: streaming,
     messages: [
       {
         role: "user",
@@ -32,13 +37,34 @@ exports.parseImage = async function (input, config, ctx) {
       },
     ],
   });
-  var result = ctx.helpers.openai.chatCompletions.parseResponse(
-    await ctx.http.request(request)
-  );
+
+  var text;
+
+  if (streaming) {
+    var parser = ctx.helpers.openai.chatCompletions.createStreamParser();
+
+    for await (var frame of ctx.http.stream(request)) {
+      if (frame.type !== "sse") continue;
+
+      for (var event of parser.push(frame.data)) {
+        if (event.type === "text.delta") {
+          await ctx.emit(event);
+        }
+      }
+    }
+
+    text = parser.finish().text;
+  } else {
+    var result = ctx.helpers.openai.chatCompletions.parseResponse(
+      await ctx.http.request(request)
+    );
+    text = result.text;
+  }
+
   return {
-    text: result.text,
+    text: text,
     format: "markdown",
-    items: result.text
+    items: text
       .split(/\r?\n/)
       .filter(Boolean)
       .map(function (text) {
