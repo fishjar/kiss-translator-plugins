@@ -24,7 +24,12 @@ test("two services preserve compatible prompts and use editable local defaults",
     assert.equal(f.config.model, "Qwen3.8-27B");
     assert.deepEqual(service.models, [{ id: "Qwen3.8-27B", name: "Qwen3.8-27B" }]);
     const original = compatible.services.find((s) => s.id === service.id);
-    assert.deepEqual(service.capabilities, original.capabilities);
+    assert.deepEqual(service.capabilities, service.id === "vision" ? {
+      parseImage: {
+        handler: "parseImage", coordinates: false,
+        outputModes: ["complete"], inputModalities: ["image"],
+      },
+    } : original.capabilities);
     assert.deepEqual(service.defaultPrompts, original.defaultPrompts);
   }
 });

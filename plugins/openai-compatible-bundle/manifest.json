@@ -393,7 +393,8 @@
           "handler": "parseImage",
           "coordinates": false,
           "outputModes": [
-            "complete"
+            "complete",
+            "stream"
           ],
           "inputModalities": [
             "image"
