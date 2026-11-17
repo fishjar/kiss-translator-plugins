@@ -1636,3 +1636,13 @@ Declarative `$url.path` must be a relative path, forbidding absolute URLs, backs
 Remote `evaluate` results are no longer tied to local engine model names. `model` is the vendor model ID; `answers` must strictly cover questions with matching types; `usage` preserves vendor metrics. `confidence` and `action` are optional metadata, validated for proper probabilities when present, and never fabricated to satisfy contracts. Local Jev results remain unchanged. Initial standard question types are `choice`, `score`, and `noul`, excluding `box` or image inputs. Plugin Choice criteria only allows non-empty objects whose option keys are non-blank; keys are returned identifiers and values are descriptions (`Json`), where the resulting `choice` must belong to the criteria object's own keys (e.g. `{"en": "English text", "zh": "Chinese text"}` returning `en` or `zh`). Array inputs are rejected immediately without conversion or compatibility layers. Local inference engine formats are maintained separately and unaffected.
 
 For OpenRouter adaptation and live API / browser acceptance, see [OpenRouter Acceptance Record](../plugins/openrouter/ACCEPTANCE.md).
+
+## Structured image parsing (host 2.2.6)
+
+API 1 `parseImage` adds optional boolean `includesTranslation` and `includesLayout` declarations (default false). A `vlm` preset may select `protocol: "image-json"`. Host language/glossary input and the shared SDK supply prompt rendering, a JSON output contract and parsing.
+
+Results may contain original `text` and `format`, `translation: {text,targetLanguage,format}`, and `layout: {regions:[{id,type,poly,order,text?,translation?}]}`. Original and translated content remain separate. Region IDs are unique and polygons use prepared-image pixels. Layout boxes are not OCR text-line coordinates. Legacy plain-text output is not auto-detected as structured JSON.
+
+The image/screenshot scene reuses valid translations and translates only missing items with available source text. Recognition-only never invokes fallback. Prompts request outputs; capability declarations do not. Verify the actual model, especially coordinate quality. No default layout preset is supplied.
+
+Publish new packages after the matching minimum host release. For development, set `KISS_TRANSLATOR_ROOT` to the feature checkout and use test-only `KISS_TRANSLATOR_TEST_VERSION=2.2.6` with `npm run test:host`. This never bypasses production compatibility checks.

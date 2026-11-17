@@ -147,3 +147,18 @@ test("publisher rejects response and condition fallback", () => {
   };
   assert.throws(p.check);
 });
+
+
+test("publisher restricts image features to boolean parseImage declarations", () => {
+  const original = require("../plugins/index-translate/manifest.json");
+  const fs = require("node:fs"), path = require("node:path");
+  for (const [capability, feature] of [["parseImage", "includesTranslation"], ["parseImage", "includesLayout"], ["translate", "includesLayout"]]) {
+    const manifest = JSON.parse(JSON.stringify(original));
+    const service = manifest.services.find((s) => s.capabilities[capability]);
+    service.capabilities[capability][feature] = capability === "parseImage" ? "yes" : true;
+    const files = { "manifest.json": Buffer.from(JSON.stringify(manifest)) };
+    for (const s of manifest.services) files[s.implementation.entry] = fs.readFileSync(path.join(__dirname, "../plugins/index-translate", s.implementation.entry));
+    files[manifest.icon] = fs.readFileSync(path.join(__dirname, "../plugins/index-translate", manifest.icon));
+    assert.throws(() => validatePackageFiles(files), /Invalid image feature/);
+  }
+});

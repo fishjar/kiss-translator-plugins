@@ -1,4 +1,3 @@
-
 // OpenAI-compatible vision demonstrates task-owned binary reads, not fabricated OCR boxes.
 exports.parseImage = async function (input, config, ctx) {
   var bytes = await ctx.assets.read(input.image);
@@ -22,20 +21,28 @@ exports.parseImage = async function (input, config, ctx) {
       : {}),
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
     stream: streaming,
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text:
-              input.prompt ||
-              "Extract the visible text faithfully. Output only the recognized text.",
-          },
-          { type: "image_url", image_url: { url: imageUrl } },
-        ],
-      },
-    ],
+    messages:
+      input.protocol === "image-json"
+        ? await ctx.helpers.openai.chatCompletions.prepareMessages(
+            ctx.helpers.textTasks.buildMessages("parseImage", input),
+            async function () {
+              return bytes;
+            },
+          )
+        : [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text:
+                    input.prompt ||
+                    "Extract the visible text faithfully. Output only the recognized text.",
+                },
+                { type: "image_url", image_url: { url: imageUrl } },
+              ],
+            },
+          ],
   });
 
   var text;
@@ -56,11 +63,13 @@ exports.parseImage = async function (input, config, ctx) {
     text = parser.finish().text;
   } else {
     var result = ctx.helpers.openai.chatCompletions.parseResponse(
-      await ctx.http.request(request)
+      await ctx.http.request(request),
     );
     text = result.text;
   }
 
+  if (input.protocol === "image-json")
+    return ctx.helpers.textTasks.parseResult("parseImage", text, input);
   return {
     text: text,
     format: "markdown",

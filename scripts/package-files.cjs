@@ -60,6 +60,13 @@ function packagePaths(manifest) {
       !Object.hasOwn(service.capabilities, "speak"),
       "System speech is native-only",
     );
+    for (const [capability, descriptor] of Object.entries(service.capabilities)) {
+      for (const feature of ["includesTranslation", "includesLayout"]) {
+        requireValue(descriptor?.[feature] === undefined ||
+          (capability === "parseImage" && typeof descriptor[feature] === "boolean"),
+          "Invalid image feature declaration: " + feature);
+      }
+    }
     ids.add(service.id);
     const promptCapabilities = {
       batch: "translate",
@@ -125,7 +132,8 @@ function packagePaths(manifest) {
             prompt.protocol === undefined ||
               (slot === "batch"
                 ? ["json", "line", "xml"].includes(prompt.protocol)
-                : slot === "nobatch" && prompt.protocol === "text"),
+                : (slot === "vlm" && prompt.protocol === "image-json") ||
+                  (slot === "nobatch" && prompt.protocol === "text")),
             "Invalid prompt protocol: " + slot,
           );
         }
