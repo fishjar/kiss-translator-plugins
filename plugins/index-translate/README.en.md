@@ -12,6 +12,10 @@ Publish only after the matching host release. Existing 2.2.5 installations canno
 
 ## Browser Origin setup
 
-In the tested Chrome/Edge extension environment, the public gateway returns HTTP 412 for the extension Origin. Search settings for “Disabled Origin List” and append `https://index-translate.bilibili.com` without `/v1`, preserving existing entries. This uses the host's existing same-origin Origin rewrite. No User-Agent override is needed. The plugin does not change global rules automatically. Browsers without this feature can use a separately hosted compatible gateway or local bridge.
+The plugin declares the official domain in `permissions.originRewrite`. Supporting hosts deduplicate declarations from enabled, configured instances together with the user's list. No manual entry is required. Shared domains remain active until their last plugin contributor disappears, and user entries are always retained. Installing only a template does not activate rules.
 
-Original recognition, translation-only and bilingual responses were verified. Both direct translation cases succeed even when the fallback service is an intentionally unavailable test reference. Recognition-only does not invoke fallback. Layout accuracy is not verified or advertised.
+The saved user list is never edited, including previously added Index entries. Rules are not installed or removed per request and do not serialize concurrent requests. They affect extension-originated requests to the declared target origin.
+
+The public gateway may reject an extension Origin with HTTP 412; the host rewrites it to the target origin. No User-Agent override is needed. Browsers without the required API can use a separately hosted compatible gateway or local bridge. Custom endpoints are not automatically added to the rewrite list.
+
+See ACCEPTANCE.md for validation and limitations. Layout accuracy is not advertised.

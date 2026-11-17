@@ -191,7 +191,7 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | apiVersion     | 数字，必需     | 固定为整数 1；不接受字符串、缺失值或旧格式          |
 | services       | 非空数组，必需 | 服务定义                                            |
 | sharedSettings | 可选字段数组   | 共用字段定义，实例值各自独立                        |
-| permissions    | 可选对象       | network 和 endpointFields                           |
+| permissions    | 可选对象       | network、endpointFields 和可选 originRewrite         |
 | icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
 | resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
@@ -284,6 +284,9 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 - network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
+- 从宿主 2.2.6 起，可声明 `permissions.originRewrite: ["https://api.example.com"]`，要求宿主将发往这些地址的扩展请求的 Origin 设为目标 origin。名单必须是 `network` 固定地址的子集，不允许通配符、路径、尾斜线、查询或账号信息。更改 `endpointFields` 不会自动扩大此名单。
+- 宿主从所有启用、兼容且配置有效的外部服务实例快照收集声明，与用户保存的 Origin 名单去重合并；用户规则优先。仅安装模板不生效，同一地址最后一个实例停用后才撤销插件规则，用户保存的名单不被改写。导入、实例升级及设置页面会展示此权限。
+- 规则在启动及配置变化时同步，受影响的首次请求等待同步；请求结束不撤销规则，也不逐请求更新。规则只覆盖精确 origin 的扩展 XHR/fetch，不移除 CSP 或扩大网络权限。不支持 DNR 的浏览器会明确拒绝依赖此功能的调用。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
 - 禁止 Cookie、URL 用户名密码、重定向及其他实例凭据，不授予浏览器 API 权限。
 

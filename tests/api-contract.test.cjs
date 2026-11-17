@@ -162,3 +162,22 @@ test("publisher restricts image features to boolean parseImage declarations", ()
     assert.throws(() => validatePackageFiles(files), /Invalid image feature/);
   }
 });
+test("publisher validates Origin rewrite declarations independently of the host", () => {
+  for (const invalid of [
+    null, "https://a.example", ["https://a.example/path"],
+    ["https://b.example"], ["https://*.example"],
+  ]) {
+    const f = fixture();
+    f.manifest.permissions = {
+      network: ["https://a.example", "https://*.example"],
+      originRewrite: invalid,
+    };
+    assert.throws(f.check, /Origin/);
+  }
+  const f = fixture();
+  f.manifest.permissions = {
+    network: ["https://a.example"],
+    originRewrite: ["https://a.example", "https://a.example"],
+  };
+  assert.doesNotThrow(f.check);
+});

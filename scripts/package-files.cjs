@@ -40,6 +40,26 @@ function packagePaths(manifest) {
     Array.isArray(manifest.services) && manifest.services.length,
     "Missing services",
   );
+  const rewrite = manifest.permissions?.originRewrite;
+  requireValue(
+    rewrite === undefined || Array.isArray(rewrite),
+    "Invalid Origin rewrite list",
+  );
+  for (const origin of rewrite || []) {
+    let url;
+    try {
+      url = new URL(origin);
+    } catch {
+      throw new Error("Invalid Origin rewrite origin");
+    }
+    requireValue(
+      typeof origin === "string" && url.origin === origin &&
+        ["http:", "https:"].includes(url.protocol) &&
+        !url.hostname.includes("*") &&
+        manifest.permissions?.network?.includes(origin),
+      "Origin rewriting must be a subset of fixed network origins",
+    );
+  }
   const entries = new Set(["manifest.json"]),
     ids = new Set();
   for (const service of manifest.services) {

@@ -21,6 +21,9 @@
     ],
     "endpointFields": [
       "baseUrl"
+    ],
+    "originRewrite": [
+      "https://index-translate.bilibili.com"
     ]
   },
   "sharedSettings": [
