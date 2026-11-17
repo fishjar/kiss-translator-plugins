@@ -10,6 +10,7 @@ const { createServiceInstance, projectInstanceConfig } = load(
   "providers/instances.js",
 );
 const { runDeclarative } = load("providers/declarative.js");
+const { withDefaultPromptInput } = load("providers/defaultPrompts.js");
 const { providerHelpers } = load("providers/sdk/index.js");
 const { supportsProviderCapability } = load("providers/capabilities.js");
 const { validateResult } = load("providers/validation.js");
@@ -53,14 +54,18 @@ function fixture(id = "chat-completions", model) {
       },
     },
   };
-  const invoke = (handler, input) =>
-    api.provider.code
-      ? runScript(api.provider, handler, input, ctx)
-      : runDeclarative(api.provider, handler, input, ctx);
+  const invoke = (handler, input) => {
+    const selected = withDefaultPromptInput(api, handler, input);
+    return api.provider.code
+      ? runScript(api.provider, handler, selected, ctx)
+      : runDeclarative(api.provider, handler, selected, ctx);
+  };
   return { api, ctx, invoke, calls, events };
 }
 const chat = { messages: [{ role: "user", content: "Hello" }] };
 const batch = {
+  translationMode: "batch",
+  outputProtocol: "json",
   items: [
     { id: "a", text: "Hello" },
     { id: "b", text: "World" },

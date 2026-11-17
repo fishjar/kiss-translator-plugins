@@ -45,7 +45,7 @@ After importing the updated plugin ZIP, select DeepSeek's Image Text Extraction 
 
 The service defaults to `deepseek-flash` with thinking disabled. You can enter a compatible model ID that supports image input. Preview the default Plain text recognition prompt in the plugin list. The service extracts visible text from screenshots and scanned pages in document mode, without coordinates. [DeepSeek Vision guide](https://api-docs.deepseek.com/guides/vision/)
 
-Choose a preset under the image recognition prompt in the service settings. Plain text recognition preserves visible text and line breaks. Other presets include Document to Markdown, Table extraction, Chart analysis, and Image description. Existing instances can be upgraded to the new template snapshot.
+Choose a preset under the image recognition prompt in the service settings. Plain text recognition preserves visible text, merges visual wraps within paragraphs, and retains genuine paragraph and structural breaks. Other presets include Document to Markdown, Table extraction, Chart analysis, and Image description. Existing instances can be upgraded to the new template snapshot.
 
 ## Installation and Verification
 

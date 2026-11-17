@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <title>Compatible API connection</title>
+  <g fill="none" stroke="#3267C8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 44h24v40H20M108 44H84v40h24M44 64h40"/>
+    <path d="M20 56h-8m8 16h-8m96-16h8m-8 16h8"/>
+  </g>
+</svg>

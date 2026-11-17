@@ -5,7 +5,7 @@
       "protocol": "openai-chat-completions",
       "task": "parseImage",
       "request": {
-        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "baseUrl": { "$ref": "config.baseUrl" },
         "model": {
           "$ref": "config.model"
         },

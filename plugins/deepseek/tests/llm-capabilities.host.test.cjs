@@ -6,6 +6,8 @@ const { withDefaultPromptInput } = load("providers/defaultPrompts.js");
 
 for (const plugin of [
   "deepseek",
+  "llama-cpp",
+  "ollama",
   "openai-compatible-bundle",
   "openrouter",
   "siliconflow",

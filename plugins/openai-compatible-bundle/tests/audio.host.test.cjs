@@ -2,6 +2,30 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fixture = require("../../../tests/support/declarative-host.cjs");
 
+test("LAN endpoints without API keys work across script and declarative services", async () => {
+  const manifest = require("../manifest.json");
+  assert.ok(!manifest.sharedSettings.find((field) => field.key === "apiKey").required);
+  for (const apiKey of [undefined, "", "test-only-secret"]) {
+    const config = { baseUrl: "http://192.168.6.138:8088/v1", apiKey, model: "llama" };
+    for (const [service, handler, input] of [
+      ["chat-completions", "chat", { messages: [{ role: "user", content: "Hello" }] }],
+      ["speech", "synthesizeSpeech", { text: "Hello" }],
+      ["transcriptions", "transcribe", {}],
+    ]) {
+      const f = fixture("openai-compatible-bundle", service, config);
+      if (handler === "synthesizeSpeech")
+        f.respond(() => new Response(Uint8Array.of(0, 0), { headers: { "Content-Type": "audio/mpeg" } }));
+      if (handler === "transcribe") {
+        input.audio = f.assets.put(new Blob([Uint8Array.of(0, 0)], { type: "audio/wav" }));
+        f.respond(() => Response.json({ text: "Hello" }));
+      }
+      await f.invoke(handler, input);
+      assert.ok(f.calls[0].url.startsWith(config.baseUrl + "/"));
+      assert.equal(f.calls[0].init.headers.Authorization, apiKey ? "Bearer test-only-secret" : undefined);
+    }
+  }
+});
+
 test("speech maps voice, speed and text to a real request and returns an audio asset", async () => {
   const f = fixture("openai-compatible-bundle", "speech");
   const bytes = Uint8Array.of(0, 127, 128, 255);

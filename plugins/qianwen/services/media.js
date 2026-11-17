@@ -1,4 +1,3 @@
-var origin = "https://maas.qianwenaiapi.com";
 var noSpeech = "[NO_SPEECH]";
 var audioFormats = {
   "audio/wav": "wav",
@@ -41,7 +40,7 @@ exports.transcribe = async function (input, config, ctx) {
   if (input.language && input.language !== "auto")
     parameters.language_hints = [ctx.helpers.languages.toIso6391(input.language)];
   var response = await ctx.http.request({
-    url: origin + "/api/v1/services/aigc/multimodal-generation/generation",
+    url: config.baseUrl.replace(/\/+$/, "") + "/services/aigc/multimodal-generation/generation",
     method: "POST",
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
     headers: { "Content-Type": "application/json", "X-DashScope-SSE": "enable" },
@@ -130,7 +129,7 @@ exports.transcribe = async function (input, config, ctx) {
 async function readOmni(content, config, ctx) {
   var sdk = ctx.helpers.openai.chatCompletions;
   var request = sdk.buildRequest({
-    baseUrl: origin + "/compatible-mode/v1",
+    baseUrl: config.baseUrl,
     model: config.model,
     auth: { type: "bearer", secret: ctx.secrets.ref("apiKey") },
     messages: [{ role: "user", content: content }],

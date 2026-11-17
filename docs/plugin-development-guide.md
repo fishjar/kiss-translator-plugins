@@ -56,6 +56,8 @@
 
 ## 2. 从零创建首个插件
 
+也可以从 [OpenAI 兼容外部插件 demo](https://github.com/fishjar/kiss-translator-plugins-openai-demo) 开始：该独立仓库可直接通过仓库 URL 安装，也可克隆作为开发起点，无需构建。安装与配置见 [demo README](https://github.com/fishjar/kiss-translator-plugins-openai-demo/blob/main/README.md)。改作自己的插件时，请更换插件 ID 和名称，按服务商协议调整服务适配内容，使用数字 `apiVersion: 1`，并测试所声明的能力。
+
 以下两个文件就是完整插件，提供文本聊天、批量翻译与流式输出。假设服务使用 Chat Completions 兼容协议，能按提示词输出带 ID 的翻译 JSON；其他协议见第 5、7 节。开发前只需准备文本编辑器、提供“接口插件”功能的扩展，以及服务地址和测试凭据；Node.js 仅用于可选自检。
 
 ### 2.1 目录
@@ -279,7 +281,7 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 ```
 
 - network 为完整 origin：协议、主机、可选端口，无路径、尾斜线、查询、账号或通配符。
-- 必须 HTTPS，仅 localhost、127.0.0.1、[::1] 可用 HTTP，普通局域网 HTTP 不支持。
+- network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
@@ -932,6 +934,8 @@ exports.translate = async function (input, config, ctx) {
 | ctx.emit(event)               | Promise<void>，逐个 await             |
 | ctx.helpers                   | 第 9 节公开工具，不自动请求网络       |
 
+Bearer auth 引用未设置 required 的秘密字段时，若值未填写或为空字符串，宿主省略 Authorization 头。必填凭据、签名和 secretBindings 仍要求有效的非空秘密值。此行为需要宿主支持，旧版宿主仍会拒绝空凭据。
+
 脚本 ctx 不暴露 AbortSignal、资产写入、持久存储或任意 RPC。将参数视为只读，需要修改时创建副本。不要使用模块变量作为跨调用存储。
 
 禁止 DOM/window/document/chrome/browser/GM、fetch/XHR/WebSocket、其他 Worker、宿主存储、eval/Function、动态 import、无限循环、嵌套解释器。SDK 唯一宿主入口，编写约束不代替安全隔离。
@@ -1348,6 +1352,8 @@ ctx.http.stream 首先返回 `{type:"headers",status,headers}`，默认随后返
 
 翻译预设的 protocol 必须与所选提示词一起生效：batch 支持 json/line/xml，省略时 json；nobatch 支持 text，省略时 text。消息构造、完整响应及流式解析使用同一个 outputProtocol。脚本插件应向 translation.buildMessages、parseResult、createStreamParser 传入同一 input。任意自定义格式需要插件自行实现解析，预设不包含可执行解析器。其他任务的 wire 契约不变。
 
+普通翻译、词典和摘要的默认模板只在宿主选择预设时提供；SDK 消息构造器不再自行补模板或原文。显式传入任一模板字段（包括 null 或空字符串）即视为完整自定义模板对，另一项为空，不从预设补齐。单句和词典通过 {{text}}、批量通过 {{segments}}、摘要通过 {{text}} 或 {{transcript}} 明确传入内容；系统和用户模板均可承载内容。模板单次展开，输入中的占位符和 $ 字符按字面保留；两条消息展开后均为空白时以 INVALID_INPUT 阻止请求。直接调用 SDK 的旧脚本必须显式提供模板。字幕等结构化任务和图片任务仍保留固定协议输入。已保存的实例模板不会自动覆盖。
+
 ### 11.2 翻译变量
 
 protocol translate/translation.buildMessages 支持 `{{变量名}}`：
@@ -1513,7 +1519,7 @@ npm run build
 | HANDLER_MISSING/Script handler not found | exports/handlers 大小写                                                |
 | SCRIPT_ERROR                             | 全局/ES module/依赖/Sval 语法，Node 通过不代表 Sval                    |
 | SECRET_UNAVAILABLE                       | 声明、非空保存、ref 键                                                 |
-| NETWORK_DENIED                           | origin 声明范围、远程 HTTP/重定向                                      |
+| NETWORK_DENIED                           | origin 声明范围、非 HTTP/HTTPS 协议、URL 内嵌凭据或重定向              |
 | HTTP_ERROR                               | 地址模型账号参数，无厂家错误正文                                       |
 | INVALID_RESPONSE/INCOMPLETE_RESPONSE     | 标准结构/JSON/拒答/缺重复 ID/截断                                      |
 | CAPABILITY_DISABLED/SERVICE_UNAVAILABLE  | 启用/服务声明/停用/配置完整                                            |
@@ -1628,3 +1634,9 @@ HTTP 请求可在 `responseType: "asset"` 时指定 `responseAudio: { encoding: 
 远程 evaluate 的结果不再绑定本地引擎模型名称。model 为厂家模型 ID，answers 必须恰好覆盖问题且类型对应，usage 保留厂家数据。confidence 与 action 为可选元数据，存在时仍校验有效概率；不得为满足契约伪造数值。本地 Jev 结果保持不变。首版公共问题仍为 choice / score / noul，不含 box 或图片输入。插件 Choice 条件只允许非空对象，所有选项键必须非空白；键是返回标识，值是判断描述（Json），结果 choice 必须属于条件对象的自有键。例如 `{"en":"English text","zh":"Chinese text"}` 返回 en 或 zh。数组输入直接拒绝，不做转换或按 SDK 版本兼容。本地推理引擎内部格式独立维护，不因此更改。
 
 OpenRouter 的适配和真实 API / 浏览器验收见 [OpenRouter 验收记录](../plugins/openrouter/ACCEPTANCE.md)。
+
+### 文本模板的空消息与能力测试
+
+普通翻译、词典和摘要按整对模板执行。原始两边均为空（缺失、null、空字符串或纯空白）时，依次使用有效选定预设、插件对应能力默认预设或宿主任务默认模板；批量模板匹配当前协议。只有一边非空时，另一边保持空，不补预设或追加输入。自定义模板展开后均为空则返回 INVALID_INPUT，不再回退。SDK 直接调用也支持空模板对默认回退，属于 Plugin API 1。旧实例的空字段在运行时回退，不覆盖存储。能力测试复用相同规则；自动字幕上下文摘要使用专用默认模板。
+
+SDK 消息构造器省略空文本消息，不影响有效图片、音频。原生协议不能表达纯系统输入时，宿主明确返回 INVALID_INPUT，不补原文或移动角色。字幕仍使用固定 JSON 用户输入和 SDK 输出格式约束，不采用可编辑用户模板。

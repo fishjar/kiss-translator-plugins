@@ -5,7 +5,7 @@
       "protocol": "openai-chat-completions",
       "task": "chat",
       "request": {
-        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "baseUrl": { "$ref": "config.baseUrl" },
         "model": {
           "$ref": "config.model"
         },
@@ -37,7 +37,7 @@
       "protocol": "openai-chat-completions",
       "task": "translate",
       "request": {
-        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "baseUrl": { "$ref": "config.baseUrl" },
         "model": {
           "$ref": "config.model"
         },
@@ -69,7 +69,7 @@
       "protocol": "openai-chat-completions",
       "task": "dictionary",
       "request": {
-        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "baseUrl": { "$ref": "config.baseUrl" },
         "model": {
           "$ref": "config.model"
         },
@@ -101,7 +101,7 @@
       "protocol": "openai-chat-completions",
       "task": "segmentSubtitle",
       "request": {
-        "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+        "baseUrl": { "$ref": "config.baseUrl" },
         "model": {
           "$ref": "config.model"
         },

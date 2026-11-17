@@ -9,10 +9,15 @@ Service adapter plugins maintained by the [KISS Translator](https://github.com/f
 | Plugin | Capabilities |
 | ------ | ------------ |
 | [DeepSeek](plugins/deepseek/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode. |
+| [Kimi](plugins/kimi/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode for Kimi Code and the open platform. |
+| [LLaMA.cpp](plugins/llama-cpp/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |
+| [Ollama](plugins/ollama/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |
 | [OpenAI Compatible Protocol](plugins/openai-compatible-bundle/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, speech recognition, speech synthesis, and full-image recognition. |
 | [OpenRouter](plugins/openrouter/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Whisper/Qwen speech recognition, Gemini/Qwen speech synthesis, and Jev decisions. |
 | [Qianwen AI](plugins/qianwen/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, timestamped speech recognition, and image text extraction. |
 | [SiliconFlow](plugins/siliconflow/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Qwen & XingChen speech recognition, PaddleOCR & DeepSeek OCR full-image recognition. |
+
+API Key is optional in all official plugins; empty keys omit the Bearer authorization header. API base URLs support HTTP/HTTPS, including compatible LAN services. These features require a host supporting HTTP and optional credentials, and upgrading existing service instances.
 
 These adapter plugins are maintained by KISS Translator and do not represent endorsement or official release by the respective service providers.
 
@@ -34,7 +39,7 @@ External plugin authors can add the `kiss-translator-plugin` topic to public rep
 
 This project is licensed under the [MIT License](LICENSE). Parts of the source code are migrated from fishjar/kiss-translator, preserving original project and contributor attributions; the host repository license is maintained independently. Release ZIPs include the full license text.
 
-Official plugins reference package-internal `assets/logo.png` via Manifest `icon`, loaded locally after installation and displayable offline. If an instance and local template versions mismatch, templates are missing, or icon decoding fails, it falls back to the default icon. Existing instances must match new templates through the host's existing upgrade process. Icons do not sync across devices with instances. Brand graphics for DeepSeek, OpenRouter, Qianwen, and SiliconFlow belong to their respective owners; the code's MIT license does not relicense brand assets; sources and original assets can be found in each plugin's `assets/SOURCES.md`. The OpenAI Compatible plugin uses a neutral interface connection icon.
+Official plugins reference package-internal `assets/logo.png` via Manifest `icon`, loaded locally after installation and displayable offline. If an instance and local template versions mismatch, templates are missing, or icon decoding fails, it falls back to the default icon. Existing instances must match new templates through the host's existing upgrade process. Icons do not sync across devices with instances. Brand graphics for DeepSeek, Kimi, OpenRouter, Qianwen, and SiliconFlow belong to their respective owners; the code's MIT license does not relicense brand assets; sources and original assets can be found in each plugin's `assets/SOURCES.md`. The OpenAI Compatible plugin uses a neutral interface connection icon.
 
 Build and publish only prune retired distribution directories (`example-deepseek`, `example-openai-compatible-bundle`), preserving historical ZIPs and other files for active plugins. Direct download links for retired examples will become unavailable once pruning takes effect; existing instance snapshots are not deleted, but templates can no longer be restored via old links. Remote cleanup takes effect with normal release commits without rewriting branch history.
 
@@ -51,3 +56,5 @@ Model parameter branching is a plugin adaptation strategy; standalone tests veri
 `apiVersion: 1` is the sole plugin contract version, covering manifest, rules, and SDK capabilities; `manifestVersion` / `rulesVersion` are no longer used. Plugin versions and host release versions remain independent. The publisher validates independently without relying on host source code.
 
 Current verification results and browser acceptance boundaries can be found in [Plugin API 1 Acceptance Record](docs/plugin-api-1-acceptance.md).
+
+VLM defaults to Plain text recognition: visual wraps within prose paragraphs are merged, genuine paragraphs are separated by blank lines, and structural breaks in headings, lists, tables, code, and poetry are preserved. Document to Markdown remains a separate option. Upgrade existing service snapshots to obtain the new presets; custom prompts and explicitly selected presets remain effective. SiliconFlow PaddleOCR and DeepSeek OCR retain their specialized task instructions and defaults.

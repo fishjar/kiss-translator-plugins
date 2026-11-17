@@ -7,6 +7,37 @@ const { getPluginPromptOptions, withDefaultPromptInput } = load("providers/defau
 const completion = (text) => ({ choices: [{ message: { content: text }, finish_reason: "stop" }] });
 const sse = (data) => new Response(data, { headers: { "content-type": "text/event-stream" } });
 
+test("all Qianwen services retain default URLs and honor custom HTTP base paths without a key", async () => {
+  for (const service of ["chat", "ocr", "omni", "asr"]) {
+    for (const baseUrl of [undefined, "http://192.168.6.138:8088/proxy/v1/"]) {
+      const f = fixture("qianwen", service, { apiKey: "", ...(baseUrl && { baseUrl }) });
+      let handler, input, suffix;
+      if (service === "asr") {
+        handler = "transcribe";
+        input = { audio: f.assets.put(new Blob(["wav"], { type: "audio/wav" })) };
+        suffix = "/services/aigc/multimodal-generation/generation";
+        f.respond(() => Response.json({ output: {
+          text: "Hello", sentence: { begin_time: 0, end_time: 1000, sentence_end: true, text: "Hello" },
+        } }));
+      } else {
+        handler = service === "chat" ? "chat" : "parseImage";
+        input = service === "chat"
+          ? { messages: [{ role: "user", content: "Hello" }] }
+          : { image: f.assets.put(new Blob(["png"], { type: "image/png" })), mode: "doc" };
+        suffix = "/chat/completions";
+        if (service === "omni")
+          f.respond(() => sse('data: {"choices":[{"delta":{"content":"Hello"},"finish_reason":"stop"}]}\n\ndata: [DONE]\n\n'));
+      }
+      await f.invoke(handler, input);
+      const expectedBase = baseUrl
+        ? baseUrl.replace(/\/+$/, "")
+        : "https://maas.qianwenaiapi.com/" + (service === "asr" ? "api/v1" : "compatible-mode/v1");
+      assert.equal(f.calls[0].url, expectedBase + suffix);
+      assert.equal(f.calls[0].init.headers.Authorization, undefined);
+    }
+  }
+});
+
 test("Qianwen OCR and Omni send default, selected and explicit image prompts", async () => {
   for (const [id, expected] of [
     ["ocr", ["plain-text", "document", "table", "formula"]],

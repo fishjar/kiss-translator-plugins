@@ -202,7 +202,7 @@ test("single and batch translation preserve IDs, prompts and reject missing resu
     { items: [{ id: "a", text: "你好" }] },
   );
   assert.match(
-    JSON.parse(f.calls[0].init.body).messages[1].content,
+    JSON.parse(f.calls[0].init.body).messages.find(m=>m.role === "user").content,
     /without any explanation/,
   );
   f.respond(() =>
