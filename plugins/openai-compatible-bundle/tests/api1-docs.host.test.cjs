@@ -81,7 +81,9 @@ for (const id of [
       fs.readFileSync(path.join(root, "plugins", id, "manifest.json")),
     );
     assert.equal(manifest.apiVersion, 1);
-    assert.equal(Object.hasOwn(manifest, "minHostVersion"), false);
+    if (id === "openai-compatible-bundle")
+      assert.equal(manifest.minHostVersion, "2.2.6");
+    else assert.equal(Object.hasOwn(manifest, "minHostVersion"), false);
     const prompts = manifest.services.find(
       (service) => service.id === "chat-completions",
     ).defaultPrompts;

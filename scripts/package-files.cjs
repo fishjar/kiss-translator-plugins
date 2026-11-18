@@ -19,6 +19,7 @@ const requireValue = (valid, message) => {
 
 // This is the publisher's package check, not a copy of the host SDK/runtime.
 function packagePaths(manifest) {
+  requireValue(manifest.isFree === undefined || typeof manifest.isFree === "boolean", "Invalid isFree declaration");
   requireValue(
     !Object.hasOwn(manifest, "manifestVersion") &&
       !Object.hasOwn(manifest, "rulesVersion") &&
@@ -40,6 +41,26 @@ function packagePaths(manifest) {
     Array.isArray(manifest.services) && manifest.services.length,
     "Missing services",
   );
+  const rewrite = manifest.permissions?.originRewrite;
+  requireValue(
+    rewrite === undefined || Array.isArray(rewrite),
+    "Invalid Origin rewrite list",
+  );
+  for (const origin of rewrite || []) {
+    let url;
+    try {
+      url = new URL(origin);
+    } catch {
+      throw new Error("Invalid Origin rewrite origin");
+    }
+    requireValue(
+      typeof origin === "string" && url.origin === origin &&
+        ["http:", "https:"].includes(url.protocol) &&
+        !url.hostname.includes("*") &&
+        manifest.permissions?.network?.includes(origin),
+      "Origin rewriting must be a subset of fixed network origins",
+    );
+  }
   const entries = new Set(["manifest.json"]),
     ids = new Set();
   for (const service of manifest.services) {
@@ -60,6 +81,13 @@ function packagePaths(manifest) {
       !Object.hasOwn(service.capabilities, "speak"),
       "System speech is native-only",
     );
+    for (const [capability, descriptor] of Object.entries(service.capabilities)) {
+      for (const feature of ["includesTranslation", "includesLayout"]) {
+        requireValue(descriptor?.[feature] === undefined ||
+          (capability === "parseImage" && typeof descriptor[feature] === "boolean"),
+          "Invalid image feature declaration: " + feature);
+      }
+    }
     ids.add(service.id);
     const promptCapabilities = {
       batch: "translate",
@@ -125,7 +153,8 @@ function packagePaths(manifest) {
             prompt.protocol === undefined ||
               (slot === "batch"
                 ? ["json", "line", "xml"].includes(prompt.protocol)
-                : slot === "nobatch" && prompt.protocol === "text"),
+                : (slot === "vlm" && prompt.protocol === "image-json") ||
+                  (slot === "nobatch" && prompt.protocol === "text")),
             "Invalid prompt protocol: " + slot,
           );
         }

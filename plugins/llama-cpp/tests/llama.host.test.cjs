@@ -30,7 +30,9 @@ test("two services preserve compatible prompts and use editable local defaults",
         outputModes: ["complete"], inputModalities: ["image"],
       },
     } : original.capabilities);
-    assert.deepEqual(service.defaultPrompts, original.defaultPrompts);
+    assert.deepEqual(service.defaultPrompts, service.id === "vision"
+      ? { vlm: original.defaultPrompts.vlm.filter((prompt) => prompt.protocol !== "image-json") }
+      : original.defaultPrompts);
   }
 });
 

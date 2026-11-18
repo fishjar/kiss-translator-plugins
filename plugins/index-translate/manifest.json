@@ -1,0 +1,270 @@
+{
+  "id": "index-translate",
+  "name": "Index-Translate",
+  "version": "1.0.2",
+  "isFree": true,
+  "apiVersion": 1,
+  "minHostVersion": "2.2.6",
+  "description": "Index-Translate：文本翻译、图片原文识别与双语解析。",
+  "descriptionI18n": {
+    "zh": "Index-Translate：文本翻译、图片原文识别与双语解析。",
+    "en": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "zh_TW": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "ja": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "ko": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "tr": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "vi": "Index-Translate text translation, image recognition and bilingual image parsing.",
+    "ru": "Index-Translate text translation, image recognition and bilingual image parsing."
+  },
+  "permissions": {
+    "network": [
+      "https://index-translate.bilibili.com"
+    ],
+    "endpointFields": [
+      "baseUrl"
+    ],
+    "originRewrite": [
+      "https://index-translate.bilibili.com"
+    ]
+  },
+  "sharedSettings": [
+    {
+      "key": "baseUrl",
+      "label": "API 基础地址",
+      "labelI18n": {
+        "zh": "API 基础地址",
+        "en": "API base URL",
+        "zh_TW": "API 基础地址",
+        "ja": "API base URL",
+        "ko": "API base URL",
+        "tr": "API base URL",
+        "vi": "API base URL",
+        "ru": "API base URL"
+      },
+      "type": "text",
+      "required": true,
+      "defaultValue": "https://index-translate.bilibili.com/v1"
+    }
+  ],
+  "services": [
+    {
+      "id": "translation",
+      "name": "文本翻译",
+      "nameI18n": {
+        "zh": "文本翻译",
+        "en": "Text translation",
+        "zh_TW": "文本翻译",
+        "ja": "Text translation",
+        "ko": "Text translation",
+        "tr": "Text translation",
+        "vi": "Text translation",
+        "ru": "Text translation"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/translation.js"
+      },
+      "capabilities": {
+        "translate": {
+          "handler": "translate",
+          "outputModes": [
+            "complete"
+          ],
+          "batch": {
+            "supported": true,
+            "maxItems": 8
+          }
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "Model",
+            "ko": "Model",
+            "tr": "Model",
+            "vi": "Model",
+            "ru": "Model"
+          },
+          "type": "text",
+          "required": true,
+          "defaultValue": "Index-Translate-35B-A3B"
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "Index-Translate-35B-A3B",
+          "name": "Index-Translate-35B-A3B"
+        }
+      ],
+      "defaultPrompts": {
+        "nobatch": [
+          {
+            "id": "default",
+            "name": "单条翻译",
+            "nameI18n": {
+              "zh": "单条翻译",
+              "en": "Single-item translation"
+            },
+            "protocol": "text",
+            "systemPrompt": "",
+            "userPrompt": "Translate the following {{from}} text into {{to}}. Return only the translation, without explanations. Preserve the source structure, HTML-like tags, code and placeholders. Follow glossary mappings exactly; an empty glossary value means preserve the source term.\nGlossary: {{glossary}}\n\nSource text:\n{{text}}"
+          },
+          {
+            "id": "concise",
+            "name": "简洁单句",
+            "nameI18n": {
+              "zh": "简洁单句",
+              "en": "Concise single-item translation"
+            },
+            "protocol": "text",
+            "systemPrompt": "Translate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "Preserve code and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Use this context only for meaning:\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nContext: {{context}}\n{{glossary}}\n{{tone}}\nTranslate the following text into {{to}}. Preserve all HTML-like tags. Output ONLY the translated text without any explanation:\n{{text}}"
+          },
+          {
+            "id": "standard",
+            "name": "标准单句",
+            "nameI18n": {
+              "zh": "标准单句",
+              "en": "Standard single-item translation"
+            },
+            "protocol": "text",
+            "systemPrompt": "You are a professional, authentic machine translation engine.\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "# Context\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\n{{context}}\nTone: {{tone}}\n\n# Glossary:\n{{glossary}}\n\n# Task\nTranslate the Source Text below to {{to}}.\n1. Use the Context to ensure accuracy.\n2. Adapt the wording to match the specified Tone.\n3. If a Source Text term exactly matches a Glossary entry, output ONLY that entry's value; never repeat the source term, never wrap the value in parentheses.\n4. Output ONLY the translated text. No markdown, no explanations.\n\nSource Text:\n{{text}}"
+          }
+        ],
+        "batch": [
+          {
+            "id": "default",
+            "name": "聚合翻译（JSON）",
+            "nameI18n": {
+              "zh": "聚合翻译（JSON）",
+              "en": "Batch translation (JSON)"
+            },
+            "protocol": "json",
+            "systemPrompt": "Act as a professional machine translation engine. Output a raw JSON array strictly. No Markdown fences, no conversational filler.\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "Preserve whitespace, HTML entities, all HTML-like tags, code, and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Keep every string ID exactly once. Use context only for meaning, never translate the instructions.\n{{title}}\n{{description}}\n{{summary}}\n{{context}}\n{{glossary}}\n{{tone}}\nTranslate the text field of each object in the JSON array below into {{to}}. Keep the id unchanged and output a raw JSON array. Output ONLY the translated JSON result without any additional explanation:\n{{segments}}"
+          },
+          {
+            "id": "xml",
+            "name": "聚合翻译（XML）",
+            "nameI18n": {
+              "zh": "聚合翻译（XML）",
+              "en": "Batch translation (XML)"
+            },
+            "protocol": "xml",
+            "systemPrompt": "Translate the text of each <t> element from {{sourceLanguage}} to {{targetLanguage}}. Output only <root><t id=\"ID\">Text</t></root>, keeping every ID exactly once. Escape XML entities and preserve internal newlines. Do not output explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}} Tone: {{tone}}\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "{{segments}}"
+          },
+          {
+            "id": "line",
+            "name": "聚合翻译（LINE）",
+            "nameI18n": {
+              "zh": "聚合翻译（LINE）",
+              "en": "Batch translation (LINE)"
+            },
+            "protocol": "line",
+            "systemPrompt": "Translate each input line from {{sourceLanguage}} to {{targetLanguage}}. Output only ID | Text lines, keeping every ID exactly once. Keep <br> for internal newlines. Do not output explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}} Tone: {{tone}}\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "{{segments}}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "vision",
+      "name": "视觉解析",
+      "nameI18n": {
+        "zh": "视觉解析",
+        "en": "Visual parsing",
+        "zh_TW": "视觉解析",
+        "ja": "Visual parsing",
+        "ko": "Visual parsing",
+        "tr": "Visual parsing",
+        "vi": "Visual parsing",
+        "ru": "Visual parsing"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/vision.js"
+      },
+      "capabilities": {
+        "parseImage": {
+          "handler": "parseImage",
+          "outputModes": [
+            "complete"
+          ],
+          "coordinates": false,
+          "includesTranslation": true,
+          "inputModalities": [
+            "image"
+          ]
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "Model",
+            "ko": "Model",
+            "tr": "Model",
+            "vi": "Model",
+            "ru": "Model"
+          },
+          "type": "text",
+          "required": true,
+          "defaultValue": "Index-Translate-35B-A3B"
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "Index-Translate-35B-A3B",
+          "name": "Index-Translate-35B-A3B"
+        }
+      ],
+      "defaultPrompts": {
+        "vlm": [
+          {
+            "id": "plain-text",
+            "name": "纯文本识别",
+            "userPrompt": "Extract all visible text from the image in its original language and reading order. Reconstruct logical paragraphs: merge visual line wraps within each prose paragraph, using spaces between words where required by the language. Do not preserve a newline just because text wraps in the image. Separate genuinely distinct paragraphs with a blank line. Preserve structural breaks in headings, lists, tables, code, and poetry. Do not translate, summarize, rewrite, or invent content. Return only the extracted text as plain text paragraphs, without adding Markdown formatting, explanations, or code fences.",
+            "nameI18n": {
+              "zh": "纯文本识别",
+              "en": "Plain text recognition"
+            }
+          },
+          {
+            "id": "image-translation",
+            "name": "图片翻译",
+            "nameI18n": {
+              "zh": "图片翻译",
+              "en": "Image translation"
+            },
+            "protocol": "image-json",
+            "userPrompt": "Translate all visible text into {{to}}. Return exactly {\"format\":\"text\",\"translation\":{\"text\":\"your complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit original text and layout."
+          },
+          {
+            "id": "image-bilingual",
+            "name": "双语解析",
+            "nameI18n": {
+              "zh": "双语解析",
+              "en": "Bilingual image parsing"
+            },
+            "protocol": "image-json",
+            "userPrompt": "Extract all visible original text in reading order and translate it into {{to}}. Return exactly {\"format\":\"text\",\"text\":\"the complete original text\",\"translation\":{\"text\":\"the complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit layout."
+          }
+        ]
+      }
+    }
+  ],
+  "icon": "assets/logo.png"
+}

@@ -2,6 +2,17 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { validatePackageFiles } = require("../scripts/package-files.cjs");
 
+test("publisher validates optional free service metadata", () => {
+  for (const isFree of [undefined, true, false]) {
+    const f = fixture(); f.manifest.isFree = isFree;
+    assert.doesNotThrow(f.check);
+  }
+  for (const isFree of ["true", 1, null]) {
+    const f = fixture(); f.manifest.isFree = isFree;
+    assert.throws(f.check, /isFree/);
+  }
+});
+
 test("publisher rejects encoded traversal and malformed relative URL paths", () => {
   for (const path of [
     "../speech",
@@ -146,4 +157,38 @@ test("publisher rejects response and condition fallback", () => {
     then: 1,
   };
   assert.throws(p.check);
+});
+
+
+test("publisher restricts image features to boolean parseImage declarations", () => {
+  const original = require("../plugins/index-translate/manifest.json");
+  const fs = require("node:fs"), path = require("node:path");
+  for (const [capability, feature] of [["parseImage", "includesTranslation"], ["parseImage", "includesLayout"], ["translate", "includesLayout"]]) {
+    const manifest = JSON.parse(JSON.stringify(original));
+    const service = manifest.services.find((s) => s.capabilities[capability]);
+    service.capabilities[capability][feature] = capability === "parseImage" ? "yes" : true;
+    const files = { "manifest.json": Buffer.from(JSON.stringify(manifest)) };
+    for (const s of manifest.services) files[s.implementation.entry] = fs.readFileSync(path.join(__dirname, "../plugins/index-translate", s.implementation.entry));
+    files[manifest.icon] = fs.readFileSync(path.join(__dirname, "../plugins/index-translate", manifest.icon));
+    assert.throws(() => validatePackageFiles(files), /Invalid image feature/);
+  }
+});
+test("publisher validates Origin rewrite declarations independently of the host", () => {
+  for (const invalid of [
+    null, "https://a.example", ["https://a.example/path"],
+    ["https://b.example"], ["https://*.example"],
+  ]) {
+    const f = fixture();
+    f.manifest.permissions = {
+      network: ["https://a.example", "https://*.example"],
+      originRewrite: invalid,
+    };
+    assert.throws(f.check, /Origin/);
+  }
+  const f = fixture();
+  f.manifest.permissions = {
+    network: ["https://a.example"],
+    originRewrite: ["https://a.example", "https://a.example"],
+  };
+  assert.doesNotThrow(f.check);
 });

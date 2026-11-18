@@ -26,6 +26,7 @@ function buildPackage(folder) {
     id: manifest.id, name: manifest.name, nameI18n: manifest.nameI18n,
     description: manifest.description, descriptionI18n: manifest.descriptionI18n,
     version: manifest.version, apiVersion: manifest.apiVersion,
+    ...(manifest.isFree !== undefined && { isFree: manifest.isFree }),
     ...(manifest.kind !== undefined && { kind: manifest.kind }),
     ...(manifest.minHostVersion !== undefined && { minHostVersion: manifest.minHostVersion }),
     capabilities: [...new Set(manifest.services.flatMap((service) => Object.keys(service.capabilities)))],

@@ -100,3 +100,7 @@ Here are the four reproducible default templates; `sourceLanguage`, `targetLangu
 New template version is 1.6.1. Installed instances retain their own snapshots; update the plugin package first, then create an upgraded instance, test, and replace profile references. Legacy snapshots without protocol declarations continue JSON compatibility; explicitly binding host prompts follows that prompt's mode and protocol. Custom scripts parsing responses must read `translationMode`/`outputProtocol`; legacy scripts using SDK helpers inherit the call protocol.
 
 Current LLM service supports translation, chat (LLM), subtitle segmentation, and AI dictionary, sharing model and credential configurations. Requires a host supporting numeric Plugin API 1; legacy development instances should be recreated.
+
+## 2.0.8: structured image parsing
+
+Requires host 2.2.6 or later. Vision adds image-translation and bilingual prompts while retaining original-text extraction by default. Valid translations bypass fallback text translation. Custom image-json prompts may return layout, but image input, structured output and coordinate quality must be verified for the actual model. No default layout preset is supplied. Publish after the matching host release.

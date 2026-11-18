@@ -284,6 +284,9 @@ Shared fields and permissions are validated per service, and shared capability-s
 - Fixed addresses in `network` and user-configured addresses in `endpointFields` support HTTP/HTTPS, including LAN services; origin scope checks still apply.
 - `endpointFields` references merged non-secret `text` fields, granting access to the origin of the instance's saved value without restricting paths.
 - Requests may only access declared fixed origins and origins from configured endpoint fields; requests outside these scopes are blocked.
+- Since host 2.2.6, `permissions.originRewrite: ["https://api.example.com"]` requests setting the Origin header of extension requests to the destination origin. Entries must be a subset of fixed `network` origins, without wildcards, paths, trailing slashes, queries or credentials. Changing `endpointFields` does not expand this list.
+- The host deduplicates declarations from all enabled, compatible and configured external service snapshots and merges them with saved user Origin rules; user rules take precedence. Installing a template alone activates nothing. A shared plugin rule remains until its last contributing instance is disabled or removed, and saved user settings remain unchanged. Import, instance upgrade and settings views display this permission.
+- Rules synchronize at startup and on configuration changes; affected first requests await synchronization. Requests do not install or remove rules individually. Rules match the exact origin and extension-initiated XHR/fetch only; they do not remove CSP or expand network access. Browsers without DNR explicitly reject calls requiring this feature.
 - When endpoint fields are modified, new requests use the new address while active tasks continue using their original snapshot. Never declare unrelated endpoint fields.
 - Cookies, URL credentials, redirects, and access to other instance credentials are prohibited; no browser extension API permissions are granted.
 
@@ -1636,3 +1639,17 @@ Declarative `$url.path` must be a relative path, forbidding absolute URLs, backs
 Remote `evaluate` results are no longer tied to local engine model names. `model` is the vendor model ID; `answers` must strictly cover questions with matching types; `usage` preserves vendor metrics. `confidence` and `action` are optional metadata, validated for proper probabilities when present, and never fabricated to satisfy contracts. Local Jev results remain unchanged. Initial standard question types are `choice`, `score`, and `noul`, excluding `box` or image inputs. Plugin Choice criteria only allows non-empty objects whose option keys are non-blank; keys are returned identifiers and values are descriptions (`Json`), where the resulting `choice` must belong to the criteria object's own keys (e.g. `{"en": "English text", "zh": "Chinese text"}` returning `en` or `zh`). Array inputs are rejected immediately without conversion or compatibility layers. Local inference engine formats are maintained separately and unaffected.
 
 For OpenRouter adaptation and live API / browser acceptance, see [OpenRouter Acceptance Record](../plugins/openrouter/ACCEPTANCE.md).
+
+## Structured image parsing (host 2.2.6)
+
+Optional manifest metadata `isFree?: boolean` declares whether the default service is free to use. Only explicit `true` displays a green Free badge, both for imported packages and catalog entries. False or omission does not imply a paid service. The publisher validates the type and carries it into the official catalog; this declaration grants no network permissions or capabilities.
+
+Hover or focus the visual-parsing capability label in package details or instance settings to inspect `includesTranslation` and `includesLayout`. These are read-only adapter declarations, not task switches or guarantees about a particular model. False and omitted fields display as support not declared; upgrade previews show declaration changes by service.
+
+API 1 `parseImage` adds optional boolean `includesTranslation` and `includesLayout` declarations (default false). A `vlm` preset may select `protocol: "image-json"`. Host language/glossary input and the shared SDK supply prompt rendering, a JSON output contract and parsing.
+
+Results may contain original `text` and `format`, `translation: {text,targetLanguage,format}`, and `layout: {regions:[{id,type,poly,order,text?,translation?}]}`. Original and translated content remain separate. Region IDs are unique and polygons use prepared-image pixels. Layout boxes are not OCR text-line coordinates. Legacy plain-text output is not auto-detected as structured JSON.
+
+The image/screenshot scene reuses valid translations and translates only missing items with available source text. Recognition-only never invokes fallback. Prompts request outputs; capability declarations do not. Verify the actual model, especially coordinate quality. No default layout preset is supplied.
+
+Publish new packages after the matching minimum host release. For development, set `KISS_TRANSLATOR_ROOT` to the feature checkout and use test-only `KISS_TRANSLATOR_TEST_VERSION=2.2.6` with `npm run test:host`. This never bypasses production compatibility checks.

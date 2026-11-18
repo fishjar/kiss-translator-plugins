@@ -1,17 +1,13 @@
 {
   "id": "openai-compatible-bundle",
   "name": "OpenAI 兼容协议",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "OpenAI 兼容协议：对话、翻译、字幕断句与 AI 词典、语音识别、语音合成和图片全文识别。",
   "permissions": {
-    "network": [
-      "https://api.openai.com"
-    ],
-    "endpointFields": [
-      "baseUrl"
-    ]
+    "network": ["https://api.openai.com"],
+    "endpointFields": ["baseUrl"]
   },
   "sharedSettings": [
     {
@@ -49,36 +45,23 @@
       "capabilities": {
         "chat": {
           "handler": "chat",
-          "inputModalities": [
-            "text"
-          ],
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "inputModalities": ["text"],
+          "outputModes": ["complete", "stream"]
         },
         "translate": {
           "handler": "translate",
           "batch": {
             "supported": true
           },
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "outputModes": ["complete", "stream"]
         },
         "dictionary": {
           "handler": "dictionary",
-          "outputModes": [
-            "complete",
-            "stream"
-          ]
+          "outputModes": ["complete", "stream"]
         },
         "segmentSubtitle": {
           "handler": "segmentSubtitle",
-          "outputModes": [
-            "complete"
-          ]
+          "outputModes": ["complete"]
         }
       },
       "settings": [
@@ -106,9 +89,7 @@
           "defaultValue": 0,
           "min": 0,
           "max": 2,
-          "visibleForCapabilities": [
-            "translate"
-          ],
+          "visibleForCapabilities": ["translate"],
           "labelI18n": {
             "zh": "翻译采样温度（推理模式 none 时生效）",
             "en": "Translation temperature (when reasoning is none)",
@@ -209,9 +190,7 @@
         "transcribe": {
           "handler": "transcribe",
           "timestamps": false,
-          "outputModes": [
-            "complete"
-          ]
+          "outputModes": ["complete"]
         }
       },
       "settings": [
@@ -261,9 +240,7 @@
       "capabilities": {
         "synthesizeSpeech": {
           "handler": "synthesizeSpeech",
-          "outputModes": [
-            "complete"
-          ]
+          "outputModes": ["complete"]
         }
       },
       "settings": [
@@ -290,9 +267,7 @@
           "type": "select",
           "defaultValue": "marin",
           "required": true,
-          "visibleForCapabilities": [
-            "synthesizeSpeech"
-          ],
+          "visibleForCapabilities": ["synthesizeSpeech"],
           "options": [
             {
               "value": "alloy",
@@ -392,13 +367,10 @@
         "parseImage": {
           "handler": "parseImage",
           "coordinates": false,
-          "outputModes": [
-            "complete",
-            "stream"
-          ],
-          "inputModalities": [
-            "image"
-          ]
+          "outputModes": ["complete", "stream"],
+          "inputModalities": ["image"],
+          "includesTranslation": true,
+          "includesLayout": true
         }
       },
       "settings": [
@@ -490,6 +462,26 @@
               "zh": "图片描述",
               "en": "Image description"
             }
+          },
+          {
+            "id": "image-translation",
+            "name": "图片翻译",
+            "nameI18n": {
+              "zh": "图片翻译",
+              "en": "Image translation"
+            },
+            "protocol": "image-json",
+            "userPrompt": "Translate all visible text into {{to}}. Return exactly {\"format\":\"text\",\"translation\":{\"text\":\"your complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit original text and layout."
+          },
+          {
+            "id": "image-bilingual",
+            "name": "双语解析",
+            "nameI18n": {
+              "zh": "双语解析",
+              "en": "Bilingual image parsing"
+            },
+            "protocol": "image-json",
+            "userPrompt": "Extract all visible original text in reading order and translate it into {{to}}. Return exactly {\"format\":\"text\",\"text\":\"the complete original text\",\"translation\":{\"text\":\"the complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit layout."
           }
         ]
       },
@@ -524,5 +516,6 @@
     "tr": "OpenAI uyumlu sohbet ve çeviri, ses transkripsiyonu, konuşma sentezi ve görüntü metni tanıma.",
     "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
     "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
-  }
+  },
+  "minHostVersion": "2.2.6"
 }

@@ -191,7 +191,8 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | apiVersion     | 数字，必需     | 固定为整数 1；不接受字符串、缺失值或旧格式          |
 | services       | 非空数组，必需 | 服务定义                                            |
 | sharedSettings | 可选字段数组   | 共用字段定义，实例值各自独立                        |
-| permissions    | 可选对象       | network 和 endpointFields                           |
+| permissions    | 可选对象       | network、endpointFields 和可选 originRewrite         |
+| isFree         | 可选布尔值     | 作者声明默认服务是否免费；true 时显示绿色“免费”标签 |
 | icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
 | resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
@@ -284,6 +285,9 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 - network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
+- 从宿主 2.2.6 起，可声明 `permissions.originRewrite: ["https://api.example.com"]`，要求宿主将发往这些地址的扩展请求的 Origin 设为目标 origin。名单必须是 `network` 固定地址的子集，不允许通配符、路径、尾斜线、查询或账号信息。更改 `endpointFields` 不会自动扩大此名单。
+- 宿主从所有启用、兼容且配置有效的外部服务实例快照收集声明，与用户保存的 Origin 名单去重合并；用户规则优先。仅安装模板不生效，同一地址最后一个实例停用后才撤销插件规则，用户保存的名单不被改写。导入、实例升级及设置页面会展示此权限。
+- 规则在启动及配置变化时同步，受影响的首次请求等待同步；请求结束不撤销规则，也不逐请求更新。规则只覆盖精确 origin 的扩展 XHR/fetch，不移除 CSP 或扩大网络权限。不支持 DNR 的浏览器会明确拒绝依赖此功能的调用。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
 - 禁止 Cookie、URL 用户名密码、重定向及其他实例凭据，不授予浏览器 API 权限。
 
@@ -1640,3 +1644,17 @@ OpenRouter 的适配和真实 API / 浏览器验收见 [OpenRouter 验收记录]
 普通翻译、词典和摘要按整对模板执行。原始两边均为空（缺失、null、空字符串或纯空白）时，依次使用有效选定预设、插件对应能力默认预设或宿主任务默认模板；批量模板匹配当前协议。只有一边非空时，另一边保持空，不补预设或追加输入。自定义模板展开后均为空则返回 INVALID_INPUT，不再回退。SDK 直接调用也支持空模板对默认回退，属于 Plugin API 1。旧实例的空字段在运行时回退，不覆盖存储。能力测试复用相同规则；自动字幕上下文摘要使用专用默认模板。
 
 SDK 消息构造器省略空文本消息，不影响有效图片、音频。原生协议不能表达纯系统输入时，宿主明确返回 INVALID_INPUT，不补原文或移动角色。字幕仍使用固定 JSON 用户输入和 SDK 输出格式约束，不采用可编辑用户模板。
+
+## 结构化图片解析（宿主 2.2.6）
+
+清单可选 `isFree?: boolean` 声明默认服务是否免费。仅显式 `true` 显示绿色“免费”标签，支持本地导入和目录条目；`false` 或省略不表示收费。发布工具校验类型并写入官方目录，此字段不授予权限或能力。
+
+在插件详情或实例设置中，悬停或聚焦视觉解析能力标签，可查看 `includesTranslation`、`includesLayout` 的只读声明。它们不代表开启任务或保证具体模型效果；`false` 和省略均显示“未声明支持”。升级预览按服务显示声明变化。
+
+保持 `parseImage` 能力，新增 `includesTranslation` / `includesLayout` 布尔声明。省略时为 false。`vlm` 提示词可使用 `protocol: "image-json"`，宿主传入目标语言及术语，公共 SDK负责组装格式约束及解析。
+
+结果可包含原文 `text`、`format`，以及 `translation: {text,targetLanguage,format}` 和 `layout: {regions:[{id,type,poly,order,text?,translation?}]}`。原文和译文字段不能混用。区域 ID 必须唯一；布局坐标以送入模型的图片像素为基准。布局框不等于 OCR 文字框。旧文本协议保持原样，不通过 JSON 外观猜测协议。
+
+图片／截图场景优先使用有效译文，只对缺少译文且有原文的内容调用所选文本翻译服务。仅识别不补译。提示词决定输出，声明不自动执行任务。模型输出质量需实际验证；首版不提供未经验证的布局预设。
+
+包需声明对应宿主最低版本并在宿主发布后上线。开发中可用 `KISS_TRANSLATOR_ROOT` 指向支持分支，并用测试专用 `KISS_TRANSLATOR_TEST_VERSION=2.2.6` 模拟未来版本运行 `npm run test:host`；该变量不影响生产兼容性检查。
