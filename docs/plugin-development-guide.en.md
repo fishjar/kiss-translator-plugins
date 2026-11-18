@@ -1642,6 +1642,10 @@ For OpenRouter adaptation and live API / browser acceptance, see [OpenRouter Acc
 
 ## Structured image parsing (host 2.2.6)
 
+Optional manifest metadata `isFree?: boolean` declares whether the default service is free to use. Only explicit `true` displays a green Free badge, both for imported packages and catalog entries. False or omission does not imply a paid service. The publisher validates the type and carries it into the official catalog; this declaration grants no network permissions or capabilities.
+
+Hover or focus the visual-parsing capability label in package details or instance settings to inspect `includesTranslation` and `includesLayout`. These are read-only adapter declarations, not task switches or guarantees about a particular model. False and omitted fields display as support not declared; upgrade previews show declaration changes by service.
+
 API 1 `parseImage` adds optional boolean `includesTranslation` and `includesLayout` declarations (default false). A `vlm` preset may select `protocol: "image-json"`. Host language/glossary input and the shared SDK supply prompt rendering, a JSON output contract and parsing.
 
 Results may contain original `text` and `format`, `translation: {text,targetLanguage,format}`, and `layout: {regions:[{id,type,poly,order,text?,translation?}]}`. Original and translated content remain separate. Region IDs are unique and polygons use prepared-image pixels. Layout boxes are not OCR text-line coordinates. Legacy plain-text output is not auto-detected as structured JSON.

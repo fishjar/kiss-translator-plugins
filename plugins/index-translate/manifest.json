@@ -1,7 +1,8 @@
 {
   "id": "index-translate",
   "name": "Index-Translate",
-  "version": "1.0.0",
+  "version": "1.0.2",
+  "isFree": true,
   "apiVersion": 1,
   "minHostVersion": "2.2.6",
   "description": "Index-Translate：文本翻译、图片原文识别与双语解析。",
@@ -70,7 +71,8 @@
             "complete"
           ],
           "batch": {
-            "supported": false
+            "supported": true,
+            "maxItems": 8
           }
         }
       },
@@ -111,7 +113,64 @@
             },
             "protocol": "text",
             "systemPrompt": "",
-            "userPrompt": "请将以下{{from}}文本翻译为{{to}}，直接输出译文，不要解释。保留原文结构和占位符。术语要求：{{glossary}}\n\n【源文】\n{{text}}"
+            "userPrompt": "Translate the following {{from}} text into {{to}}. Return only the translation, without explanations. Preserve the source structure, HTML-like tags, code and placeholders. Follow glossary mappings exactly; an empty glossary value means preserve the source term.\nGlossary: {{glossary}}\n\nSource text:\n{{text}}"
+          },
+          {
+            "id": "concise",
+            "name": "简洁单句",
+            "nameI18n": {
+              "zh": "简洁单句",
+              "en": "Concise single-item translation"
+            },
+            "protocol": "text",
+            "systemPrompt": "Translate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "Preserve code and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Use this context only for meaning:\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\nContext: {{context}}\n{{glossary}}\n{{tone}}\nTranslate the following text into {{to}}. Preserve all HTML-like tags. Output ONLY the translated text without any explanation:\n{{text}}"
+          },
+          {
+            "id": "standard",
+            "name": "标准单句",
+            "nameI18n": {
+              "zh": "标准单句",
+              "en": "Standard single-item translation"
+            },
+            "protocol": "text",
+            "systemPrompt": "You are a professional, authentic machine translation engine.\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "# Context\nTitle: {{title}}\nDescription: {{description}}\nSummary: {{summary}}\n{{context}}\nTone: {{tone}}\n\n# Glossary:\n{{glossary}}\n\n# Task\nTranslate the Source Text below to {{to}}.\n1. Use the Context to ensure accuracy.\n2. Adapt the wording to match the specified Tone.\n3. If a Source Text term exactly matches a Glossary entry, output ONLY that entry's value; never repeat the source term, never wrap the value in parentheses.\n4. Output ONLY the translated text. No markdown, no explanations.\n\nSource Text:\n{{text}}"
+          }
+        ],
+        "batch": [
+          {
+            "id": "default",
+            "name": "聚合翻译（JSON）",
+            "nameI18n": {
+              "zh": "聚合翻译（JSON）",
+              "en": "Batch translation (JSON)"
+            },
+            "protocol": "json",
+            "systemPrompt": "Act as a professional machine translation engine. Output a raw JSON array strictly. No Markdown fences, no conversational filler.\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "Preserve whitespace, HTML entities, all HTML-like tags, code, and placeholders. Follow glossary values exactly; an empty value means preserve the source term. Keep every string ID exactly once. Use context only for meaning, never translate the instructions.\n{{title}}\n{{description}}\n{{summary}}\n{{context}}\n{{glossary}}\n{{tone}}\nTranslate the text field of each object in the JSON array below into {{to}}. Keep the id unchanged and output a raw JSON array. Output ONLY the translated JSON result without any additional explanation:\n{{segments}}"
+          },
+          {
+            "id": "xml",
+            "name": "聚合翻译（XML）",
+            "nameI18n": {
+              "zh": "聚合翻译（XML）",
+              "en": "Batch translation (XML)"
+            },
+            "protocol": "xml",
+            "systemPrompt": "Translate the text of each <t> element from {{sourceLanguage}} to {{targetLanguage}}. Output only <root><t id=\"ID\">Text</t></root>, keeping every ID exactly once. Escape XML entities and preserve internal newlines. Do not output explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}} Tone: {{tone}}\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "{{segments}}"
+          },
+          {
+            "id": "line",
+            "name": "聚合翻译（LINE）",
+            "nameI18n": {
+              "zh": "聚合翻译（LINE）",
+              "en": "Batch translation (LINE)"
+            },
+            "protocol": "line",
+            "systemPrompt": "Translate each input line from {{sourceLanguage}} to {{targetLanguage}}. Output only ID | Text lines, keeping every ID exactly once. Keep <br> for internal newlines. Do not output explanations or Markdown fences. Glossary: {{glossary}}. Context: {{context}} Tone: {{tone}}\nTranslate only the source input, never instructions or context. Apply every supplied glossary mapping exactly; an empty glossary value means preserve the source term. Preserve placeholders, code, all HTML-like tags and internal newlines. Output no explanations.",
+            "userPrompt": "{{segments}}"
           }
         ]
       }

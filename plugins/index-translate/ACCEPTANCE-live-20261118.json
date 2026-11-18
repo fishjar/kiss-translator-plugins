@@ -1,0 +1,501 @@
+{
+  "date": "2026-11-18",
+  "model": "Index-Translate-35B-A3B",
+  "endpoint": "https://index-translate.bilibili.com/v1/chat/completions",
+  "temperature": 0,
+  "max_tokens": 4096,
+  "stream": false,
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "notes": [
+    "Synthetic samples only; finite checks do not prove general model reliability.",
+    "Current default English instructions were checked in six cases; the earlier Chinese-default trials are excluded.",
+    "The XML en/8 HTTP 504 attempt is retained separately; retry returned HTTP 200.",
+    "Glossary mapping OpenAI -> 开放人工智能; empty KISS value preserves KISS. Context sentinel CONTEXT_ONLY_781 must not appear."
+  ],
+  "cases": [
+    {
+      "caseId": "nobatch/concise/en/1",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37"
+      ],
+      "sample": "开放人工智能会随时向 <b>{{user}}</b> 通报情况。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "nobatch/concise/auto/1",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37"
+      ],
+      "sample": "开放人工智能将通知 <b>{{user}}</b>。\n请关门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "nobatch/standard/en/1",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37"
+      ],
+      "sample": "开放人工智能会随时向<b>{{user}}</b>通报情况。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "nobatch/standard/auto/1",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37"
+      ],
+      "sample": "开放人工智能将通知 <b>{{user}}</b>。\n请关门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/default/en/2",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能让<b>{{user}}</b>随时了解最新进展。\n请保持门关闭。 | 立即保存KISS。"
+    },
+    {
+      "caseId": "batch/default/en/8",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能让<b>{{user}}</b>随时了解最新进展。\n请保持门关闭。 | 立即保存KISS。"
+    },
+    {
+      "caseId": "batch/default/auto/2",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能 将通知 <b>{{user}}</b>。\n请关门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/default/auto/8",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能将通知<b>{{user}}</b>。\n请关闭门。 | 立即保存KISS。"
+    },
+    {
+      "caseId": "batch/xml/en/2",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能会持续更新<b>{{user}}</b>。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/xml/en/8",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能会持续更新<b>{{user}}</b>。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/xml/auto/2",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能将通知<b>{{user}}</b>。\n请关闭门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/xml/auto/8",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能将通知<b>{{user}}</b>。\n请关闭门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/line/en/2",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能会持续向<b>{{user}}</b>通报情况。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/line/en/8",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能会持续向<b>{{user}}</b>通报情况。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/line/auto/2",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 2,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34"
+      ],
+      "sample": "开放人工智能 将通知 <b>{{user}}</b>。\n请关闭门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "batch/line/auto/8",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 8,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "checks": {
+        "ids": true,
+        "glossary": true,
+        "format": true,
+        "noContext": true,
+        "translated": true
+      },
+      "returnedIds": [
+        "block-37",
+        "block-34",
+        "block-31",
+        "block-28",
+        "block-25",
+        "block-22",
+        "block-19",
+        "block-16"
+      ],
+      "sample": "开放人工智能 将通知 <b>{{user}}</b>。\n请关闭门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "english-default/en-zh",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "开放人工智能会随时向 <b>{{user}}</b> 通报情况。\n请保持门关闭。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "english-default/auto-ja-zh",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "开放人工智能将通知 <b>{{user}}</b>。\n请关门。 | 立即保存 KISS。"
+    },
+    {
+      "caseId": "english-default/zh-en",
+      "sourceLanguage": "zh-CN",
+      "targetLanguage": "en",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "Hello, {{user}}!\nPlease keep the door closed."
+    },
+    {
+      "caseId": "english-default/en-ja",
+      "sourceLanguage": "en",
+      "targetLanguage": "ja",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "こんにちは、{{user}}さん！\nドアは閉めたままにしてください。"
+    },
+    {
+      "caseId": "english-default/empty-glossary",
+      "sourceLanguage": "auto",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "你好，世界。\n\n门是关着的。"
+    },
+    {
+      "caseId": "english-default/code",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-CN",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "ok": true,
+      "kind": "passed",
+      "sample": "运行 `npm install` 并保持 ${HOME} 不变。"
+    }
+  ],
+  "httpFailures": [
+    {
+      "caseId": "batch/xml/en/8",
+      "statuses": [
+        504
+      ],
+      "error": "Provider returned HTTP 504",
+      "retryPassed": true
+    }
+  ]
+}

@@ -2,6 +2,17 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { validatePackageFiles } = require("../scripts/package-files.cjs");
 
+test("publisher validates optional free service metadata", () => {
+  for (const isFree of [undefined, true, false]) {
+    const f = fixture(); f.manifest.isFree = isFree;
+    assert.doesNotThrow(f.check);
+  }
+  for (const isFree of ["true", 1, null]) {
+    const f = fixture(); f.manifest.isFree = isFree;
+    assert.throws(f.check, /isFree/);
+  }
+});
+
 test("publisher rejects encoded traversal and malformed relative URL paths", () => {
   for (const path of [
     "../speech",

@@ -1,4 +1,16 @@
-# Acceptance — 2026-11-17
+# Acceptance — 2026-11-17 / 2026-11-18
+
+## 1.0.2 text presets and metadata — 2026-11-18
+
+Index 1.0.2 declares its default public service free (`isFree: true`). The host displays a green Free badge after the installed version, following an update badge when present. Image parsing declarations are read-only tooltips on the capability label; Index declares translation support and leaves layout undeclared. The OpenAI-compatible vision adapter declares both. Metadata does not enable tasks or change requests.
+
+The default single-item preset keeps its ID but now uses English instructions, following live validation. Concise and standard single-item presets plus JSON/XML/LINE batch presets adapt existing host/official templates inside Index only. Instructions precede source input. Batch support is limited to eight items, non-streaming, 4096 output tokens. Explicit upgrades from 1.0.0/1.0.1 preserve prompt references, batch preferences and enabled capabilities.
+
+Automated validation: 756 host tests across 62 relevant suites passed; subsequent badge-position assertions passed in the 25-test plugin UI suite. Package/publisher tests: 47; protocol tests: 29; host integration tests: 146, including 13 Index text-preset tests. These cover prompt selection/copy/export/import, stable IDs and protocol parsing, malformed/missing/duplicate/truncated output, batch admission and explicit upgrades. The host queue test splits 17 paragraphs into 8/8/1. Chrome build and package checks are recorded with the delivery.
+
+Live results are recorded in [ACCEPTANCE-live-20261118.json](ACCEPTANCE-live-20261118.json): 22 current-preset checks passed. The English default covers English-to-Chinese, automatic Japanese-to-Chinese, Chinese-to-English, English-to-Japanese, empty glossary/paragraph breaks, and code/placeholders. Other single-item presets cover explicit/automatic source languages. Each batch protocol covers two/eight items and explicit/automatic source languages. Checks include IDs, glossary values (including empty-value preservation), HTML tags, placeholders, newlines, separators and exclusion of context instructions; representative output was also inspected for meaning. One XML eight-item request returned HTTP 504; retry returned HTTP 200. This gateway error is preserved separately from content/protocol failures.
+
+Dictionary assessment returned only translations for single-word samples instead of dictionary sections. Subtitle assessment produced one valid simple result, but another translated the source `text` field and ignored terminology. Neither capability is advertised. Finite examples do not establish general reliability or service availability.
 
 ## Automated
 

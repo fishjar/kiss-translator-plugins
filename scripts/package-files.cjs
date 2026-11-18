@@ -19,6 +19,7 @@ const requireValue = (valid, message) => {
 
 // This is the publisher's package check, not a copy of the host SDK/runtime.
 function packagePaths(manifest) {
+  requireValue(manifest.isFree === undefined || typeof manifest.isFree === "boolean", "Invalid isFree declaration");
   requireValue(
     !Object.hasOwn(manifest, "manifestVersion") &&
       !Object.hasOwn(manifest, "rulesVersion") &&
