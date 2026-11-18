@@ -38,6 +38,31 @@
       "sha256": "d607daa27ef37a4eaeed83d057c64a67316a153a3f2f065a22fed97a9396615a"
     },
     {
+      "id": "index-translate",
+      "name": "Index-Translate",
+      "description": "Index-Translate：文本翻译、图片原文识别与双语解析。",
+      "descriptionI18n": {
+        "zh": "Index-Translate：文本翻译、图片原文识别与双语解析。",
+        "en": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "zh_TW": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "ja": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "ko": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "tr": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "vi": "Index-Translate text translation, image recognition and bilingual image parsing.",
+        "ru": "Index-Translate text translation, image recognition and bilingual image parsing."
+      },
+      "version": "1.0.2",
+      "apiVersion": 1,
+      "isFree": true,
+      "minHostVersion": "2.2.6",
+      "capabilities": [
+        "translate",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/index-translate/1.0.2.zip",
+      "sha256": "2cae83d3834e840e8d5e05dc0b06aa598026f7ba99a9940f91c6b16a289b1a24"
+    },
+    {
       "id": "kimi",
       "name": "Kimi",
       "nameI18n": {
@@ -168,8 +193,9 @@
         "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.7",
+      "version": "2.0.8",
       "apiVersion": 1,
+      "minHostVersion": "2.2.6",
       "capabilities": [
         "chat",
         "translate",
@@ -179,8 +205,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.7.zip",
-      "sha256": "ff4da7ad29f9ece6e3b195058e6ffa98228d0047a1f575faba3a2c60c470f097"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.8.zip",
+      "sha256": "e71196590f0e890bb10b193d86d395fc7fb9c31c8bb0e0803e172d804b3b7fea"
     },
     {
       "id": "openrouter",
