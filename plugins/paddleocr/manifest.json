@@ -11,7 +11,7 @@
     "vi": "PaddleOCR",
     "ru": "PaddleOCR"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
@@ -137,7 +137,7 @@
         {
           "key": "model",
           "label": "模型",
-          "type": "select",
+          "type": "text",
           "defaultValue": "PP-OCRv6",
           "required": true,
           "labelI18n": {
@@ -149,24 +149,22 @@
             "tr": "Model",
             "vi": "Mô hình",
             "ru": "Модель"
-          },
-          "options": [
-            {
-              "value": "PP-OCRv6",
-              "label": "PP-OCRv6"
-            },
-            {
-              "value": "PP-OCRv5",
-              "label": "PP-OCRv5"
-            },
-            {
-              "value": "PP-OCRv5-latin",
-              "label": "PP-OCRv5-latin"
-            }
-          ]
+          }
         }
       ],
-      "modelField": "model"
+      "modelField": "model",
+      "allowCustomModel": false,
+      "models": [
+        {
+          "id": "PP-OCRv6"
+        },
+        {
+          "id": "PP-OCRv5"
+        },
+        {
+          "id": "PP-OCRv5-latin"
+        }
+      ]
     },
     {
       "id": "doc-parsing",
@@ -205,7 +203,7 @@
         {
           "key": "model",
           "label": "模型",
-          "type": "select",
+          "type": "text",
           "defaultValue": "PaddleOCR-VL-1.6",
           "required": true,
           "labelI18n": {
@@ -217,24 +215,22 @@
             "tr": "Model",
             "vi": "Mô hình",
             "ru": "Модель"
-          },
-          "options": [
-            {
-              "value": "PaddleOCR-VL-1.6",
-              "label": "PaddleOCR-VL-1.6"
-            },
-            {
-              "value": "PaddleOCR-VL-1.5",
-              "label": "PaddleOCR-VL-1.5"
-            },
-            {
-              "value": "PP-StructureV3",
-              "label": "PP-StructureV3"
-            }
-          ]
+          }
         }
       ],
-      "modelField": "model"
+      "modelField": "model",
+      "allowCustomModel": false,
+      "models": [
+        {
+          "id": "PaddleOCR-VL-1.6"
+        },
+        {
+          "id": "PaddleOCR-VL-1.5"
+        },
+        {
+          "id": "PP-StructureV3"
+        }
+      ]
     }
   ],
   "freeTier": "quota-limited"

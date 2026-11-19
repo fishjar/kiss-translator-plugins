@@ -29,6 +29,28 @@ test("official package loads as API 1", () => {
   assert.doesNotThrow(() => assertPluginCompatibility(manifest));
 });
 
+test("the host submits the selected predefined model for each service", async () => {
+  const cases = [
+    ["text-ocr", "recognizeText", "PP-OCRv5-latin", [{
+      ocrResults: [{ prunedResult: {
+        rec_texts: ["Text"], rec_polys: [[[0, 0], [20, 0], [20, 10], [0, 10]]],
+      } }],
+    }]],
+    ["doc-parsing", "parseImage", "PP-StructureV3", [
+      { layoutParsingResults: [{ markdown: { text: "Document" } }] },
+    ]],
+  ];
+  for (const [service, capability, model, pages] of cases) {
+    const f = fixture("paddleocr", service, { model });
+    assert.equal(f.instance.provider.allowCustomModel, false);
+    await f.invoke(capability, job(f, pages));
+    assert.equal(f.calls[0].init.body.get("model"), model);
+    assert.throws(() => fixture("paddleocr", service, { model: "unknown" }), {
+      code: "INVALID_CONFIG",
+    });
+  }
+});
+
 test("gateway base URL scopes both job requests and keeps BOS downloads unauthenticated", async () => {
   const f = fixture("paddleocr", "doc-parsing", {
     baseUrl: "http://gateway.example/ocr-proxy/",

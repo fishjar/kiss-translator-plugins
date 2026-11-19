@@ -2,7 +2,7 @@
 
 [English](README.en.md) | [简体中文](README.md)
 
-KISS Translator maintains this plugin for the official PaddleOCR asynchronous API on Baidu AI Studio. It uses Plugin API 1 and supports KISS Translator 2.2.5 and later.
+KISS Translator maintains this plugin for the official PaddleOCR asynchronous API on Baidu AI Studio. It uses Plugin API 1. Starting with plugin 1.0.3, the predefined model list and model restriction require host support for `allowCustomModel`.
 
 | Service | Verified models | Output |
 | --- | --- | --- |
