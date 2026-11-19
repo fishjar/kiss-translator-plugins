@@ -3,8 +3,7 @@
   "name": "Index-Translate",
   "version": "1.0.3",
   "freeTier": "free",
-  "apiVersion": 1,
-  "minHostVersion": "2.2.6",
+  "apiVersion": 2,
   "description": "Index-Translate：文本翻译、图片原文识别与双语解析。",
   "descriptionI18n": {
     "zh": "Index-Translate：文本翻译、图片原文识别与双语解析。",

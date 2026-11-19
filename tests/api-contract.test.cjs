@@ -87,8 +87,10 @@ function fixture(format = "http") {
   return { manifest, rules, rule, reference, check };
 }
 
-test("publisher requires numeric API 1 and rejects removed version fields", () => {
+test("publisher requires numeric API 1 or 2 and rejects removed version fields", () => {
   const f = fixture();
+  assert.doesNotThrow(f.check);
+  f.manifest.apiVersion = 2;
   assert.doesNotThrow(f.check);
   for (const apiVersion of [
     undefined,
@@ -99,7 +101,6 @@ test("publisher requires numeric API 1 and rejects removed version fields", () =
     0,
     -1,
     1.5,
-    2,
     3,
     Number.MAX_SAFE_INTEGER + 1,
   ]) {

@@ -27,7 +27,7 @@ function packagePaths(manifest) {
   requireValue(
     !Object.hasOwn(manifest, "manifestVersion") &&
       !Object.hasOwn(manifest, "rulesVersion") &&
-      manifest.apiVersion === 1 &&
+      [1, 2].includes(manifest.apiVersion) &&
       /^[a-z][a-z0-9-]{1,100}$/.test(manifest.id) &&
       validVersion(manifest.version),
     "Invalid manifest identity/version",
@@ -35,11 +35,6 @@ function packagePaths(manifest) {
   requireValue(
     manifest.kind === undefined || manifest.kind === "provider",
     "Unsupported plugin kind",
-  );
-  requireValue(
-    manifest.minHostVersion === undefined ||
-      validVersion(manifest.minHostVersion),
-    "Invalid minHostVersion",
   );
   requireValue(
     Array.isArray(manifest.services) && manifest.services.length,

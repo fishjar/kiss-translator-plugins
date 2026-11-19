@@ -24,11 +24,9 @@ function job(f, pages, resultUrl = RESULT_URL, endpoint = JOB_URL) {
   return { image };
 }
 
-test("official package passes the 2.2.6 contract and requires that version", () => {
-  assert.throws(() => assertPluginCompatibility(manifest, "2.2.5"), {
-    code: "HOST_VERSION_UNSUPPORTED",
-  });
-  assert.doesNotThrow(() => assertPluginCompatibility(manifest, "2.2.6"));
+test("official package loads as API 2", () => {
+  assert.equal(manifest.apiVersion, 2);
+  assert.doesNotThrow(() => assertPluginCompatibility(manifest));
 });
 
 test("gateway base URL scopes both job requests and keeps BOS downloads unauthenticated", async () => {

@@ -1,6 +1,6 @@
 # Index-Translate
 
-需要支持结构化图片解析的 KISS Translator 2.2.6 或更新版本。插件 API 1。
+需要支持插件 API 2 的 KISS Translator。
 
 默认使用公开免费接口 `https://index-translate.bilibili.com/v1` 和 `Index-Translate-35B-A3B`，无需 API Key，并以 `freeTier: "free"` 声明默认服务免费。提供单条／聚合文本翻译和视觉解析，不声明布局或文字坐标能力。
 

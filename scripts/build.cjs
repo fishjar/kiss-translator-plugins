@@ -28,7 +28,6 @@ function buildPackage(folder) {
     version: manifest.version, apiVersion: manifest.apiVersion,
     ...(manifest.freeTier !== undefined && { freeTier: manifest.freeTier }),
     ...(manifest.kind !== undefined && { kind: manifest.kind }),
-    ...(manifest.minHostVersion !== undefined && { minHostVersion: manifest.minHostVersion }),
     capabilities: [...new Set(manifest.services.flatMap((service) => Object.keys(service.capabilities)))],
     downloadUrl: `${base}/${relative}`,
     sha256: createHash("sha256").update(bytes).digest("hex"),

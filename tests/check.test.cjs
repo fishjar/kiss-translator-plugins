@@ -79,23 +79,16 @@ test("standalone directory and ZIP checks do not execute scripts or require a ho
     assert.deepEqual(await check(dir), await check(zip));
     const legacy = buildPackage(dir);
     assert.equal(Object.hasOwn(legacy.item, "kind"), false);
-    assert.equal(Object.hasOwn(legacy.item, "minHostVersion"), false);
     fs.writeFileSync(
       path.join(dir, "manifest.json"),
       JSON.stringify({
         ...manifest,
         kind: "provider",
-        minHostVersion: "0.0.0",
+        apiVersion: 2,
       }),
     );
     assert.equal(buildPackage(dir).item.kind, "provider");
-    assert.equal(buildPackage(dir).item.minHostVersion, "0.0.0");
-    // Authors can publish a future requirement; the consuming host decides compatibility.
-    fs.writeFileSync(
-      path.join(dir, "manifest.json"),
-      JSON.stringify({ ...manifest, minHostVersion: "999999.0.0" }),
-    );
-    assert.equal((await check(dir)).id, manifest.id);
+    assert.equal(buildPackage(dir).item.apiVersion, 2);
     fs.writeFileSync(path.join(dir, "manifest.json"), files["manifest.json"]);
     assert.deepEqual(
       JSON.parse(
@@ -107,7 +100,7 @@ test("standalone directory and ZIP checks do not execute scripts or require a ho
     );
     for (const change of [
       { kind: "page" },
-      { minHostVersion: "invalid" },
+      { apiVersion: 3 },
       { services: [] },
     ]) {
       const content = {

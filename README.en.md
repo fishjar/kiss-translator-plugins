@@ -33,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 Plugins can be installed via the "Service Plugins" page in KISS Translator or imported after downloading the ZIP. The official repository contains multiple plugins; do not use the repository root URL as a single-plugin installation URL.
 
-All current official plugins use numeric `apiVersion: 1` and require a host supporting Plugin API 1. The development stage is not backwards-compatible with legacy contracts; please re-import packages and create new instances.
+Official plugins declare their required contract with numeric `apiVersion`. PaddleOCR, Index-Translate and the OpenAI Compatible Protocol use API 2. The other official packages use API 1.
 
 For directory structure, protocol testing, and CI publishing steps of new official plugins, as well as protocol and SDK contracts, see the [Plugin Development Guide](docs/plugin-development-guide.en.md). [Signed Dictionary](examples/signed-dictionary/README.md) is solely an educational development example and is not distributed as an official service.
 
@@ -55,7 +55,7 @@ To verify in GitHub Actions, manually run [Optional host compatibility](.github/
 
 Model parameter branching is a plugin adaptation strategy; standalone tests verify request construction logic, and host integration tests verify execution behavior under specified source versions, but neither proves all real models accept these parameters. Real services and browser acceptance require valid credentials and actual calls, with verified versions and results recorded separately.
 
-`apiVersion: 1` is the sole plugin contract version, covering manifest, rules, and SDK capabilities; `manifestVersion` / `rulesVersion` are no longer used. Plugin versions and host release versions remain independent. The publisher validates independently without relying on host source code.
+`apiVersion` is the sole plugin contract version, covering manifest, rules, and SDK capabilities; `manifestVersion` / `rulesVersion` are no longer used. Plugin versions and host release versions remain independent. The publisher validates independently without relying on host source code.
 
 Current verification results and browser acceptance boundaries can be found in [Plugin API 1 Acceptance Record](docs/plugin-api-1-acceptance.md).
 

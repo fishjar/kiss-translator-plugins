@@ -1,6 +1,6 @@
 # Index-Translate
 
-Requires KISS Translator 2.2.6 or later with structured image parsing. Plugin API 1.
+Requires KISS Translator with Plugin API 2 support.
 
 Uses the free public endpoint `https://index-translate.bilibili.com/v1` and `Index-Translate-35B-A3B` by default; no API key is required. `freeTier: "free"` declares the default service free. Supports single-item/batch text translation and image parsing. Layout and OCR coordinates are not advertised.
 

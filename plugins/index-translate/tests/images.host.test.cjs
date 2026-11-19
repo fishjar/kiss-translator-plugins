@@ -87,10 +87,11 @@ test("Index: single-item text translation uses the host protocol and stable IDs"
   assert.deepEqual(result.items, [{ id: "source", text: "你好" }]);
 });
 
-test("new manifests reject released 2.2.5 hosts", () => {
+test("structured image packages load as API 2", () => {
   for (const plugin of ["index-translate", "openai-compatible-bundle"]) {
     const manifest = require(`../../${plugin}/manifest.json`);
-    assert.throws(() => assertPluginCompatibility(manifest, "2.2.5"), /2.2.6/);
+    assert.equal(manifest.apiVersion, 2);
+    assert.doesNotThrow(() => assertPluginCompatibility(manifest));
   }
 });
 

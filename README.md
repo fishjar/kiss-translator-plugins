@@ -33,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 可在简约翻译的“接口插件”页面安装，也可下载 ZIP 后导入。官方仓库包含多个插件，不能使用仓库根地址作为单插件安装地址。
 
-当前全部官方插件使用数字 `apiVersion: 1`，需要新版插件 API 1 宿主。开发阶段不兼容旧契约；请重新导入包并创建实例。
+官方插件使用数字 `apiVersion` 声明所需契约。PaddleOCR、Index-Translate 和 OpenAI 兼容协议使用 API 2，其余使用 API 1。
 
 新增官方插件的目录结构、协议测试与 CI 发布步骤，以及协议和 SDK 契约，见[插件开发指南](docs/plugin-development-guide.md)。[签名词典](examples/signed-dictionary/README.md)仅为开发教学示例，不作为官方服务分发。
 
@@ -55,7 +55,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 模型参数分支是插件的适配策略；独立测试证明请求构造逻辑，宿主集成证明指定源码版本下的执行行为，两者都不能证明所有真实模型接受这些参数。真实服务与浏览器验收需要有效凭据和实际调用，单独记录验证版本及结果。
 
-`apiVersion: 1` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
+`apiVersion` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
 
 当前验证结果及浏览器验收边界见[插件 API 1 验收记录](docs/plugin-api-1-acceptance.md)。
 

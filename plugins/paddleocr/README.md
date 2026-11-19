@@ -2,7 +2,7 @@
 
 [English](README.en.md) | [简体中文](README.md)
 
-由简约翻译项目维护，通过百度 AI Studio 的 PaddleOCR 官方异步 API 提供两项服务。需要简约翻译 2.2.6 或更新版本。
+由简约翻译项目维护，通过百度 AI Studio 的 PaddleOCR 官方异步 API 提供两项服务。需要支持插件 API 2 的简约翻译。
 
 | 服务 | 已验证的模型 | 输出 |
 | --- | --- | --- |

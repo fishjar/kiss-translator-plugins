@@ -4,7 +4,7 @@
 
 This document is for official and external plugin authors, explaining the files and interfaces required to create, configure, execute, debug, and publish plugins. Basic development does not require cloning the host; new official plugins are developed in this repository according to Section 12.5. Host source code and dependencies are only needed when optionally running real host SDK integration tests.
 
-Contract check: 2026-10-28. Development uniformly uses numeric `apiVersion: 1`; it defines the manifest, declarative syntax, and SDK capabilities simultaneously. Only the integer `1` is accepted; legacy SDKs, string versions, or legacy instances are not compatible, and no automatic conversion or migration is performed. Manifests do not contain `manifestVersion`, and declarative files do not contain `rulesVersion`; the two rule types are distinguished by `format`.
+Numeric `apiVersion` defines the manifest, declarative syntax, and SDK capabilities. The host supports integers 1 and 2. Use API 2 for plugins that depend on structured image parsing or script Worker timers. Manifests omit `manifestVersion` and declarative rules omit `rulesVersion`. The rule types are distinguished by `format`.
 
 For current automated tests, build artifacts, and real browser verification boundaries, see the [Plugin API 1 Acceptance Record](plugin-api-1-acceptance.md).
 
@@ -188,7 +188,7 @@ The Manifest uses standard JSON and does not support comments or trailing commas
 | `id` | String, required | Stable ID matching `^[a-z][a-z0-9-]{1,100}$`, 2–101 characters |
 | `name` | String | Display name of the plugin |
 | `version` | String, required | Three-part semantic version (e.g. `1.0.0`), without `v` prefix, pre-release, or build suffixes |
-| `apiVersion` | Number, required | Fixed integer `1`; does not accept strings, missing values, or legacy formats |
+| `apiVersion` | Number, required | Integer 1 or 2, according to the contract the plugin requires |
 | `services` | Non-empty array, required | Service definitions |
 | `sharedSettings` | Optional array | Shared configuration field definitions; instance values remain independent |
 | `permissions` | Optional object | `network` and `endpointFields` |
@@ -284,7 +284,7 @@ Shared fields and permissions are validated per service, and shared capability-s
 - Fixed addresses in `network` and user-configured addresses in `endpointFields` support HTTP/HTTPS, including LAN services; origin scope checks still apply.
 - `endpointFields` references merged non-secret `text` fields, granting access to the origin of the instance's saved value without restricting paths.
 - Requests may only access declared fixed origins and origins from configured endpoint fields; requests outside these scopes are blocked.
-- Since host 2.2.6, `permissions.originRewrite: ["https://api.example.com"]` requests setting the Origin header of extension requests to the destination origin. Entries must be a subset of fixed `network` origins, without wildcards, paths, trailing slashes, queries or credentials. Changing `endpointFields` does not expand this list.
+- API 2 plugins can rely on `permissions.originRewrite: ["https://api.example.com"]` to set the Origin header of extension requests to the destination origin. Entries must be a subset of fixed `network` origins, without wildcards, paths, trailing slashes, queries, or credentials. Changing `endpointFields` does not expand this list.
 - The host deduplicates declarations from all enabled, compatible and configured external service snapshots and merges them with saved user Origin rules; user rules take precedence. Installing a template alone activates nothing. A shared plugin rule remains until its last contributing instance is disabled or removed, and saved user settings remain unchanged. Import, instance upgrade and settings views display this permission.
 - Rules synchronize at startup and on configuration changes; affected first requests await synchronization. Requests do not install or remove rules individually. Rules match the exact origin and extension-initiated XHR/fetch only; they do not remove CSP or expand network access. Browsers without DNR explicitly reject calls requiring this feature.
 - When endpoint fields are modified, new requests use the new address while active tasks continue using their original snapshot. Never declare unrelated endpoint fields.
@@ -298,11 +298,11 @@ Prior to release, gaps in generic contracts or implementations can be resolved a
 
 ### Plugin Kinds and Host Compatibility
 
-Manifests may optionally declare `kind: "provider"` and `minHostVersion: "2.1.1"` (the version is illustrative; specify the first host version releasing the required feature). Omitting `kind` defaults to service provider plugins; omitting minHostVersion preserves legacy behavior without injecting default values or modifying package hashes. `minHostVersion` only accepts three non-negative safe integers without pre-release tags. Unknown kinds and unsupported host versions report `UNSUPPORTED_PLUGIN_KIND` and `HOST_VERSION_UNSUPPORTED` respectively.
+Manifests may declare `kind: "provider"`. Omitting `kind` defaults to service provider plugins. Unrecognized kinds and unsupported API versions report `UNSUPPORTED_PLUGIN_KIND` and `SDK_VERSION_UNSUPPORTED`, respectively.
 
 Requirements synchronize with instance snapshots, enforced during import, restoration, instance creation, and execution boundaries. Newer hosts can prevent incompatible snapshots from executing; older hosts without these checks cannot be retroactively protected, requiring host updates across devices. Official catalogs may list incompatible packages but prevent their installation.
 
-`kind` is a classification and grants no permissions. Currently only `provider` is supported; `script`/`declarative` are implementation methods for provider plugins. Future plugin types (e.g., page injects, text processors) will require independent contracts, permissions, and lifecycles, using new Manifest/API versions to prevent older hosts from loading them; never rely solely on unrecognized kinds or minHostVersion. No generic plugin registry is introduced at this time.
+`kind` is a classification and grants no permissions. Currently only `provider` is supported. Scripts and declarative rules are implementation methods for provider plugins. Future plugin types require their own contracts, permissions, lifecycle, and numeric API version.
 
 ### 3.6 Model Catalog
 
@@ -1494,7 +1494,7 @@ npm test                          # Packaging regression + standalone adapter te
 npm run build
 ```
 
-`check` shares package validations with the build, covering Manifest identity and version formats, referenced paths/files, sizes, script syntax, and declarative handler mappings. Directory checks only inspect files referenced by publication; ZIP checks do not execute scripts. This check does not replicate full host SDK, permissions, or runtime validation, nor does it inspect the publisher machine's host version. `minHostVersion` can declare future versions, leaving compatibility to consuming hosts.
+`check` shares package validations with the build, covering Manifest identity and version formats, referenced paths/files, sizes, script syntax, and declarative handler mappings. Directory checks only inspect files referenced by publication; ZIP checks do not execute scripts. This check does not replicate full host SDK, permissions, or runtime validation, nor does it inspect the publisher machine's host version.
 
 `npm run test:protocol` gathers plugin `*.test.cjs` files (excluding `*.host.test.cjs`), validating vendor adaptation logic using SDK test doubles without calling vendor APIs. Default protocol tests intercept global `fetch`; live vendor calls use separate `live.cjs` scripts and are excluded from default test suites.
 
@@ -1620,7 +1620,7 @@ This example implements `complete` only, so the service must declare `outputMode
 
 New default prompt slots include `summary` → `summarize`, `detectLanguage`, `suggest`, `evaluate`, `recognizeText`, and `analyzeLayout`, alongside existing `batch`, `nobatch`, `dictionary`, `subtitle`, and `vlm`. Text tasks support `instructions`/`userPrompt`; image tasks use `prompt`. Explicit inputs take precedence over plugin defaults; selecting "Plugin internal default" uses the instance snapshot without fetching remote templates. `textTasks` supports `text`, `transcript` (alias for text in summaries), `sourceLanguage`, `targetLanguage`, `language`, `from`/`fromLang`, `to`/`toLang`, `context`, `title`, `description`, `summary`, `url`, `tone`, `glossary`, and `items`; missing text variables are empty, languages default to `auto`, and `glossary` formats as a `- term: value` list. Translation helpers continue formatting `glossary` as a JSON object. Input payloads and output schemas for structured tasks are fixed by the SDK; users may only customize task instructions without altering wire formats.
 
-Plugin API 1 uses numeric `apiVersion: 1` as the sole contract version. Vendor endpoints, models, and prompt adjustments generally increment plugin `version` only; `apiVersion` is incremented when introducing contracts that legacy hosts cannot handle correctly. The host accepts only integer `1` and does not support legacy contracts or automatic instance migrations. `minHostVersion` is reserved for host feature dependencies outside the contract, omitted in standard adapters.
+The host checks compatibility using numeric `apiVersion`. Endpoint, model, and prompt changes usually require only a new plugin `version`. Plugins that rely on a new contract declare the API version that supports it. Existing API 1 instances continue to work.
 
 Installing a new package updates templates only. Users create or upgrade snapshots via the existing instance upgrade flow; original accounts, models, explicit prompts, and capability selections are preserved in preview without automatic overwrites. SDKs supported by templates and instances are re-verified at execution boundaries. Generic prompts and documentation examples in Plugin API 1 enter host integration regressions; new capabilities must provide complete support matrices, input/output schemas, invalid declaration checks, and tests across both execution modes.
 
@@ -1640,7 +1640,7 @@ Remote `evaluate` results are no longer tied to local engine model names. `model
 
 For OpenRouter adaptation and live API / browser acceptance, see [OpenRouter Acceptance Record](../plugins/openrouter/ACCEPTANCE.md).
 
-## Structured image parsing (host 2.2.6)
+## Structured image parsing and Worker timers (Plugin API 2)
 
 Optional manifest metadata `freeTier` controls the badge. Supported values are `free`, `quota-limited`, `some-models`, and `time-limited`. Omit the field to hide the badge. The publisher includes it in the official catalog. Text fields can provide localized instructions with `helpText` and `helpTextI18n`.
 
@@ -1652,4 +1652,4 @@ Results may contain original `text` and `format`, `translation: {text,targetLang
 
 The image/screenshot scene reuses valid translations and translates only missing items with available source text. Recognition-only never invokes fallback. Prompts request outputs; capability declarations do not. Verify the actual model, especially coordinate quality. No default layout preset is supplied.
 
-Publish new packages after the matching minimum host release. For development, set `KISS_TRANSLATOR_ROOT` to the feature checkout and use test-only `KISS_TRANSLATOR_TEST_VERSION=2.2.6` with `npm run test:host`. This never bypasses production compatibility checks.
+Packages that rely on these features declare `apiVersion: 2`. Publish them after a host supporting API 2 is available. Script Workers provide bounded one-shot `setTimeout` and `clearTimeout` for polling cloud jobs. Point `KISS_TRANSLATOR_ROOT` at a compatible host checkout and run `npm run test:host` during development.

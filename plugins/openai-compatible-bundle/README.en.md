@@ -1,4 +1,4 @@
-> Current development contract: Plugin API 1 (numeric `apiVersion: 1`), declarative rules use `format: "http"` or `"protocol"`. The legacy release notes below are historical and do not imply compatibility with legacy contracts.
+> Current contract: Plugin API 2 (numeric `apiVersion: 2`), declarative rules use `format: "http"` or `"protocol"`. The legacy release notes below are historical and do not imply compatibility with legacy contracts.
 
 # OpenAI Compatible Protocol Plugin
 
@@ -103,4 +103,4 @@ Current LLM service supports translation, chat (LLM), subtitle segmentation, and
 
 ## 2.0.8: structured image parsing
 
-Requires host 2.2.6 or later. Vision adds image-translation and bilingual prompts while retaining original-text extraction by default. Valid translations bypass fallback text translation. Custom image-json prompts may return layout, but image input, structured output and coordinate quality must be verified for the actual model. No default layout preset is supplied. Publish after the matching host release.
+Requires a host supporting Plugin API 2. Vision adds image-translation and bilingual prompts while retaining original-text extraction by default. Valid translations bypass fallback text translation. Custom image-json prompts may return layout, but image input, structured output and coordinate quality must be verified for the actual model. No default layout preset is supplied. Publish after the matching host release.
