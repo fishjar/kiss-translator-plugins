@@ -269,16 +269,16 @@
         "vi": "API bất đồng bộ chính thức của PaddleOCR: nhận dạng văn bản PP-OCR kèm tọa độ dòng, và phân tích tài liệu PP-StructureV3 / PaddleOCR-VL.",
         "ru": "Официальный асинхронный API PaddleOCR: распознавание текста PP-OCR с координатами строк и разбор документов PP-StructureV3 / PaddleOCR-VL."
       },
-      "version": "1.0.2",
+      "version": "1.0.3",
       "apiVersion": 1,
       "freeTier": "quota-limited",
       "capabilities": [
         "recognizeText",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.2.zip",
-      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.2.icon.png",
-      "sha256": "523fb8e7972d918bf08a07728d2943d4e2fa0ba51ddc4a965709638f1e54522b"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.3.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.3.icon.png",
+      "sha256": "b0aa24a6e5997ba474fd97c0774f4e54c0ced5a4918a94d6940571b7347aa9b2"
     },
     {
       "id": "qianwen",
