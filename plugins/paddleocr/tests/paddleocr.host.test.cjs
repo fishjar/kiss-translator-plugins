@@ -24,8 +24,8 @@ function job(f, pages, resultUrl = RESULT_URL, endpoint = JOB_URL) {
   return { image };
 }
 
-test("official package loads as API 2", () => {
-  assert.equal(manifest.apiVersion, 2);
+test("official package loads as API 1", () => {
+  assert.equal(manifest.apiVersion, 1);
   assert.doesNotThrow(() => assertPluginCompatibility(manifest));
 });
 

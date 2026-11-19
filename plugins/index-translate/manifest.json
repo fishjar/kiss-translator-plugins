@@ -3,7 +3,7 @@
   "name": "Index-Translate",
   "version": "1.0.3",
   "freeTier": "free",
-  "apiVersion": 2,
+  "apiVersion": 1,
   "description": "Index-Translate：文本翻译、图片原文识别与双语解析。",
   "descriptionI18n": {
     "zh": "Index-Translate：文本翻译、图片原文识别与双语解析。",
@@ -240,26 +240,6 @@
               "zh": "纯文本识别",
               "en": "Plain text recognition"
             }
-          },
-          {
-            "id": "image-translation",
-            "name": "图片翻译",
-            "nameI18n": {
-              "zh": "图片翻译",
-              "en": "Image translation"
-            },
-            "protocol": "image-json",
-            "userPrompt": "Translate all visible text into {{to}}. Return exactly {\"format\":\"text\",\"translation\":{\"text\":\"your complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit original text and layout."
-          },
-          {
-            "id": "image-bilingual",
-            "name": "双语解析",
-            "nameI18n": {
-              "zh": "双语解析",
-              "en": "Bilingual image parsing"
-            },
-            "protocol": "image-json",
-            "userPrompt": "Extract all visible original text in reading order and translate it into {{to}}. Return exactly {\"format\":\"text\",\"text\":\"the complete original text\",\"translation\":{\"text\":\"the complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit layout."
           }
         ]
       }

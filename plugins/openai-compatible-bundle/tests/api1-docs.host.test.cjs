@@ -80,7 +80,7 @@ for (const id of [
     const manifest = JSON.parse(
       fs.readFileSync(path.join(root, "plugins", id, "manifest.json")),
     );
-    assert.equal(manifest.apiVersion, id === "openai-compatible-bundle" ? 2 : 1);
+    assert.equal(manifest.apiVersion, 1);
     const prompts = manifest.services.find(
       (service) => service.id === "chat-completions",
     ).defaultPrompts;

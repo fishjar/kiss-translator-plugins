@@ -33,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 Plugins can be installed via the "Service Plugins" page in KISS Translator or imported after downloading the ZIP. The official repository contains multiple plugins; do not use the repository root URL as a single-plugin installation URL.
 
-Official plugins declare their required contract with numeric `apiVersion`. PaddleOCR, Index-Translate and the OpenAI Compatible Protocol use API 2. The other official packages use API 1.
+Official plugins declare their required contract with numeric `apiVersion`. Current official packages use API 1. PaddleOCR, Index-Translate and OpenAI Compatible use whole-image recognition or structured image parsing when supported by the host.
 
 For directory structure, protocol testing, and CI publishing steps of new official plugins, as well as protocol and SDK contracts, see the [Plugin Development Guide](docs/plugin-development-guide.en.md). [Signed Dictionary](examples/signed-dictionary/README.md) is solely an educational development example and is not distributed as an official service.
 

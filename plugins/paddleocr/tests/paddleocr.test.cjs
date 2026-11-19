@@ -1,6 +1,9 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
 const handlers = require("../services/paddleocr.js");
+const manifest = require("../manifest.json");
 
 const IMAGE = { assetId: "asset-1", mimeType: "image/png" };
 const JSON_URL = "https://paddleocr.bj.bcebos.com/result.jsonl";
@@ -210,31 +213,80 @@ test("parseImage keeps layout blocks, headers and Markdown fallback pages", asyn
   assert.equal(payload.useTextlineOrientation, undefined);
 });
 
-test("unavailable models fall back to the service default", async () => {
-  const { ctx, calls } = createContext([
-    () => response(JSON.stringify({ code: 0, data: { jobId: "job-3" } })),
-    () =>
-      response(
-        JSON.stringify({
-          code: 0,
-          data: { state: "done", resultUrl: { jsonUrl: JSON_URL } },
-        })
-      ),
-    () =>
-      response(
-        JSON.stringify({ result: { layoutParsingResults: [] } })
-      ),
-  ]);
-  // 空结果会抛错，但提交请求已经发生，可直接检查 payload。
+test("an unavailable model is rejected before submitting a job", async () => {
+  const { ctx, calls } = createContext([]);
   await assert.rejects(
     handlers.parseImage(
       { image: IMAGE },
       { model: "PaddleOCR-VL" },
       ctx
     ),
-    /未返回文档解析结果/
+    { code: "INVALID_CONFIG" }
   );
-  assert.equal(calls[0].request.body.model, "PaddleOCR-VL-1.6");
+  assert.equal(calls.length, 0);
+});
+
+for (const [index, capability, expected] of [
+  [0, "recognizeText", ["PP-OCRv6", "PP-OCRv5", "PP-OCRv5-latin"]],
+  [1, "parseImage", ["PaddleOCR-VL-1.6", "PaddleOCR-VL-1.5", "PP-StructureV3"]],
+]) {
+  test(`${capability} submits exactly the models shown in its select field`, async () => {
+    const modelField = manifest.services[index].settings.find((field) => field.key === "model");
+    assert.equal(modelField.type, "select");
+    assert.deepEqual(modelField.options.map((option) => option.value), expected);
+    for (const model of expected) {
+      const marker = new Error("stop after submission");
+      const { ctx, calls } = createContext([() => { throw marker; }]);
+      await assert.rejects(handlers[capability]({ image: IMAGE }, { model }, ctx), marker);
+      assert.equal(calls[0].request.body.model, model);
+    }
+  });
+}
+
+function handlersWithoutTimers(AbortSignal) {
+  const exports = {};
+  vm.runInNewContext(
+    fs.readFileSync(require.resolve("../services/paddleocr.js"), "utf8"),
+    { exports, AbortSignal }
+  );
+  return exports;
+}
+
+test("the API 1 timer fallback waits between polls and enforces the overall deadline", async () => {
+  const delays = [];
+  const { recognizeText } = handlersWithoutTimers({
+    timeout(ms) {
+      const controller = new AbortController();
+      delays.push({ ms, controller });
+      if (ms < 100000) queueMicrotask(() => controller.abort());
+      return controller.signal;
+    },
+  });
+  const { ctx } = createContext([
+    () => response(JSON.stringify({ code: 0, data: { jobId: "legacy" } })),
+    () => response(JSON.stringify({ code: 0, data: { state: "pending" } })),
+    () => response(JSON.stringify({
+      code: 0,
+      data: { state: "done", resultUrl: { jsonUrl: JSON_URL } },
+    })),
+    () => response(JSON.stringify({ result: OCR_PAGE })),
+  ]);
+  assert.equal((await recognizeText({ image: IMAGE }, {}, ctx)).text, "Hello\nWorld");
+  assert.deepEqual(delays.map(({ ms }) => ms), [100000, 1500]);
+
+  const stalled = createContext([() => new Promise(() => {})]);
+  const pending = recognizeText({ image: IMAGE }, {}, stalled.ctx);
+  delays.at(-1).controller.abort();
+  await assert.rejects(pending, { code: "PROVIDER_TIMEOUT" });
+});
+
+test("missing scheduling primitives fail before uploading the image", async () => {
+  const { recognizeText } = handlersWithoutTimers(undefined);
+  const { ctx, calls } = createContext([]);
+  await assert.rejects(recognizeText({ image: IMAGE }, {}, ctx), {
+    code: "POLL_DELAY_UNAVAILABLE",
+  });
+  assert.equal(calls.length, 0);
 });
 
 test("failed jobs and missing coordinates are reported", async () => {

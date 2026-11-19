@@ -33,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 可在简约翻译的“接口插件”页面安装，也可下载 ZIP 后导入。官方仓库包含多个插件，不能使用仓库根地址作为单插件安装地址。
 
-官方插件使用数字 `apiVersion` 声明所需契约。PaddleOCR、Index-Translate 和 OpenAI 兼容协议使用 API 2，其余使用 API 1。
+官方插件使用数字 `apiVersion` 声明所需契约。当前官方包使用 API 1。PaddleOCR、Index-Translate 和 OpenAI 兼容协议可随宿主能力使用整图优先或结构化图片解析。
 
 新增官方插件的目录结构、协议测试与 CI 发布步骤，以及协议和 SDK 契约，见[插件开发指南](docs/plugin-development-guide.md)。[签名词典](examples/signed-dictionary/README.md)仅为开发教学示例，不作为官方服务分发。
 

@@ -14,15 +14,31 @@ function fail(code, message) {
   throw Object.assign(new Error(message), { code: code });
 }
 
+function schedule(callback, ms) {
+  if (typeof setTimeout === "function" && typeof clearTimeout === "function") {
+    var timer = setTimeout(callback, ms);
+    return function () { clearTimeout(timer); };
+  }
+  if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+    var signal = AbortSignal.timeout(ms);
+    signal.addEventListener("abort", callback, { once: true });
+    return function () { signal.removeEventListener("abort", callback); };
+  }
+  fail("POLL_DELAY_UNAVAILABLE", "当前脚本环境无法等待 PaddleOCR 任务，请更新简约翻译或浏览器");
+}
+
 function sleep(ms) {
   return new Promise(function (resolve) {
-    setTimeout(resolve, ms);
+    schedule(function () { resolve(); }, ms);
   });
 }
 
 function pickModel(config, models) {
   var value = config && config.model;
-  return models.indexOf(value) >= 0 ? value : models[0];
+  if (value == null || value === "") return models[0];
+  if (models.indexOf(value) < 0)
+    fail("INVALID_CONFIG", "请选择此 PaddleOCR 服务支持的模型");
+  return value;
 }
 
 function imageRef(ref) {
@@ -118,21 +134,23 @@ async function runJob(ctx, input, config, model, optionalPayload) {
   if (!input || !input.image) fail("INVALID_INPUT", "缺少图片资产");
   var endpoint = jobEndpoint(config);
   var deadline = Date.now() + JOB_BUDGET_MS;
-  var timer;
+  var rejectDeadline;
+  var timeout = new Promise(function (resolve, reject) {
+    rejectDeadline = reject;
+  });
+  var cancelDeadline = schedule(function () {
+    rejectDeadline(Object.assign(new Error("PaddleOCR 任务超时"), {
+      code: "PROVIDER_TIMEOUT",
+    }));
+  }, JOB_BUDGET_MS);
   var pages;
   try {
     pages = await Promise.race([
       submitAndPoll(ctx, input, endpoint, model, optionalPayload, deadline),
-      new Promise(function (resolve, reject) {
-        timer = setTimeout(function () {
-          reject(Object.assign(new Error("PaddleOCR 任务超时"), {
-            code: "PROVIDER_TIMEOUT",
-          }));
-        }, JOB_BUDGET_MS);
-      }),
+      timeout,
     ]);
   } finally {
-    clearTimeout(timer);
+    cancelDeadline();
   }
   return pages;
 }
