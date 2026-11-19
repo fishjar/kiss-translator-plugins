@@ -17,6 +17,38 @@ const requireValue = (valid, message) => {
     throw Object.assign(new Error(message), { code: "INVALID_PACKAGE" });
 };
 
+function checkModels(manifest, service) {
+  const { allowCustomModel, models } = service;
+  requireValue(
+    allowCustomModel === undefined || typeof allowCustomModel === "boolean",
+    "Invalid allowCustomModel",
+  );
+  if (models === undefined && allowCustomModel !== false) return;
+  const modelField = service.modelField || "model";
+  const field =
+    service.settings?.find((setting) => setting?.key === modelField) ??
+    manifest.sharedSettings?.find((setting) => setting?.key === modelField);
+  requireValue(
+    field?.type === "text" && !field.isSecret && Array.isArray(models) && models.length,
+    "Models require a non-secret text model setting and a non-empty list",
+  );
+  requireValue(
+    models.every((model) => typeof model?.id === "string" && model.id) &&
+      new Set(models.map((model) => model.id)).size === models.length,
+    "Invalid model definition",
+  );
+  for (const model of models)
+    requireValue(
+      model.capabilities === undefined,
+      "Model capabilities must be declared on separate services: " + service.id,
+    );
+  requireValue(
+    allowCustomModel !== false || field.defaultValue === undefined ||
+      models.some((model) => model.id === field.defaultValue),
+    "Default model must be in models",
+  );
+}
+
 // This is the publisher's package check, not a copy of the host SDK/runtime.
 function packagePaths(manifest) {
   requireValue(
@@ -88,6 +120,7 @@ function packagePaths(manifest) {
       }
     }
     ids.add(service.id);
+    checkModels(manifest, service);
     const promptCapabilities = {
       batch: "translate",
       nobatch: "translate",
@@ -159,12 +192,6 @@ function packagePaths(manifest) {
         }
       }
     }
-    for (const model of service.models || [])
-      requireValue(
-        model?.capabilities === undefined,
-        "Model capabilities must be declared on separate services: " +
-          service.id,
-      );
     entries.add(service.implementation.entry);
   }
   for (const resource of manifest.resources || []) entries.add(resource.path);

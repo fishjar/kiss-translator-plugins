@@ -230,10 +230,10 @@ for (const [index, capability, expected] of [
   [0, "recognizeText", ["PP-OCRv6", "PP-OCRv5", "PP-OCRv5-latin"]],
   [1, "parseImage", ["PaddleOCR-VL-1.6", "PaddleOCR-VL-1.5", "PP-StructureV3"]],
 ]) {
-  test(`${capability} submits exactly the models shown in its select field`, async () => {
-    const modelField = manifest.services[index].settings.find((field) => field.key === "model");
-    assert.equal(modelField.type, "select");
-    assert.deepEqual(modelField.options.map((option) => option.value), expected);
+  test(`${capability} submits exactly its predefined models`, async () => {
+    const service = manifest.services[index];
+    assert.equal(service.allowCustomModel, false);
+    assert.deepEqual(service.models.map((model) => model.id), expected);
     for (const model of expected) {
       const marker = new Error("stop after submission");
       const { ctx, calls } = createContext([() => { throw marker; }]);

@@ -221,7 +221,8 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | capabilities         | 非空对象，键为第 6 节标准能力                 |
 | settings             | 本服务字段，与 sharedSettings 合并            |
 | modelField           | 模型字段键，省略时 model                      |
-| models               | 可选非空建议目录，见 3.6                      |
+| models               | 可选非空预定义模型列表，见 3.6                |
+| allowCustomModel     | 可选布尔值，默认允许自定义型号                |
 | defaultPrompts       | 可选默认模板，见第 11 节                      |
 
 服务 ID、handler、字段键、资源 ID 不得为 **proto**、constructor、prototype。JS 每个入口为完整单文件，不运行时加载其他脚本/npm 依赖，有依赖需作者预先合并。
@@ -319,11 +320,12 @@ kind 是分类，不授予权限。当前仅支持 provider，script 和 declara
 
 ### 3.6 模型目录
 
-服务已声明 chat/translate 且存在非秘密 text 字段 model 时可添加：
+服务可以用 `models` 声明预定义模型。它绑定到 `modelField` 指定的非密钥 `text` 字段，默认绑定 `model`。
 
 ```json
 {
   "modelField": "model",
+  "allowCustomModel": false,
   "models": [
     { "id": "model-a", "name": "通用模型" },
     { "id": "model-b", "name": "另一个通用模型" }
@@ -331,7 +333,7 @@ kind 是分类，不授予权限。当前仅支持 provider，script 和 declara
 }
 ```
 
-模型目录的 ID 必须唯一。用户可输入自定义 ID，目录不是白名单。所有模型和自定义 ID 使用同一份服务能力声明；作者和使用者须确认自定义模型支持该服务的能力与协议。模型层 capabilities 会被安装校验拒绝；能力不同的模型必须拆成独立服务。
+模型 ID 必须唯一，可用 `name` 和 `nameI18n` 提供显示名。插件详情和服务配置使用同一份列表。省略 `allowCustomModel` 或设为 `true` 时允许自定义 ID。设为 `false` 时必须声明非空列表，配置和显式默认值只能使用列表里的 ID。使用该限制的插件需要支持此字段的宿主。所有模型共用服务能力声明，能力不同的模型应拆成独立服务。
 
 默认模型优先采用字段默认值，否则取目录第一项；没有目录时由用户填写。切换模型不改变用户启用的能力，包括全部关闭的状态。更新目录仅影响新实例，旧实例保留原目录快照。
 

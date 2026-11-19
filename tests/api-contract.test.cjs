@@ -114,6 +114,22 @@ test("publisher requires numeric API 1 or 2 and rejects removed version fields",
   }
 });
 
+test("publisher validates fixed model declarations", () => {
+  const f = fixture();
+  const service = f.manifest.services[0];
+  service.modelField = "voice";
+  service.allowCustomModel = false;
+  assert.throws(f.check, /non-empty list/);
+  service.models = [{ id: "model-a" }];
+  assert.doesNotThrow(f.check);
+  service.settings[0].defaultValue = "unknown";
+  assert.throws(f.check, /Default model/);
+  service.settings[0].defaultValue = "model-a";
+  assert.doesNotThrow(f.check);
+  service.allowCustomModel = "false";
+  assert.throws(f.check, /Invalid allowCustomModel/);
+});
+
 for (const format of ["http", "protocol"]) {
   test(`${format} publisher checks fallback references without a host`, () => {
     assert.doesNotThrow(fixture(format).check);
