@@ -51,16 +51,15 @@
         "vi": "Index-Translate text translation, image recognition and bilingual image parsing.",
         "ru": "Index-Translate text translation, image recognition and bilingual image parsing."
       },
-      "version": "1.0.2",
+      "version": "1.0.3",
       "apiVersion": 1,
-      "isFree": true,
-      "minHostVersion": "2.2.6",
+      "freeTier": "free",
       "capabilities": [
         "translate",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/index-translate/1.0.2.zip",
-      "sha256": "2cae83d3834e840e8d5e05dc0b06aa598026f7ba99a9940f91c6b16a289b1a24"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/index-translate/1.0.3.zip",
+      "sha256": "7cf0e484c611aac2547a98eee8067a6d05ebba5da2c2c8e4fa13762bd0dc6b97"
     },
     {
       "id": "kimi",
@@ -193,9 +192,8 @@
         "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
         "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
       },
-      "version": "2.0.8",
+      "version": "2.0.9",
       "apiVersion": 1,
-      "minHostVersion": "2.2.6",
       "capabilities": [
         "chat",
         "translate",
@@ -205,8 +203,8 @@
         "synthesizeSpeech",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.8.zip",
-      "sha256": "e71196590f0e890bb10b193d86d395fc7fb9c31c8bb0e0803e172d804b3b7fea"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.9.zip",
+      "sha256": "ab8c3068b83a9699d0cc45fb925595163479ccedf7f0979a8b1eb84825716f77"
     },
     {
       "id": "openrouter",
@@ -225,8 +223,9 @@
         "vi": "Trò chuyện và dịch qua OpenRouter, cùng chép lời âm thanh bằng Whisper và Qwen. Hỗ trợ tổng hợp giọng nói Gemini, Qwen và quyết định Jev.",
         "ru": "Чат и перевод OpenRouter, а также транскрипция аудио с Whisper и Qwen. Поддерживает синтез речи Gemini и Qwen и решения Jev."
       },
-      "version": "1.2.3",
+      "version": "1.2.4",
       "apiVersion": 1,
+      "freeTier": "some-models",
       "capabilities": [
         "chat",
         "translate",
@@ -236,8 +235,42 @@
         "synthesizeSpeech",
         "evaluate"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.3.zip",
-      "sha256": "8837e930d616f1a9c217925bae5cd700a50a742407cc02306bf3bc2ce12579b5"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.4.zip",
+      "sha256": "52b09e7e1129fb483925503a4a8838dea9e2588492079eff8d43fb6aa112e34c"
+    },
+    {
+      "id": "paddleocr",
+      "name": "PaddleOCR",
+      "nameI18n": {
+        "zh": "PaddleOCR",
+        "en": "PaddleOCR",
+        "zh_TW": "PaddleOCR",
+        "ja": "PaddleOCR",
+        "ko": "PaddleOCR",
+        "tr": "PaddleOCR",
+        "vi": "PaddleOCR",
+        "ru": "PaddleOCR"
+      },
+      "description": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+      "descriptionI18n": {
+        "zh": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+        "en": "PaddleOCR official async API: PP-OCR text recognition with line boxes, and PP-StructureV3 / PaddleOCR-VL document parsing.",
+        "zh_TW": "PaddleOCR 官方非同步 API：PP-OCR 文字辨識（含文字行座標）與 PP-StructureV3 / PaddleOCR-VL 文件解析。",
+        "ja": "PaddleOCR 公式非同期 API：PP-OCR 文字認識（行座標付き）と PP-StructureV3 / PaddleOCR-VL 文書解析。",
+        "ko": "PaddleOCR 공식 비동기 API: 텍스트 줄 좌표가 포함된 PP-OCR 인식과 PP-StructureV3 / PaddleOCR-VL 문서 분석.",
+        "tr": "PaddleOCR resmî eşzamansız API: metin satırı koordinatlı PP-OCR tanıma ve PP-StructureV3 / PaddleOCR-VL belge ayrıştırma.",
+        "vi": "API bất đồng bộ chính thức của PaddleOCR: nhận dạng văn bản PP-OCR kèm tọa độ dòng, và phân tích tài liệu PP-StructureV3 / PaddleOCR-VL.",
+        "ru": "Официальный асинхронный API PaddleOCR: распознавание текста PP-OCR с координатами строк и разбор документов PP-StructureV3 / PaddleOCR-VL."
+      },
+      "version": "1.0.2",
+      "apiVersion": 1,
+      "freeTier": "quota-limited",
+      "capabilities": [
+        "recognizeText",
+        "parseImage"
+      ],
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.2.zip",
+      "sha256": "523fb8e7972d918bf08a07728d2943d4e2fa0ba51ddc4a965709638f1e54522b"
     },
     {
       "id": "qianwen",
@@ -293,8 +326,9 @@
         "vi": "SiliconFlow: trò chuyện và dịch, chép lời âm thanh bằng Qwen và XingChen, nhận dạng văn bản trong ảnh bằng PaddleOCR và DeepSeek OCR.",
         "ru": "SiliconFlow: чат и перевод, транскрипция аудио с Qwen и XingChen, распознавание текста на изображениях с PaddleOCR и DeepSeek OCR."
       },
-      "version": "1.1.8",
+      "version": "1.1.9",
       "apiVersion": 1,
+      "freeTier": "some-models",
       "capabilities": [
         "chat",
         "translate",
@@ -303,8 +337,8 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.8.zip",
-      "sha256": "1eef83e079a2970592d3ac8c636551f3dfb01670eeb9d05a9b8c1c2e8b79859a"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.9.zip",
+      "sha256": "1b37a7c3f64f055dd920026a272371165ed94f8db5e60c5cf0cc011ca2a604d9"
     }
   ]
 }
