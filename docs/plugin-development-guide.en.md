@@ -195,7 +195,19 @@ The Manifest uses standard JSON and does not support comments or trailing commas
 | `icon` | Optional string | Package-relative PNG/JPEG/WebP path, max 256 KiB |
 | `resources` | Optional array | `{id, path, mimeType}`, see Section 8 |
 
-Icons are stored locally and are not cloned into instances; if a template is missing, uninstalled, or decoding fails, default icons are used without affecting execution. Do not rely on undefined fields to steer behavior.
+Official catalog builds publish a preview image from the package `icon`. The community directory reads `icon` from the root Manifest on the GitHub repository’s default branch and resolves it relative to the repository root. Installed plugins load icons from the local package, and service instances do not sync them. The host displays a generic icon if the image is missing or fails to load.
+
+Use Markdown in `description` and `descriptionI18n` for setup steps and links. The host shows three lines by default and displays up to 1,000 Unicode code points of text per locale, including the ellipsis when truncated. Markdown syntax and link destinations do not count toward the limit. Use absolute HTTP(S) links.
+
+```json
+{
+  "icon": "assets/logo.png",
+  "description": "**Quick start**\n\n1. Create an API key.\n2. Enter it in the service settings.\n\n[Setup guide](https://example.com/setup)",
+  "descriptionI18n": {
+    "zh": "**快速开始**\n\n1. 创建 API 密钥。\n2. 在服务配置中填入密钥。\n\n[查看配置指南](https://example.com/setup)"
+  }
+}
+```
 
 ### 3.2 Service Fields
 
