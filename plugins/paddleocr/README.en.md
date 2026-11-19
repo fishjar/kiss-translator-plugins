@@ -17,6 +17,10 @@ KISS Translator maintains this plugin for the official PaddleOCR asynchronous AP
 
 Document parsing reads ordered layout blocks when a page provides them. Text without coordinates still goes to translation. Pages without usable blocks fall back to Markdown. Document parsing runs in whole-image mode.
 
-The plugin sends images and the access token to AI Studio and downloads results from presigned Baidu Object Storage HTTPS URLs. If the service uses a new download origin, set it explicitly in Result download origin. Jobs have a 100-second budget and can end sooner at the host deadline.
+Whole-image document parsing uses the selected model and task parameters and requires no prompt. The plugin extracts source text and layout. The selected translation service produces the translation.
+
+The API base URL defaults to `https://paddleocr.aistudio-app.com`. For a compatible gateway, enter its base URL. The plugin appends `/api/v2/ocr/jobs` and sends images and the access token to that endpoint. Jobs have a 100-second budget and can end sooner at the host deadline.
+
+The plugin downloads results from presigned HTTPS URLs. Common Baidu Object Storage origins are built in. If the returned download origin is denied, enter its HTTPS origin in Additional result download origin. Result downloads omit the access token.
 
 [Official API documentation](https://www.paddleocr.ai/latest/en/version3.x/inference_deployment/serving/paddleocr_official_api/typescript.html) · [Acceptance notes](ACCEPTANCE.md) · [Original contribution by Gouzau-cn](https://github.com/fishjar/kiss-translator-plugins/pull/7)

@@ -1,7 +1,7 @@
 // PaddleOCR 官方异步任务 API。
 // 基本流程与官方示例一致：提交任务 -> 轮询任务状态 -> 下载 JSONL -> 解析结果。
 // recognizeText 用于 PP-OCR 文字识别；parseImage 用于 PP-StructureV3 / PaddleOCR-VL 文档解析。
-var JOB_URL = "https://paddleocr.aistudio-app.com/api/v2/ocr/jobs";
+var DEFAULT_BASE_URL = "https://paddleocr.aistudio-app.com";
 var POLL_INITIAL_MS = 1500;
 var POLL_MAX_MS = 5000;
 // 宿主对插件调用的默认超时是 120 秒，这里预留下载与解析时间。
@@ -46,6 +46,13 @@ function imageRef(ref) {
 
 function bearer(ctx) {
   return { type: "bearer", secret: ctx.secrets.ref("apiKey") };
+}
+
+function jobEndpoint(config) {
+  var base = (config.baseUrl || DEFAULT_BASE_URL).trim();
+  if (!/^https?:\/\/[^/\s@?#\\]+(?:\/[^?#\s\\]*)?$/i.test(base))
+    fail("INVALID_CONFIG", "PaddleOCR 接口地址须为 HTTP(S) 基础地址");
+  return base.replace(/\/+$/, "") + "/api/v2/ocr/jobs";
 }
 
 async function readJson(ctx, request) {
@@ -107,14 +114,15 @@ function jobTimedOut() {
   fail("PROVIDER_TIMEOUT", "PaddleOCR 任务超时");
 }
 
-async function runJob(ctx, input, model, optionalPayload) {
+async function runJob(ctx, input, config, model, optionalPayload) {
   if (!input || !input.image) fail("INVALID_INPUT", "缺少图片资产");
+  var endpoint = jobEndpoint(config);
   var deadline = Date.now() + JOB_BUDGET_MS;
   var timer;
   var pages;
   try {
     pages = await Promise.race([
-      submitAndPoll(ctx, input, model, optionalPayload, deadline),
+      submitAndPoll(ctx, input, endpoint, model, optionalPayload, deadline),
       new Promise(function (resolve, reject) {
         timer = setTimeout(function () {
           reject(Object.assign(new Error("PaddleOCR 任务超时"), {
@@ -129,9 +137,9 @@ async function runJob(ctx, input, model, optionalPayload) {
   return pages;
 }
 
-async function submitAndPoll(ctx, input, model, optionalPayload, deadline) {
+async function submitAndPoll(ctx, input, endpoint, model, optionalPayload, deadline) {
   var submitted = await readJson(ctx, {
-    url: JOB_URL,
+    url: endpoint,
     method: "POST",
     auth: bearer(ctx),
     bodyType: "multipart",
@@ -150,7 +158,7 @@ async function submitAndPoll(ctx, input, model, optionalPayload, deadline) {
   var interval = POLL_INITIAL_MS;
   while (Date.now() < deadline) {
     var status = await readJson(ctx, {
-      url: JOB_URL + "/" + encodeURIComponent(jobId),
+      url: endpoint + "/" + encodeURIComponent(jobId),
       method: "GET",
       auth: bearer(ctx),
       responseType: "text",
@@ -414,7 +422,7 @@ exports.recognizeText = async function (input, config, ctx) {
     useDocUnwarping: false,
     useTextlineOrientation: false,
   };
-  var pages = await runJob(ctx, input, model, payload);
+  var pages = await runJob(ctx, input, config, model, payload);
   return parseOcrPages(pages);
 };
 
@@ -432,6 +440,6 @@ exports.parseImage = async function (input, config, ctx) {
   } else {
     payload.useLayoutDetection = true;
   }
-  var pages = await runJob(ctx, input, model, payload);
+  var pages = await runJob(ctx, input, config, model, payload);
   return parseDocPages(pages);
 };

@@ -9,10 +9,10 @@ const manifest = require("../manifest.json");
 const JOB_URL = "https://paddleocr.aistudio-app.com/api/v2/ocr/jobs";
 const RESULT_URL = "https://paddleocr-store-1.bj.bcebos.com/result.jsonl?signature=test";
 
-function job(f, pages, resultUrl = RESULT_URL) {
+function job(f, pages, resultUrl = RESULT_URL, endpoint = JOB_URL) {
   f.respond((url) => {
-    if (url === JOB_URL) return Response.json({ code: 0, data: { jobId: "job" } });
-    if (url === JOB_URL + "/job") {
+    if (url === endpoint) return Response.json({ code: 0, data: { jobId: "job" } });
+    if (url === endpoint + "/job") {
       return Response.json({
         code: 0,
         data: { state: "done", resultUrl: { jsonUrl: resultUrl } },
@@ -29,6 +29,22 @@ test("official package passes the 2.2.6 contract and requires that version", () 
     code: "HOST_VERSION_UNSUPPORTED",
   });
   assert.doesNotThrow(() => assertPluginCompatibility(manifest, "2.2.6"));
+});
+
+test("gateway base URL scopes both job requests and keeps BOS downloads unauthenticated", async () => {
+  const f = fixture("paddleocr", "doc-parsing", {
+    baseUrl: "http://gateway.example/ocr-proxy/",
+  });
+  const endpoint = "http://gateway.example/ocr-proxy/api/v2/ocr/jobs";
+  const pages = [{ layoutParsingResults: [{ markdown: { text: "Gateway" } }] }];
+  const result = await f.invoke("parseImage", job(f, pages, RESULT_URL, endpoint));
+  assert.equal(result.text, "Gateway");
+  assert.deepEqual(f.calls.map(({ url }) => url), [
+    endpoint, endpoint + "/job", RESULT_URL,
+  ]);
+  assert.deepEqual(f.calls.map(({ init }) => init.headers.Authorization), [
+    "Bearer test-only-secret", "Bearer test-only-secret", undefined,
+  ]);
 });
 
 test("Sval, real Broker, and host validator keep all document blocks", async () => {

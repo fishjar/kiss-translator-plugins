@@ -2,7 +2,7 @@
 
 Requires KISS Translator 2.2.6 or later with structured image parsing. Plugin API 1.
 
-Uses the free public endpoint `https://index-translate.bilibili.com/v1` and `Index-Translate-35B-A3B` by default; no API key is required. `isFree: true` declares the default service free. Supports single-item/batch text translation and image parsing. Layout and OCR coordinates are not advertised.
+Uses the free public endpoint `https://index-translate.bilibili.com/v1` and `Index-Translate-35B-A3B` by default; no API key is required. `freeTier: "free"` declares the default service free. Supports single-item/batch text translation and image parsing. Layout and OCR coordinates are not advertised.
 
 Text presets include default, concise and standard single-item prompts with English instructions, plus JSON/XML/LINE batch prompts. The default single-item ID is unchanged; JSON is the batch default. Batches allow at most eight items, with 4096 output tokens and no streaming. Index-specific copies place instructions before the source and reinforce glossary, tag and placeholder requirements; host presets and other plugins remain unchanged. Existing 1.0.0/1.0.1 instances require an explicit upgrade to 1.0.2, retaining saved prompt selections, batch settings and enabled capabilities.
 

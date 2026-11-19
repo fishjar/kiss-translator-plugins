@@ -2,7 +2,7 @@
 
 ## 1.0.2 text presets and metadata — 2026-11-18
 
-Index 1.0.2 declares its default public service free (`isFree: true`). The host displays a green Free badge after the installed version, following an update badge when present. Image parsing declarations are read-only tooltips on the capability label; Index declares translation support and leaves layout undeclared. The OpenAI-compatible vision adapter declares both. Metadata does not enable tasks or change requests.
+Index 1.0.3 declares its default public service free (`freeTier: "free"`). The host displays a green Free badge after the installed version, following an update badge when present. Image parsing declarations are read-only tooltips on the capability label; Index declares translation support and leaves layout undeclared. The OpenAI-compatible vision adapter declares both. Metadata does not enable tasks or change requests.
 
 The default single-item preset keeps its ID but now uses English instructions, following live validation. Concise and standard single-item presets plus JSON/XML/LINE batch presets adapt existing host/official templates inside Index only. Instructions precede source input. Batch support is limited to eight items, non-streaming, 4096 output tokens. Explicit upgrades from 1.0.0/1.0.1 preserve prompt references, batch preferences and enabled capabilities.
 

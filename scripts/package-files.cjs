@@ -19,7 +19,11 @@ const requireValue = (valid, message) => {
 
 // This is the publisher's package check, not a copy of the host SDK/runtime.
 function packagePaths(manifest) {
-  requireValue(manifest.isFree === undefined || typeof manifest.isFree === "boolean", "Invalid isFree declaration");
+  requireValue(
+    manifest.freeTier === undefined ||
+      ["free", "quota-limited", "some-models", "time-limited"].includes(manifest.freeTier),
+    "Invalid freeTier declaration",
+  );
   requireValue(
     !Object.hasOwn(manifest, "manifestVersion") &&
       !Object.hasOwn(manifest, "rulesVersion") &&
@@ -270,7 +274,10 @@ function readPackageDirectory(folder) {
   );
   const files = {};
   let size = 0;
-  for (const entry of packagePaths(manifest)) {
+  const entries = packagePaths(manifest);
+  if (fs.existsSync(path.join(root, "NOTICE")) && !entries.includes("NOTICE"))
+    entries.push("NOTICE");
+  for (const entry of entries) {
     const file = fs.realpathSync(path.join(root, entry));
     requireValue(
       file.startsWith(root + path.sep),

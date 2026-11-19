@@ -2,14 +2,14 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { validatePackageFiles } = require("../scripts/package-files.cjs");
 
-test("publisher validates optional free service metadata", () => {
-  for (const isFree of [undefined, true, false]) {
-    const f = fixture(); f.manifest.isFree = isFree;
+test("publisher validates optional free tiers", () => {
+  for (const freeTier of [undefined, "free", "quota-limited", "some-models", "time-limited"]) {
+    const f = fixture(); f.manifest.freeTier = freeTier;
     assert.doesNotThrow(f.check);
   }
-  for (const isFree of ["true", 1, null]) {
-    const f = fixture(); f.manifest.isFree = isFree;
-    assert.throws(f.check, /isFree/);
+  for (const freeTier of [true, "yes", "constructor", 1, null]) {
+    const f = fixture(); f.manifest.freeTier = freeTier;
+    assert.throws(f.check, /freeTier/);
   }
 });
 

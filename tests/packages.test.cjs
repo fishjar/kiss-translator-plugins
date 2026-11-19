@@ -44,11 +44,15 @@ for (const folder of fs.readdirSync(path.join(root, "plugins"))) {
     assert.ok(icon.length <= 256 * 1024);
     assert.equal(icon.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
     assert.equal(icon.toString("ascii", 12, 16), "IHDR");
-    assert.equal(icon.readUInt32BE(16), 128);
-    assert.equal(icon.readUInt32BE(20), 128);
+    const iconSize = folder === "paddleocr" ? 60 : 128;
+    assert.equal(icon.readUInt32BE(16), iconSize);
+    assert.equal(icon.readUInt32BE(20), iconSize);
+    if (folder === "paddleocr")
+      assert.match(Buffer.from(files.NOTICE).toString("utf8"), /PaddleOCR for Kiss Translator contributors/);
     assert.ok(!Object.keys(files).some((name) => /logo-source|SOURCES\.md/.test(name)));
     assert.equal(manifest.id, pack.item.id);
     assert.equal(manifest.version, pack.item.version);
+    assert.equal(pack.item.freeTier, manifest.freeTier);
     for (const locale of ["zh", "en", "zh_TW", "ja", "ko", "tr", "vi", "ru"]) {
       assert.ok(manifest.descriptionI18n[locale]?.trim(), `${folder}: missing ${locale} description`);
       assert.equal(pack.item.descriptionI18n[locale], manifest.descriptionI18n[locale]);

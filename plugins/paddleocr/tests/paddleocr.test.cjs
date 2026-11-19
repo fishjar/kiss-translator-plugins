@@ -5,6 +5,21 @@ const handlers = require("../services/paddleocr.js");
 const IMAGE = { assetId: "asset-1", mimeType: "image/png" };
 const JSON_URL = "https://paddleocr.bj.bcebos.com/result.jsonl";
 
+test("invalid base addresses never send credentials", async () => {
+  for (const baseUrl of [
+    "ftp://gateway.example",
+    "https://user:password@gateway.example",
+    "https://gateway.example?token=test",
+    "https://gateway.example/path#fragment",
+  ]) {
+    const { ctx, calls } = createContext([]);
+    await assert.rejects(handlers.recognizeText({ image: IMAGE }, { baseUrl }, ctx), {
+      code: "INVALID_CONFIG",
+    });
+    assert.equal(calls.length, 0);
+  }
+});
+
 function response(body) {
   return { status: 200, headers: {}, body: body };
 }

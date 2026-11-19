@@ -47,7 +47,7 @@ test("Index retains its default prompt ID, uses English instructions and exposes
     maxItems: 8,
   });
   assert.deepEqual(Object.keys(service.capabilities), ["translate"]);
-  assert.equal(buildPackage(path.resolve(__dirname, "..")).item.isFree, true);
+  assert.equal(buildPackage(path.resolve(__dirname, "..")).item.freeTier, "free");
 });
 
 test("preset copies retain protocol and text through export/import and scene selection", () => {
@@ -205,6 +205,6 @@ test("explicit upgrade adds presets while retaining the saved selections and ena
       assert.equal(upgraded.provider.defaultPrompts.nobatch.length, 3);
       assert.equal(upgraded.provider.defaultPrompts.batch.length, 3);
       assert.equal(upgraded.provider.capabilities.translate.batch.maxItems, 8);
-      assert.equal(upgraded.provider.source.version, "1.0.2");
+      assert.equal(upgraded.provider.source.version, require("../manifest.json").version);
     }
 });

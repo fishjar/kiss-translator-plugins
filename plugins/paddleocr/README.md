@@ -17,6 +17,10 @@
 
 文档解析优先按页读取版面块，保留块类型和阅读顺序。缺少坐标的块仍参与翻译。服务未提供可用文字块时，该页使用 Markdown 文本。文档解析只提供整图模式。
 
-图片和 Access Token 发送到 AI Studio，识别结果通过百度对象存储的预签名 HTTPS 链接下载。若服务使用新的结果域名，可在实例的「结果下载域名」中填写实际 HTTPS 来源。任务最多等待 100 秒，并受宿主调用超时限制。
+整图文档解析由所选模型和任务参数驱动，无需填写提示词。插件提取原文和版面，译文由所选翻译服务生成。
+
+「接口地址」默认为 `https://paddleocr.aistudio-app.com`。可填写兼容网关的基础地址，插件会追加 `/api/v2/ocr/jobs`，并将图片和 Access Token 发送到该地址。任务最多等待 100 秒，并受宿主调用超时限制。
+
+识别结果通过预签名 HTTPS 链接下载。常用的百度对象存储域名已内置，若返回的下载域名未获授权，再填写「额外结果下载域名」，例如 `https://files.example.com`。下载请求不携带 Access Token。
 
 [官方 API 文档](https://www.paddleocr.ai/latest/en/version3.x/inference_deployment/serving/paddleocr_official_api/typescript.html) · [验收记录](ACCEPTANCE.md) · [原始贡献 Gouzau-cn](https://github.com/fishjar/kiss-translator-plugins/pull/7)

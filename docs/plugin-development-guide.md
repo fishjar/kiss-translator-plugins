@@ -192,7 +192,7 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | services       | 非空数组，必需 | 服务定义                                            |
 | sharedSettings | 可选字段数组   | 共用字段定义，实例值各自独立                        |
 | permissions    | 可选对象       | network、endpointFields 和可选 originRewrite         |
-| isFree         | 可选布尔值     | 作者声明默认服务是否免费；true 时显示绿色“免费”标签 |
+| freeTier       | 可选枚举       | 免费方式，取值 free、quota-limited、some-models、time-limited |
 | icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
 | resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
@@ -1647,7 +1647,7 @@ SDK 消息构造器省略空文本消息，不影响有效图片、音频。原�
 
 ## 结构化图片解析（宿主 2.2.6）
 
-清单可选 `isFree?: boolean` 声明默认服务是否免费。仅显式 `true` 显示绿色“免费”标签，支持本地导入和目录条目；`false` 或省略不表示收费。发布工具校验类型并写入官方目录，此字段不授予权限或能力。
+清单可选 `freeTier`。取值 `free`、`quota-limited`、`some-models`、`time-limited` 分别显示「免费」「限额免费」「部分模型免费」「限时免费」。省略字段时隐藏标签。发布工具将其写入官方目录。服务设置的文本类字段可用 `helpText` 和 `helpTextI18n` 添加输入说明。
 
 在插件详情或实例设置中，悬停或聚焦视觉解析能力标签，可查看 `includesTranslation`、`includesLayout` 的只读声明。它们不代表开启任务或保证具体模型效果；`false` 和省略均显示“未声明支持”。升级预览按服务显示声明变化。
 

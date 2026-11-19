@@ -2,7 +2,7 @@
 
 需要支持结构化图片解析的 KISS Translator 2.2.6 或更新版本。插件 API 1。
 
-默认使用公开免费接口 `https://index-translate.bilibili.com/v1` 和 `Index-Translate-35B-A3B`，无需 API Key，并以 `isFree: true` 声明默认服务免费。提供单条／聚合文本翻译和视觉解析，不声明布局或文字坐标能力。
+默认使用公开免费接口 `https://index-translate.bilibili.com/v1` 和 `Index-Translate-35B-A3B`，无需 API Key，并以 `freeTier: "free"` 声明默认服务免费。提供单条／聚合文本翻译和视觉解析，不声明布局或文字坐标能力。
 
 文本服务提供默认、简洁、标准三份英文指令的单句预设，以及 JSON／XML／LINE 三份聚合预设。默认预设 ID 保持不变，聚合默认使用 JSON；启用聚合后每批最多 8 条，不支持流式输出，预算 4096 tokens。Index 副本将指令放在待译内容之前，并补充术语、标签和占位符约束，不修改宿主内置或其他插件预设。已有 1.0.0／1.0.1 实例需明确升级到 1.0.2，原提示词选择、聚合设置和启用能力保持不变。
 

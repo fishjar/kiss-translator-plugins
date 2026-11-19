@@ -1642,7 +1642,7 @@ For OpenRouter adaptation and live API / browser acceptance, see [OpenRouter Acc
 
 ## Structured image parsing (host 2.2.6)
 
-Optional manifest metadata `isFree?: boolean` declares whether the default service is free to use. Only explicit `true` displays a green Free badge, both for imported packages and catalog entries. False or omission does not imply a paid service. The publisher validates the type and carries it into the official catalog; this declaration grants no network permissions or capabilities.
+Optional manifest metadata `freeTier` controls the badge. Supported values are `free`, `quota-limited`, `some-models`, and `time-limited`. Omit the field to hide the badge. The publisher includes it in the official catalog. Text fields can provide localized instructions with `helpText` and `helpTextI18n`.
 
 Hover or focus the visual-parsing capability label in package details or instance settings to inspect `includesTranslation` and `includesLayout`. These are read-only adapter declarations, not task switches or guarantees about a particular model. False and omitted fields display as support not declared; upgrade previews show declaration changes by service.
 
