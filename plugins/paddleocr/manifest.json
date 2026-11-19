@@ -1,0 +1,241 @@
+{
+  "id": "paddleocr",
+  "name": "PaddleOCR",
+  "nameI18n": {
+    "zh": "PaddleOCR",
+    "en": "PaddleOCR",
+    "zh_TW": "PaddleOCR",
+    "ja": "PaddleOCR",
+    "ko": "PaddleOCR",
+    "tr": "PaddleOCR",
+    "vi": "PaddleOCR",
+    "ru": "PaddleOCR"
+  },
+  "version": "1.0.2",
+  "apiVersion": 1,
+  "icon": "assets/logo.png",
+  "description": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+  "descriptionI18n": {
+    "zh": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+    "en": "PaddleOCR official async API: PP-OCR text recognition with line boxes, and PP-StructureV3 / PaddleOCR-VL document parsing.",
+    "zh_TW": "PaddleOCR 官方非同步 API：PP-OCR 文字辨識（含文字行座標）與 PP-StructureV3 / PaddleOCR-VL 文件解析。",
+    "ja": "PaddleOCR 公式非同期 API：PP-OCR 文字認識（行座標付き）と PP-StructureV3 / PaddleOCR-VL 文書解析。",
+    "ko": "PaddleOCR 공식 비동기 API: 텍스트 줄 좌표가 포함된 PP-OCR 인식과 PP-StructureV3 / PaddleOCR-VL 문서 분석.",
+    "tr": "PaddleOCR resmî eşzamansız API: metin satırı koordinatlı PP-OCR tanıma ve PP-StructureV3 / PaddleOCR-VL belge ayrıştırma.",
+    "vi": "API bất đồng bộ chính thức của PaddleOCR: nhận dạng văn bản PP-OCR kèm tọa độ dòng, và phân tích tài liệu PP-StructureV3 / PaddleOCR-VL.",
+    "ru": "Официальный асинхронный API PaddleOCR: распознавание текста PP-OCR с координатами строк и разбор документов PP-StructureV3 / PaddleOCR-VL."
+  },
+  "permissions": {
+    "network": [
+      "https://paddleocr.aistudio-app.com",
+      "https://paddleocr-store.bj.bcebos.com",
+      "https://paddleocr-store-1.bj.bcebos.com",
+      "https://paddleocr-store-2.bj.bcebos.com",
+      "https://paddleocr-store-3.bj.bcebos.com",
+      "https://paddleocr-store-4.bj.bcebos.com",
+      "https://paddleocr-store-5.bj.bcebos.com",
+      "https://paddleocr-store-6.bj.bcebos.com",
+      "https://paddleocr-store-7.bj.bcebos.com",
+      "https://paddleocr-store-8.bj.bcebos.com",
+      "https://paddleocr-store-9.bj.bcebos.com"
+    ],
+    "endpointFields": [
+      "baseUrl",
+      "resultOrigin"
+    ],
+    "originRewrite": [
+      "https://paddleocr.aistudio-app.com"
+    ]
+  },
+  "sharedSettings": [
+    {
+      "key": "baseUrl",
+      "label": "接口地址",
+      "type": "text",
+      "required": true,
+      "defaultValue": "https://paddleocr.aistudio-app.com",
+      "labelI18n": {
+        "zh": "接口地址",
+        "en": "API base URL",
+        "zh_TW": "介面地址",
+        "ja": "API ベース URL",
+        "ko": "API 기본 URL",
+        "tr": "API temel URL'si",
+        "vi": "URL cơ sở API",
+        "ru": "Базовый URL API"
+      }
+    },
+    {
+      "key": "apiKey",
+      "label": "AI Studio Access Token",
+      "type": "password",
+      "isSecret": true,
+      "required": true,
+      "labelI18n": {
+        "zh": "AI Studio Access Token",
+        "en": "AI Studio Access Token"
+      }
+    },
+    {
+      "key": "resultOrigin",
+      "label": "额外结果下载域名（可选）",
+      "type": "text",
+      "labelI18n": {
+        "zh": "额外结果下载域名（可选）",
+        "en": "Additional result download origin (optional)",
+        "zh_TW": "額外結果下載網域（選填）",
+        "ja": "追加の結果ダウンロード元（任意）",
+        "ko": "추가 결과 다운로드 도메인 (선택)",
+        "tr": "Ek sonuç indirme kaynağı (isteğe bağlı)",
+        "vi": "Nguồn tải kết quả bổ sung (tùy chọn)",
+        "ru": "Дополнительный источник загрузки результатов (необязательно)"
+      },
+      "helpTextI18n": {
+        "zh": "常用 BOS 下载域名已内置。若返回的结果下载域名未获授权，请填写该 HTTPS 来源，例如 https://files.example.com。",
+        "en": "Common BOS download origins are built in. If access to a returned download origin is denied, enter its HTTPS origin, such as https://files.example.com.",
+        "zh_TW": "常用 BOS 下載網域已內建。若回傳的下載網域未獲授權，請填寫其 HTTPS 來源，例如 https://files.example.com。",
+        "ja": "一般的な BOS のダウンロード元は登録済みです。結果の取得元が許可されていない場合は、その HTTPS オリジンを入力します（例：https://files.example.com）。",
+        "ko": "일반적인 BOS 다운로드 도메인은 기본으로 허용됩니다. 결과 다운로드 도메인이 허용되지 않은 경우 해당 HTTPS 출처를 입력하세요. 예: https://files.example.com",
+        "tr": "Yaygın BOS indirme kaynakları yerleşiktir. Sonuç bağlantısının kaynağına izin verilmiyorsa HTTPS kaynağını girin. Örnek: https://files.example.com.",
+        "vi": "Các nguồn tải BOS phổ biến đã được tích hợp. Nếu nguồn tải kết quả chưa được cấp quyền, hãy nhập nguồn HTTPS đó, ví dụ https://files.example.com.",
+        "ru": "Обычные источники BOS уже разрешены. Если доступ к источнику загрузки отклонён, укажите его адрес HTTPS, например https://files.example.com."
+      },
+      "helpText": "常用 BOS 下载域名已内置。若返回的结果下载域名未获授权，请填写该 HTTPS 来源，例如 https://files.example.com。"
+    }
+  ],
+  "services": [
+    {
+      "id": "text-ocr",
+      "name": "文字识别",
+      "nameI18n": {
+        "zh": "文字识别",
+        "en": "Text OCR",
+        "zh_TW": "文字辨識",
+        "ja": "文字認識",
+        "ko": "텍스트 인식",
+        "tr": "Metin OCR",
+        "vi": "Nhận dạng văn bản",
+        "ru": "Распознавание текста"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/paddleocr.js"
+      },
+      "capabilities": {
+        "recognizeText": {
+          "handler": "recognizeText",
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "coordinates": true
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "type": "select",
+          "defaultValue": "PP-OCRv6",
+          "required": true,
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "モデル",
+            "ko": "모델",
+            "tr": "Model",
+            "vi": "Mô hình",
+            "ru": "Модель"
+          },
+          "options": [
+            {
+              "value": "PP-OCRv6",
+              "label": "PP-OCRv6"
+            },
+            {
+              "value": "PP-OCRv5",
+              "label": "PP-OCRv5"
+            },
+            {
+              "value": "PP-OCRv5-latin",
+              "label": "PP-OCRv5-latin"
+            }
+          ]
+        }
+      ],
+      "modelField": "model"
+    },
+    {
+      "id": "doc-parsing",
+      "name": "文档解析",
+      "nameI18n": {
+        "zh": "文档解析",
+        "en": "Document parsing",
+        "zh_TW": "文件解析",
+        "ja": "文書解析",
+        "ko": "문서 분석",
+        "tr": "Belge ayrıştırma",
+        "vi": "Phân tích tài liệu",
+        "ru": "Разбор документов"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/paddleocr.js"
+      },
+      "capabilities": {
+        "parseImage": {
+          "handler": "parseImage",
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "taskModes": [
+            "doc"
+          ],
+          "coordinates": false,
+          "includesLayout": true
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "type": "select",
+          "defaultValue": "PaddleOCR-VL-1.6",
+          "required": true,
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "モデル",
+            "ko": "모델",
+            "tr": "Model",
+            "vi": "Mô hình",
+            "ru": "Модель"
+          },
+          "options": [
+            {
+              "value": "PaddleOCR-VL-1.6",
+              "label": "PaddleOCR-VL-1.6"
+            },
+            {
+              "value": "PaddleOCR-VL-1.5",
+              "label": "PaddleOCR-VL-1.5"
+            },
+            {
+              "value": "PP-StructureV3",
+              "label": "PP-StructureV3"
+            }
+          ]
+        }
+      ],
+      "modelField": "model"
+    }
+  ],
+  "freeTier": "quota-limited"
+}

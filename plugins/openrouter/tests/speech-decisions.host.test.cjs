@@ -91,20 +91,20 @@ for (const [service, configuredVoice, overrideVoice, mime] of [
     }
   });
 
-test("PCM conversion requires API 1, validates requests and counts the WAV header in asset budgets", async () => {
+test("PCM conversion requires a supported API, validates requests and counts the WAV header in asset budgets", async () => {
   const f = fixture("openrouter", "speech-gemini");
   const request = {
     url: "https://openrouter.ai/api/v1/audio/speech",
     responseType: "asset",
     responseAudio: { encoding: "pcm_s16le", sampleRate: 24000, channels: 1 },
   };
-  for (const version of ["1", 2, undefined]) {
+  for (const version of ["1", 3, undefined]) {
     f.instance.provider.apiVersion = version;
     await assert.rejects(f.ctx.http.request(request), {
       code: "INVALID_REQUEST",
     });
   }
-  f.instance.provider.apiVersion = 1;
+  f.instance.provider.apiVersion = 2;
   await assert.rejects(
     f.ctx.http.request({ ...request, responseType: "text" }),
     { code: "INVALID_REQUEST" },

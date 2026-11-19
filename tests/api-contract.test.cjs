@@ -2,14 +2,14 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { validatePackageFiles } = require("../scripts/package-files.cjs");
 
-test("publisher validates optional free service metadata", () => {
-  for (const isFree of [undefined, true, false]) {
-    const f = fixture(); f.manifest.isFree = isFree;
+test("publisher validates optional free tiers", () => {
+  for (const freeTier of [undefined, "free", "quota-limited", "some-models", "time-limited"]) {
+    const f = fixture(); f.manifest.freeTier = freeTier;
     assert.doesNotThrow(f.check);
   }
-  for (const isFree of ["true", 1, null]) {
-    const f = fixture(); f.manifest.isFree = isFree;
-    assert.throws(f.check, /isFree/);
+  for (const freeTier of [true, "yes", "constructor", 1, null]) {
+    const f = fixture(); f.manifest.freeTier = freeTier;
+    assert.throws(f.check, /freeTier/);
   }
 });
 
@@ -87,8 +87,10 @@ function fixture(format = "http") {
   return { manifest, rules, rule, reference, check };
 }
 
-test("publisher requires numeric API 1 and rejects removed version fields", () => {
+test("publisher requires numeric API 1 or 2 and rejects removed version fields", () => {
   const f = fixture();
+  assert.doesNotThrow(f.check);
+  f.manifest.apiVersion = 2;
   assert.doesNotThrow(f.check);
   for (const apiVersion of [
     undefined,
@@ -99,7 +101,6 @@ test("publisher requires numeric API 1 and rejects removed version fields", () =
     0,
     -1,
     1.5,
-    2,
     3,
     Number.MAX_SAFE_INTEGER + 1,
   ]) {

@@ -4,7 +4,7 @@
 
 本文面向官方及外部插件作者，说明创建、配置、执行、调试和发布插件所需的文件与接口。基础开发无需克隆宿主；新增官方插件按第 12.5 节在本仓库开发，可选运行真实宿主 SDK 集成测试时，才需要额外准备宿主源码和依赖。
 
-契约核对：2026-10-28。开发阶段统一使用数字 `apiVersion: 1`；它同时定义清单、声明式语法及 SDK 能力。只接受数字 1，不兼容旧 SDK、字符串版本或旧实例，不自动转换或迁移。清单不含 manifestVersion，声明式文件不含 rulesVersion；两种规则形式通过 format 区分。
+数字 `apiVersion` 定义清单、声明式语法及 SDK 能力。宿主支持整数 1 和 2，API 2 适用于依赖结构化图片解析或脚本 Worker 计时器的插件。清单不含 manifestVersion，声明式文件不含 rulesVersion；两种规则形式通过 format 区分。
 
 当前自动测试、构建产物及真实浏览器验证边界见[插件 API 1 验收记录](plugin-api-1-acceptance.md)。
 
@@ -188,11 +188,11 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | id             | 字符串，必需   | 稳定 ID，匹配 `^[a-z][a-z0-9-]{1,100}$`，2–101 字符 |
 | name           | 字符串         | 插件显示名，发布时填写                              |
 | version        | 字符串，必需   | 三段数字，如 1.0.0，无 v 前缀、预发布或构建后缀     |
-| apiVersion     | 数字，必需     | 固定为整数 1；不接受字符串、缺失值或旧格式          |
+| apiVersion     | 数字，必需     | 整数 1 或 2，按插件所需契约声明                  |
 | services       | 非空数组，必需 | 服务定义                                            |
 | sharedSettings | 可选字段数组   | 共用字段定义，实例值各自独立                        |
 | permissions    | 可选对象       | network、endpointFields 和可选 originRewrite         |
-| isFree         | 可选布尔值     | 作者声明默认服务是否免费；true 时显示绿色“免费”标签 |
+| freeTier       | 可选枚举       | 免费方式，取值 free、quota-limited、some-models、time-limited |
 | icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
 | resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
@@ -285,7 +285,7 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 - network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
-- 从宿主 2.2.6 起，可声明 `permissions.originRewrite: ["https://api.example.com"]`，要求宿主将发往这些地址的扩展请求的 Origin 设为目标 origin。名单必须是 `network` 固定地址的子集，不允许通配符、路径、尾斜线、查询或账号信息。更改 `endpointFields` 不会自动扩大此名单。
+- API 2 插件可依赖 `permissions.originRewrite: ["https://api.example.com"]`，要求宿主将发往这些地址的扩展请求的 Origin 设为目标 origin。名单必须是 `network` 固定地址的子集，不允许通配符、路径、尾斜线、查询或账号信息。更改 `endpointFields` 不会扩大此名单。
 - 宿主从所有启用、兼容且配置有效的外部服务实例快照收集声明，与用户保存的 Origin 名单去重合并；用户规则优先。仅安装模板不生效，同一地址最后一个实例停用后才撤销插件规则，用户保存的名单不被改写。导入、实例升级及设置页面会展示此权限。
 - 规则在启动及配置变化时同步，受影响的首次请求等待同步；请求结束不撤销规则，也不逐请求更新。规则只覆盖精确 origin 的扩展 XHR/fetch，不移除 CSP 或扩大网络权限。不支持 DNR 的浏览器会明确拒绝依赖此功能的调用。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
@@ -299,11 +299,11 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 
 ### 插件类型与宿主兼容性
 
-Manifest 可选声明 `kind: "provider"` 与 `minHostVersion: "2.1.1"`（版本仅为格式示例，实际填写所依赖功能首次发布的宿主版本）。省略 kind 按接口插件处理，省略最低版本保持旧行为；不会补写默认值或改变旧包指纹。minHostVersion 只接受三段非负安全整数，不接受预发布标签。未知类型、低版本宿主分别报 UNSUPPORTED_PLUGIN_KIND 与 HOST_VERSION_UNSUPPORTED。
+Manifest 可选声明 `kind: "provider"`。省略 kind 时按接口插件处理。未知类型和不支持的 API 版本分别报 `UNSUPPORTED_PLUGIN_KIND` 和 `SDK_VERSION_UNSUPPORTED`。
 
 要求随实例快照同步，在导入、恢复、创建实例与执行边界检查。新宿主可以阻止不兼容快照执行；不含该检查的历史宿主无法追溯获得保护，跨设备需要升级宿主。官方目录可展示不兼容包，但不能安装。
 
-kind 是分类，不授予权限。当前仅支持 provider；script/declarative 是接口插件的实现方式。未来页面、正文处理等类型需要独立契约、权限和生命周期，并使用新的 Manifest/API 版本阻止旧宿主误装；不能只依靠旧宿主不认识的 kind 或 minHostVersion。现在不引入通用类型注册器。
+kind 是分类，不授予权限。当前仅支持 provider，script 和 declarative 是接口插件的实现方式。未来插件类型需要独立契约、权限和生命周期，并使用新的数字 API 版本让宿主判断兼容性。
 
 ### 3.6 模型目录
 
@@ -1493,7 +1493,8 @@ npm test                          # 打包回归 + 独立适配测试
 npm run build
 ```
 
-`check` 与构建共享本仓库的包检查，覆盖 Manifest 身份与版本格式、引用路径/文件、体积、脚本语法和声明式 handler 对应关系。目录只读取发布所引用的文件；ZIP 校验不会执行脚本。该检查不复制宿主完整 SDK、权限和运行时验证，也不判断发布者机器的宿主版本。`minHostVersion` 可以声明未来版本，由消费插件的宿主决定是否兼容。
+`check` 与构建共享本仓库的包检查，覆盖 Manifest 身份与版本格式、引用路径/文件、体积、脚本语法和声明式 handler 对应关系。目录只读取发布所引用的文件；ZIP 校验不会执行脚本。完整 SDK、权限和运行时验证由宿主负责。
+
 
 `npm run test:protocol` 自动收集插件 `*.test.cjs`（排除 `*.host.test.cjs`），用 SDK 测试替身验证供应商适配逻辑，不访问厂家。默认协议测试拦截全局 fetch；真实厂家请求使用单独的 `live.cjs`，不进入默认测试。
 
@@ -1619,7 +1620,7 @@ exports.summarize = async function (input, config, ctx) {
 
 默认提示词槽新增 summary→summarize、detectLanguage、suggest、evaluate、recognizeText、analyzeLayout；原有 batch/nobatch/dictionary/subtitle/vlm 保留。文字任务支持 instructions/userPrompt，图片任务使用 prompt。显式输入优先于插件默认值；选择插件内部默认时使用实例快照，不读取远端新模板。textTasks 支持 text、transcript（text 的摘要场景别名）、sourceLanguage、targetLanguage、language、from/fromLang、to/toLang、context、title、description、summary、url、tone、glossary、items；缺失文字变量为空，语言默认 auto，glossary 为 `- term: value` 列表。翻译 helper 的 glossary 继续使用 JSON 对象文本。结构化任务的输入载荷与输出契约由 SDK 固定，用户只能调整任务要求，不能改变 wire 输出格式。
 
-插件 API 1 使用数字 `apiVersion: 1` 作为唯一契约版本。厂家端点、模型和提示词调整通常只升级插件 version；新增旧宿主无法正确处理的契约时升级 apiVersion。宿主只接受数字 1，不支持旧契约或自动实例迁移。minHostVersion 只用于契约以外的宿主功能依赖，普通适配不设置它。
+兼容性由数字 `apiVersion` 判断。端点、模型或提示词变更通常只升级插件 `version`。插件依赖旧宿主无法正确处理的新契约时，使用支持该契约的 API 版本。已有 API 1 实例可继续使用。
 
 安装新包只更新模板。用户通过现有实例升级流程创建或升级快照，原账号、模型、显式提示词和能力选择按现有预览处理，不自动改写。模板与实例支持的 SDK 均在执行边界复核。插件 API 1 的通用提示词与文档示例进入宿主集成回归；新增能力必须补齐支持矩阵、输入输出、非法声明及两种执行方式的测试。
 
@@ -1645,9 +1646,9 @@ OpenRouter 的适配和真实 API / 浏览器验收见 [OpenRouter 验收记录]
 
 SDK 消息构造器省略空文本消息，不影响有效图片、音频。原生协议不能表达纯系统输入时，宿主明确返回 INVALID_INPUT，不补原文或移动角色。字幕仍使用固定 JSON 用户输入和 SDK 输出格式约束，不采用可编辑用户模板。
 
-## 结构化图片解析（宿主 2.2.6）
+## 结构化图片解析与 Worker 计时器（插件 API 2）
 
-清单可选 `isFree?: boolean` 声明默认服务是否免费。仅显式 `true` 显示绿色“免费”标签，支持本地导入和目录条目；`false` 或省略不表示收费。发布工具校验类型并写入官方目录，此字段不授予权限或能力。
+清单可选 `freeTier`。取值 `free`、`quota-limited`、`some-models`、`time-limited` 分别显示「免费」「限额免费」「部分模型免费」「限时免费」。省略字段时隐藏标签。发布工具将其写入官方目录。服务设置的文本类字段可用 `helpText` 和 `helpTextI18n` 添加输入说明。
 
 在插件详情或实例设置中，悬停或聚焦视觉解析能力标签，可查看 `includesTranslation`、`includesLayout` 的只读声明。它们不代表开启任务或保证具体模型效果；`false` 和省略均显示“未声明支持”。升级预览按服务显示声明变化。
 
@@ -1657,4 +1658,4 @@ SDK 消息构造器省略空文本消息，不影响有效图片、音频。原�
 
 图片／截图场景优先使用有效译文，只对缺少译文且有原文的内容调用所选文本翻译服务。仅识别不补译。提示词决定输出，声明不自动执行任务。模型输出质量需实际验证；首版不提供未经验证的布局预设。
 
-包需声明对应宿主最低版本并在宿主发布后上线。开发中可用 `KISS_TRANSLATOR_ROOT` 指向支持分支，并用测试专用 `KISS_TRANSLATOR_TEST_VERSION=2.2.6` 模拟未来版本运行 `npm run test:host`；该变量不影响生产兼容性检查。
+依赖这些能力的包声明 `apiVersion: 2`，在支持 API 2 的宿主可用后上线。脚本 Worker 提供有界的单次 `setTimeout` 和 `clearTimeout`，适用于云端任务轮询。开发时用 `KISS_TRANSLATOR_ROOT` 指向兼容宿主源码，再运行 `npm run test:host`。

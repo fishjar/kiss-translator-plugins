@@ -1,7 +1,8 @@
 {
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.2.3",
+  "version": "1.2.4",
+  "freeTier": "some-models",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "OpenRouter 对话、翻译、字幕断句与 AI 词典，以及 Whisper、Qwen 语音识别。 支持 Gemini、Qwen 语音合成和 Jev 决策。",

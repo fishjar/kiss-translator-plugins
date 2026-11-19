@@ -1,7 +1,7 @@
 {
   "id": "openai-compatible-bundle",
   "name": "OpenAI 兼容协议",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "OpenAI 兼容协议：对话、翻译、字幕断句与 AI 词典、语音识别、语音合成和图片全文识别。",
@@ -462,26 +462,6 @@
               "zh": "图片描述",
               "en": "Image description"
             }
-          },
-          {
-            "id": "image-translation",
-            "name": "图片翻译",
-            "nameI18n": {
-              "zh": "图片翻译",
-              "en": "Image translation"
-            },
-            "protocol": "image-json",
-            "userPrompt": "Translate all visible text into {{to}}. Return exactly {\"format\":\"text\",\"translation\":{\"text\":\"your complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit original text and layout."
-          },
-          {
-            "id": "image-bilingual",
-            "name": "双语解析",
-            "nameI18n": {
-              "zh": "双语解析",
-              "en": "Bilingual image parsing"
-            },
-            "protocol": "image-json",
-            "userPrompt": "Extract all visible original text in reading order and translate it into {{to}}. Return exactly {\"format\":\"text\",\"text\":\"the complete original text\",\"translation\":{\"text\":\"the complete translation\",\"targetLanguage\":\"{{to}}\",\"format\":\"text\"}}. Omit layout."
           }
         ]
       },
@@ -516,6 +496,5 @@
     "tr": "OpenAI uyumlu sohbet ve çeviri, ses transkripsiyonu, konuşma sentezi ve görüntü metni tanıma.",
     "vi": "Trò chuyện và dịch, chép lời âm thanh, tổng hợp giọng nói và nhận dạng văn bản trong ảnh qua giao thức tương thích OpenAI.",
     "ru": "Совместимые с OpenAI чат и перевод, транскрипция аудио, синтез речи и распознавание текста на изображениях."
-  },
-  "minHostVersion": "2.2.6"
+  }
 }

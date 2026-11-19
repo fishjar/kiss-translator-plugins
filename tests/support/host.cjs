@@ -7,13 +7,6 @@ const host = path.resolve(
     path.resolve(__dirname, "../../../kiss-translator"),
 );
 const hostRequire = Module.createRequire(path.join(host, "package.json"));
-// Test unreleased minimum-host contracts without changing the checkout or production checks.
-if (process.env.KISS_TRANSLATOR_TEST_VERSION) {
-  if (!/^\d+\.\d+\.\d+$/.test(process.env.KISS_TRANSLATOR_TEST_VERSION))
-    throw new Error("Invalid test host version");
-  hostRequire("./package.json").version =
-    process.env.KISS_TRANSLATOR_TEST_VERSION;
-}
 if (!fs.existsSync(path.join(host, "src/providers/package.js")))
   throw new Error(
     "Host source is missing. Set KISS_TRANSLATOR_ROOT to a kiss-translator checkout.",

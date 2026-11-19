@@ -9,9 +9,8 @@ for (const plugin of ["index-translate", "openai-compatible-bundle"]) {
   for (const mode of ["plain-text", "image-translation", "image-bilingual"]) {
     test(`${plugin}: ${mode} uses real package, SDK, assets and structured image parser`, async () => {
       const f = fixture(plugin, "vision");
-      f.instance.vlmPromptSlug = getPluginPromptOptions(f.instance, "vlm").find(
-        (p) => p.id === mode,
-      ).slug;
+      if (mode === "plain-text")
+        f.instance.vlmPromptSlug = getPluginPromptOptions(f.instance, "vlm")[0].slug;
       const source = "Hello world.";
       const translation = {
         text: "你好，世界。",
@@ -34,6 +33,10 @@ for (const plugin of ["index-translate", "openai-compatible-bundle"]) {
       const image = f.assets.put(new Blob(["png"], { type: "image/png" }));
       const result = await f.invoke("parseImage", {
         image,
+        ...(mode !== "plain-text" && {
+          protocol: "image-json",
+          prompt: "Translate the image into {{to}} and return the requested JSON.",
+        }),
         targetLanguage: "zh-CN",
         glossary: { world: "世界" },
       });
@@ -87,10 +90,14 @@ test("Index: single-item text translation uses the host protocol and stable IDs"
   assert.deepEqual(result.items, [{ id: "source", text: "你好" }]);
 });
 
-test("new manifests reject released 2.2.5 hosts", () => {
+test("vision packages keep their API 1 manifest compatible with plain image prompts", () => {
   for (const plugin of ["index-translate", "openai-compatible-bundle"]) {
     const manifest = require(`../../${plugin}/manifest.json`);
-    assert.throws(() => assertPluginCompatibility(manifest, "2.2.5"), /2.2.6/);
+    assert.equal(manifest.apiVersion, 1);
+    const vision = manifest.services.find((item) => item.id === "vision");
+    assert.equal(vision.defaultPrompts.vlm[0].id, "plain-text");
+    assert.ok(vision.defaultPrompts.vlm.every((prompt) => !prompt.protocol));
+    assert.doesNotThrow(() => assertPluginCompatibility(manifest));
   }
 });
 

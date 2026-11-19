@@ -9,6 +9,7 @@
 | 插件                                                          | 支持能力                                                                                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [DeepSeek](plugins/deepseek/README.md)                        | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式。                                          |
+| [Index-Translate](plugins/index-translate/README.md)         | 文本翻译、图片原文识别、图片翻译和双语解析。                                                   |
 | [Kimi](plugins/kimi/README.md)                                | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式，支持 Kimi Code 会员接口和开放平台。       |
 | [LLaMA.cpp](plugins/llama-cpp/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
 | [Ollama](plugins/ollama/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
@@ -16,8 +17,9 @@
 | [OpenRouter](plugins/openrouter/README.md)                    | 对话、翻译、AI 词典、字幕断句，以及 Whisper/Qwen 语音识别、Gemini/Qwen 语音合成和 Jev 决策。 |
 | [千问 AI](plugins/qianwen/README.md)                         | 对话、翻译、AI 词典、字幕断句、带时间戳语音识别和图片全文识别。                              |
 | [SiliconFlow](plugins/siliconflow/README.md)                  | 对话、翻译、AI 词典、字幕断句、Qwen 和星辰语音识别、PaddleOCR 和 DeepSeek OCR 全文识别。     |
+| [PaddleOCR](plugins/paddleocr/README.md) | 百度 AI Studio 云端文字行识别与文档版面解析。 |
 
-全部官方插件的 API Key 均可留空，留空时不发送 Bearer 鉴权头。API 基础地址支持 HTTP/HTTPS，可指向协议兼容的局域网服务；这些功能需要支持 HTTP 和可选凭据的新版宿主，并升级已有服务实例。
+PaddleOCR 需要 AI Studio Access Token。其他插件的可选 API Key 留空时会省略 Bearer 鉴权头。支持配置 API 基础地址的插件可以连接协议兼容的 HTTP/HTTPS 局域网服务。
 
 这些适配插件由简约翻译维护，不代表对应服务商发布或背书。
 
@@ -31,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 可在简约翻译的“接口插件”页面安装，也可下载 ZIP 后导入。官方仓库包含多个插件，不能使用仓库根地址作为单插件安装地址。
 
-当前全部官方插件使用数字 `apiVersion: 1`，需要新版插件 API 1 宿主。开发阶段不兼容旧契约；请重新导入包并创建实例。
+官方插件使用数字 `apiVersion` 声明所需契约。当前官方包使用 API 1。PaddleOCR、Index-Translate 和 OpenAI 兼容协议可随宿主能力使用整图优先或结构化图片解析。
 
 新增官方插件的目录结构、协议测试与 CI 发布步骤，以及协议和 SDK 契约，见[插件开发指南](docs/plugin-development-guide.md)。[签名词典](examples/signed-dictionary/README.md)仅为开发教学示例，不作为官方服务分发。
 
@@ -53,7 +55,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 模型参数分支是插件的适配策略；独立测试证明请求构造逻辑，宿主集成证明指定源码版本下的执行行为，两者都不能证明所有真实模型接受这些参数。真实服务与浏览器验收需要有效凭据和实际调用，单独记录验证版本及结果。
 
-`apiVersion: 1` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
+`apiVersion` 是唯一插件契约版本，覆盖清单、规则和 SDK 能力；不再使用 manifestVersion / rulesVersion。插件 version 和宿主发布版本仍独立。发布器独立校验，不依赖宿主源码。
 
 当前验证结果及浏览器验收边界见[插件 API 1 验收记录](docs/plugin-api-1-acceptance.md)。
 

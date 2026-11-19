@@ -9,6 +9,7 @@ Service adapter plugins maintained by the [KISS Translator](https://github.com/f
 | Plugin | Capabilities |
 | ------ | ------------ |
 | [DeepSeek](plugins/deepseek/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode. |
+| [Index-Translate](plugins/index-translate/README.en.md) | Text translation, image text recognition, image translation, and bilingual image parsing. |
 | [Kimi](plugins/kimi/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode for Kimi Code and the open platform. |
 | [LLaMA.cpp](plugins/llama-cpp/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |
 | [Ollama](plugins/ollama/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |
@@ -16,8 +17,9 @@ Service adapter plugins maintained by the [KISS Translator](https://github.com/f
 | [OpenRouter](plugins/openrouter/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Whisper/Qwen speech recognition, Gemini/Qwen speech synthesis, and Jev decisions. |
 | [Qianwen AI](plugins/qianwen/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, timestamped speech recognition, and image text extraction. |
 | [SiliconFlow](plugins/siliconflow/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Qwen & XingChen speech recognition, PaddleOCR & DeepSeek OCR full-image recognition. |
+| [PaddleOCR](plugins/paddleocr/README.en.md) | Baidu AI Studio cloud text recognition with line polygons and document layout parsing. |
 
-API Key is optional in all official plugins; empty keys omit the Bearer authorization header. API base URLs support HTTP/HTTPS, including compatible LAN services. These features require a host supporting HTTP and optional credentials, and upgrading existing service instances.
+PaddleOCR requires an AI Studio Access Token. Plugins omit the Bearer header when an optional API key is blank. Plugins with configurable API base URLs can connect to compatible HTTP/HTTPS services on a LAN.
 
 These adapter plugins are maintained by KISS Translator and do not represent endorsement or official release by the respective service providers.
 
@@ -31,7 +33,7 @@ https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.j
 
 Plugins can be installed via the "Service Plugins" page in KISS Translator or imported after downloading the ZIP. The official repository contains multiple plugins; do not use the repository root URL as a single-plugin installation URL.
 
-All current official plugins use numeric `apiVersion: 1` and require a host supporting Plugin API 1. The development stage is not backwards-compatible with legacy contracts; please re-import packages and create new instances.
+Official plugins declare their required contract with numeric `apiVersion`. Current official packages use API 1. PaddleOCR, Index-Translate and OpenAI Compatible use whole-image recognition or structured image parsing when supported by the host.
 
 For directory structure, protocol testing, and CI publishing steps of new official plugins, as well as protocol and SDK contracts, see the [Plugin Development Guide](docs/plugin-development-guide.en.md). [Signed Dictionary](examples/signed-dictionary/README.md) is solely an educational development example and is not distributed as an official service.
 
@@ -53,7 +55,7 @@ To verify in GitHub Actions, manually run [Optional host compatibility](.github/
 
 Model parameter branching is a plugin adaptation strategy; standalone tests verify request construction logic, and host integration tests verify execution behavior under specified source versions, but neither proves all real models accept these parameters. Real services and browser acceptance require valid credentials and actual calls, with verified versions and results recorded separately.
 
-`apiVersion: 1` is the sole plugin contract version, covering manifest, rules, and SDK capabilities; `manifestVersion` / `rulesVersion` are no longer used. Plugin versions and host release versions remain independent. The publisher validates independently without relying on host source code.
+`apiVersion` is the sole plugin contract version, covering manifest, rules, and SDK capabilities; `manifestVersion` / `rulesVersion` are no longer used. Plugin versions and host release versions remain independent. The publisher validates independently without relying on host source code.
 
 Current verification results and browser acceptance boundaries can be found in [Plugin API 1 Acceptance Record](docs/plugin-api-1-acceptance.md).
 
