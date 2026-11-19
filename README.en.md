@@ -9,6 +9,7 @@ Service adapter plugins maintained by the [KISS Translator](https://github.com/f
 | Plugin | Capabilities |
 | ------ | ------------ |
 | [DeepSeek](plugins/deepseek/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode. |
+| [Index-Translate](plugins/index-translate/README.en.md) | Text translation, image text recognition, image translation, and bilingual image parsing. |
 | [Kimi](plugins/kimi/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, streaming output, and thinking mode for Kimi Code and the open platform. |
 | [LLaMA.cpp](plugins/llama-cpp/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |
 | [Ollama](plugins/ollama/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, and image text recognition. |

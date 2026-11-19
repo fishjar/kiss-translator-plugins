@@ -9,6 +9,7 @@
 | 插件                                                          | 支持能力                                                                                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [DeepSeek](plugins/deepseek/README.md)                        | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式。                                          |
+| [Index-Translate](plugins/index-translate/README.md)         | 文本翻译、图片原文识别、图片翻译和双语解析。                                                   |
 | [Kimi](plugins/kimi/README.md)                                | 对话、翻译、AI 词典、字幕断句、流式输出与思考模式，支持 Kimi Code 会员接口和开放平台。       |
 | [LLaMA.cpp](plugins/llama-cpp/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
 | [Ollama](plugins/ollama/README.md) | 对话、翻译、AI 词典、字幕断句和图片全文识别。 |
