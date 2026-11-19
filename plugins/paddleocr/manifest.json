@@ -1,0 +1,212 @@
+{
+  "id": "paddleocr",
+  "name": "PaddleOCR 官方 API",
+  "nameI18n": {
+    "zh": "PaddleOCR 官方 API",
+    "en": "PaddleOCR Official API",
+    "zh_TW": "PaddleOCR 官方 API",
+    "ja": "PaddleOCR 公式 API",
+    "ko": "PaddleOCR 공식 API",
+    "tr": "PaddleOCR Resmî API",
+    "vi": "API chính thức PaddleOCR",
+    "ru": "Официальный API PaddleOCR"
+  },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minHostVersion": "2.2.6",
+  "icon": "assets/logo.png",
+  "description": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+  "descriptionI18n": {
+    "zh": "PaddleOCR 官方异步 API：PP-OCR 文字识别（含文字行坐标）与 PP-StructureV3 / PaddleOCR-VL 文档解析。",
+    "en": "PaddleOCR official async API: PP-OCR text recognition with line boxes, and PP-StructureV3 / PaddleOCR-VL document parsing.",
+    "zh_TW": "PaddleOCR 官方非同步 API：PP-OCR 文字辨識（含文字行座標）與 PP-StructureV3 / PaddleOCR-VL 文件解析。",
+    "ja": "PaddleOCR 公式非同期 API：PP-OCR 文字認識（行座標付き）と PP-StructureV3 / PaddleOCR-VL 文書解析。",
+    "ko": "PaddleOCR 공식 비동기 API: 텍스트 줄 좌표가 포함된 PP-OCR 인식과 PP-StructureV3 / PaddleOCR-VL 문서 분석.",
+    "tr": "PaddleOCR resmî eşzamansız API: metin satırı koordinatlı PP-OCR tanıma ve PP-StructureV3 / PaddleOCR-VL belge ayrıştırma.",
+    "vi": "API bất đồng bộ chính thức của PaddleOCR: nhận dạng văn bản PP-OCR kèm tọa độ dòng, và phân tích tài liệu PP-StructureV3 / PaddleOCR-VL.",
+    "ru": "Официальный асинхронный API PaddleOCR: распознавание текста PP-OCR с координатами строк и разбор документов PP-StructureV3 / PaddleOCR-VL."
+  },
+  "permissions": {
+    "network": [
+      "https://paddleocr.aistudio-app.com",
+      "https://paddleocr-store.bj.bcebos.com",
+      "https://paddleocr-store-1.bj.bcebos.com",
+      "https://paddleocr-store-2.bj.bcebos.com",
+      "https://paddleocr-store-3.bj.bcebos.com",
+      "https://paddleocr-store-4.bj.bcebos.com",
+      "https://paddleocr-store-5.bj.bcebos.com",
+      "https://paddleocr-store-6.bj.bcebos.com",
+      "https://paddleocr-store-7.bj.bcebos.com",
+      "https://paddleocr-store-8.bj.bcebos.com",
+      "https://paddleocr-store-9.bj.bcebos.com"
+    ],
+    "endpointFields": [
+      "resultOrigin"
+    ],
+    "originRewrite": [
+      "https://paddleocr.aistudio-app.com"
+    ]
+  },
+  "sharedSettings": [
+    {
+      "key": "apiKey",
+      "label": "AI Studio Access Token",
+      "type": "password",
+      "isSecret": true,
+      "required": true,
+      "labelI18n": {
+        "zh": "AI Studio Access Token",
+        "en": "AI Studio Access Token"
+      }
+    },
+    {
+      "key": "resultOrigin",
+      "label": "结果下载域名（可选）",
+      "type": "text",
+      "labelI18n": {
+        "zh": "结果下载域名（可选）",
+        "en": "Result download origin (optional)",
+        "zh_TW": "結果下載網域（選填）",
+        "ja": "結果ダウンロード元（任意）",
+        "ko": "결과 다운로드 도메인 (선택)",
+        "tr": "Sonuç indirme kaynağı (isteğe bağlı)",
+        "vi": "Tên miền tải kết quả (tùy chọn)",
+        "ru": "Источник загрузки результата (необязательно)"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "text-ocr",
+      "name": "文字识别（PaddleOCR）",
+      "nameI18n": {
+        "zh": "文字识别（PaddleOCR）",
+        "en": "Text OCR (PaddleOCR)",
+        "zh_TW": "文字辨識（PaddleOCR）",
+        "ja": "文字認識（PaddleOCR）",
+        "ko": "텍스트 인식 (PaddleOCR)",
+        "tr": "Metin OCR (PaddleOCR)",
+        "vi": "Nhận dạng văn bản (PaddleOCR)",
+        "ru": "Распознавание текста (PaddleOCR)"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/paddleocr.js"
+      },
+      "capabilities": {
+        "recognizeText": {
+          "handler": "recognizeText",
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "coordinates": true
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "type": "text",
+          "defaultValue": "PP-OCRv6",
+          "required": true,
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "モデル",
+            "ko": "모델",
+            "tr": "Model",
+            "vi": "Mô hình",
+            "ru": "Модель"
+          }
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "PP-OCRv6",
+          "name": "PP-OCRv6"
+        },
+        {
+          "id": "PP-OCRv5",
+          "name": "PP-OCRv5"
+        },
+        {
+          "id": "PP-OCRv5-latin",
+          "name": "PP-OCRv5-latin"
+        }
+      ]
+    },
+    {
+      "id": "doc-parsing",
+      "name": "文档解析（PaddleOCR）",
+      "nameI18n": {
+        "zh": "文档解析（PaddleOCR）",
+        "en": "Document parsing (PaddleOCR)",
+        "zh_TW": "文件解析（PaddleOCR）",
+        "ja": "文書解析（PaddleOCR）",
+        "ko": "문서 분석 (PaddleOCR)",
+        "tr": "Belge ayrıştırma (PaddleOCR)",
+        "vi": "Phân tích tài liệu (PaddleOCR)",
+        "ru": "Разбор документов (PaddleOCR)"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/paddleocr.js"
+      },
+      "capabilities": {
+        "parseImage": {
+          "handler": "parseImage",
+          "inputModalities": [
+            "image"
+          ],
+          "outputModes": [
+            "complete"
+          ],
+          "taskModes": [
+            "doc"
+          ],
+          "coordinates": false,
+          "includesLayout": true
+        }
+      },
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型",
+          "type": "text",
+          "defaultValue": "PaddleOCR-VL-1.6",
+          "required": true,
+          "labelI18n": {
+            "zh": "模型",
+            "en": "Model",
+            "zh_TW": "模型",
+            "ja": "モデル",
+            "ko": "모델",
+            "tr": "Model",
+            "vi": "Mô hình",
+            "ru": "Модель"
+          }
+        }
+      ],
+      "modelField": "model",
+      "models": [
+        {
+          "id": "PaddleOCR-VL-1.6",
+          "name": "PaddleOCR-VL-1.6"
+        },
+        {
+          "id": "PaddleOCR-VL-1.5",
+          "name": "PaddleOCR-VL-1.5"
+        },
+        {
+          "id": "PP-StructureV3",
+          "name": "PP-StructureV3"
+        }
+      ]
+    }
+  ]
+}

@@ -16,8 +16,9 @@ Service adapter plugins maintained by the [KISS Translator](https://github.com/f
 | [OpenRouter](plugins/openrouter/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Whisper/Qwen speech recognition, Gemini/Qwen speech synthesis, and Jev decisions. |
 | [Qianwen AI](plugins/qianwen/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, timestamped speech recognition, and image text extraction. |
 | [SiliconFlow](plugins/siliconflow/README.en.md) | Chat, translation, AI dictionary, subtitle segmentation, Qwen & XingChen speech recognition, PaddleOCR & DeepSeek OCR full-image recognition. |
+| [PaddleOCR](plugins/paddleocr/README.en.md) | Baidu AI Studio cloud text recognition with line polygons and document layout parsing. |
 
-API Key is optional in all official plugins; empty keys omit the Bearer authorization header. API base URLs support HTTP/HTTPS, including compatible LAN services. These features require a host supporting HTTP and optional credentials, and upgrading existing service instances.
+PaddleOCR requires an AI Studio Access Token. Plugins omit the Bearer header when an optional API key is blank. Plugins with configurable API base URLs can connect to compatible HTTP/HTTPS services on a LAN.
 
 These adapter plugins are maintained by KISS Translator and do not represent endorsement or official release by the respective service providers.
 
