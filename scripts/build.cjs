@@ -22,7 +22,15 @@ function buildPackage(folder) {
   const bytes = Buffer.from(zipSync(files, { level: 9 }));
   if (bytes.length > 5 * 1024 * 1024) throw new Error("Package exceeds 5 MiB");
   const relative = `${manifest.id}/${manifest.version}.zip`;
-  return { bytes, relative, item: {
+  let icon;
+  if (manifest.icon !== undefined) {
+    const extension = path.extname(manifest.icon).toLowerCase();
+    const iconBytes = content[manifest.icon];
+    if (![".png", ".jpg", ".jpeg", ".webp"].includes(extension) || iconBytes.length > 256 * 1024)
+      throw new Error("Icon must be a PNG, JPEG or WebP under 256 KiB");
+    icon = { bytes: iconBytes, relative: `${manifest.id}/${manifest.version}.icon${extension}` };
+  }
+  return { bytes, relative, icon, item: {
     id: manifest.id, name: manifest.name, nameI18n: manifest.nameI18n,
     description: manifest.description, descriptionI18n: manifest.descriptionI18n,
     version: manifest.version, apiVersion: manifest.apiVersion,
@@ -30,6 +38,7 @@ function buildPackage(folder) {
     ...(manifest.kind !== undefined && { kind: manifest.kind }),
     capabilities: [...new Set(manifest.services.flatMap((service) => Object.keys(service.capabilities)))],
     downloadUrl: `${base}/${relative}`,
+    ...(icon && { iconUrl: `${base}/${icon.relative}` }),
     sha256: createHash("sha256").update(bytes).digest("hex"),
   } };
 }
@@ -55,6 +64,7 @@ function build(projectRoot = root) {
     const file = path.join(dist, pack.relative);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, pack.bytes);
+    if (pack.icon) fs.writeFileSync(path.join(dist, pack.icon.relative), pack.icon.bytes);
   }
   const plugins = packages.map((pack) => pack.item).sort((a, b) => a.id.localeCompare(b.id));
   fs.writeFileSync(previousFile, JSON.stringify({ schemaVersion: 1, plugins }, null, 2) + "\n");

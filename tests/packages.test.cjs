@@ -2,6 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 const { unzipSync } = require("fflate");
 const { buildPackage, build } = require("../scripts/build.cjs");
 const root = path.resolve(__dirname, "..");
@@ -71,6 +72,15 @@ test("published versions cannot be replaced or downgraded", () => {
     build(project);
     const catalogPath = path.join(project, "dist/catalog.json");
     const catalog = JSON.parse(fs.readFileSync(catalogPath));
+    const { iconUrl, version, sha256 } = catalog.plugins[0];
+    const relativeIcon = `deepseek/${version}.icon.png`;
+    assert.equal(iconUrl, `https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/${relativeIcon}`);
+    const publishedZip = fs.readFileSync(path.join(project, `dist/deepseek/${version}.zip`));
+    assert.equal(createHash("sha256").update(publishedZip).digest("hex"), sha256);
+    assert.deepEqual(
+      fs.readFileSync(path.join(project, "dist", relativeIcon)),
+      Buffer.from(unzipSync(publishedZip)["assets/logo.png"]),
+    );
     catalog.plugins.push({ ...catalog.plugins[0], id: "removed-plugin" });
     fs.writeFileSync(catalogPath, JSON.stringify(catalog));
     build(project);

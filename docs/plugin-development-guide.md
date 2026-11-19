@@ -196,7 +196,19 @@ Manifest 使用标准 JSON，不支持注释或尾随逗号。路径相对于包
 | icon           | 可选字符串     | 包内 PNG/JPEG/WebP 路径，最大 256 KiB               |
 | resources      | 可选数组       | `{id,path,mimeType}`，见第 8 节                     |
 
-图标只存本机、不复制到实例；缺模板、卸载或解码失败时使用默认图标，不影响执行。不要依赖未定义的额外字段控制行为。
+官方目录发布时会从包内 `icon` 生成独立的预览图。第三方目录从 GitHub 默认分支的根目录 Manifest 读取 `icon`，图片路径相对于仓库根目录。安装后从本机插件包读取图标，图标不随服务实例同步。图标缺失或加载失败时显示通用图标。
+
+`description` 和 `descriptionI18n` 支持 Markdown，可加入配置步骤或指引链接。宿主默认显示三行，每种语言的介绍文字最多显示 1000 个 Unicode 码点（包含截断省略号）。Markdown 标记和链接地址不占用文字额度。请使用绝对 HTTP(S) 链接。
+
+```json
+{
+  "icon": "assets/logo.png",
+  "description": "**快速开始**\n\n1. 创建 API 密钥。\n2. 在服务配置中填入密钥。\n\n[查看配置指南](https://example.com/setup)",
+  "descriptionI18n": {
+    "en": "**Quick start**\n\n1. Create an API key.\n2. Enter it in the service settings.\n\n[Setup guide](https://example.com/setup)"
+  }
+}
+```
 
 ### 3.2 服务字段
 
