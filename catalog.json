@@ -35,6 +35,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.3.5.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/deepseek/1.3.5.icon.png",
       "sha256": "d607daa27ef37a4eaeed83d057c64a67316a153a3f2f065a22fed97a9396615a"
     },
     {
@@ -59,6 +60,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/index-translate/1.0.3.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/index-translate/1.0.3.icon.png",
       "sha256": "7cf0e484c611aac2547a98eee8067a6d05ebba5da2c2c8e4fa13762bd0dc6b97"
     },
     {
@@ -94,6 +96,7 @@
         "segmentSubtitle"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/kimi/1.0.2.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/kimi/1.0.2.icon.png",
       "sha256": "cd1ab7fe7ea851c8efea5847d63bf42a4c4a9e9290dc2e6e09766b6a104dbe00"
     },
     {
@@ -130,6 +133,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/llama-cpp/1.0.0.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/llama-cpp/1.0.0.icon.png",
       "sha256": "cbe45f6702541f2d224ff0a4dafd7ee8bd5741acd00565bb4841df568a8fe1f4"
     },
     {
@@ -166,6 +170,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/ollama/1.0.0.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/ollama/1.0.0.icon.png",
       "sha256": "04650dca9904da05c1f0cbb2ebe57b29979c7395f75c7c458b86fb99520e39ce"
     },
     {
@@ -204,6 +209,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.9.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openai-compatible-bundle/2.0.9.icon.png",
       "sha256": "ab8c3068b83a9699d0cc45fb925595163479ccedf7f0979a8b1eb84825716f77"
     },
     {
@@ -236,6 +242,7 @@
         "evaluate"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.4.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/openrouter/1.2.4.icon.png",
       "sha256": "52b09e7e1129fb483925503a4a8838dea9e2588492079eff8d43fb6aa112e34c"
     },
     {
@@ -270,6 +277,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.2.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/paddleocr/1.0.2.icon.png",
       "sha256": "523fb8e7972d918bf08a07728d2943d4e2fa0ba51ddc4a965709638f1e54522b"
     },
     {
@@ -307,6 +315,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.5.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.5.icon.png",
       "sha256": "f58d156488de8a4a7a3bebe752e9ccb3ad464135409e0d413ad5cf3221f2708c"
     },
     {
@@ -338,6 +347,7 @@
         "parseImage"
       ],
       "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.9.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/siliconflow/1.1.9.icon.png",
       "sha256": "1b37a7c3f64f055dd920026a272371165ed94f8db5e60c5cf0cc011ca2a604d9"
     }
   ]
