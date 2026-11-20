@@ -31,6 +31,8 @@ PaddleOCR 需要 AI Studio Access Token。其他插件的可选 API Key 留空�
 
 https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.json
 
+新增插件或升版时，Actions 会将同一个安装 ZIP 上传到 [GitHub Releases](https://github.com/fishjar/kiss-translator-plugins/releases)。每个插件版本有独立的发布条目，例如 `paddleocr-v1.0.4`。如果上传失败，可从 `main` 重新运行发布工作流，补齐目录当前版本的附件。
+
 可在简约翻译的“接口插件”页面安装，也可下载 ZIP 后导入。官方仓库包含多个插件，不能使用仓库根地址作为单插件安装地址。
 
 官方插件使用数字 `apiVersion` 声明所需契约。当前官方包使用 API 1。PaddleOCR、Index-Translate 和 OpenAI 兼容协议可随宿主能力使用整图优先或结构化图片解析。
