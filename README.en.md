@@ -31,6 +31,8 @@ Each plugin independently increments its manifest version; overwriting published
 
 https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/catalog.json
 
+When a plugin is added or its version increases, Actions uploads the same installation ZIP to [GitHub Releases](https://github.com/fishjar/kiss-translator-plugins/releases). Each plugin version has its own release, such as `paddleocr-v1.0.4`. If an upload fails, rerun the publishing workflow from `main` to fill in missing assets for versions in the current catalog.
+
 Plugins can be installed via the "Service Plugins" page in KISS Translator or imported after downloading the ZIP. The official repository contains multiple plugins; do not use the repository root URL as a single-plugin installation URL.
 
 Official plugins declare their required contract with numeric `apiVersion`. Current official packages use API 1. PaddleOCR, Index-Translate and OpenAI Compatible use whole-image recognition or structured image parsing when supported by the host.
