@@ -289,7 +289,8 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 {
   "permissions": {
     "network": ["https://api.example.com", "http://localhost:8080"],
-    "endpointFields": ["baseUrl"]
+    "endpointFields": ["baseUrl"],
+    "originRewrite": ["https://api.example.com"]
   }
 }
 ```
@@ -298,11 +299,16 @@ text/password 值必须是字符串，number 必须是有限数值，boolean 必
 - network 中的固定地址和 endpointFields 中由用户配置的接口地址均支持 HTTP/HTTPS，包括局域网服务；仍须通过 origin 范围校验。
 - endpointFields 引用各服务合并后存在的非秘密 text 字段，允许访问该实例已保存值的 origin，不限制到某个路径。
 - 请求只能访问实例声明的固定 origin 和配置端点字段的 origin，不能访问自身范围之外的地址。
-- API 2 插件可依赖 `permissions.originRewrite: ["https://api.example.com"]`，要求宿主将发往这些地址的扩展请求的 Origin 设为目标 origin。名单必须是 `network` 固定地址的子集，不允许通配符、路径、尾斜线、查询或账号信息。更改 `endpointFields` 不会扩大此名单。
-- 宿主从所有启用、兼容且配置有效的外部服务实例快照收集声明，与用户保存的 Origin 名单去重合并；用户规则优先。仅安装模板不生效，同一地址最后一个实例停用后才撤销插件规则，用户保存的名单不被改写。导入、实例升级及设置页面会展示此权限。
-- 规则在启动及配置变化时同步，受影响的首次请求等待同步；请求结束不撤销规则，也不逐请求更新。规则只覆盖精确 origin 的扩展 XHR/fetch，不移除 CSP 或扩大网络权限。不支持 DNR 的浏览器会明确拒绝依赖此功能的调用。
 - 端点字段修改后，新请求使用新地址，活动任务继续使用原快照。不要声明与业务无关的端点字段。
 - 禁止 Cookie、URL 用户名密码、重定向及其他实例凭据，不授予浏览器 API 权限。
+
+#### Origin 重写域名
+
+当服务要求请求头 `Origin` 等于接口自身的 origin 时，可在 Manifest 中声明可选的 `permissions.originRewrite`。上例只对发往 `https://api.example.com` 的扩展 XHR/fetch 设置 `Origin: https://api.example.com`。重写后仍须遵守网络权限和 CSP。每项都必须与 `permissions.network` 中的固定 HTTP/HTTPS origin 完全一致。使用协议、小写主机和可选的非默认端口，省略路径、尾斜线、查询、片段和账号信息。通配符无效，用户修改 `endpointFields` 也不会扩大重写范围。
+
+插件 API 1 和 API 2 均可声明此字段。KISS Translator 2.2.6 在支持 `declarativeNetRequest`（DNR）的浏览器扩展中自动应用。若插件兼容 2.2.5，请在插件 README 中说明手动配置步骤，让用户在「基本设置 → 禁用Origin名单」中每行添加一个所需的完整 origin。可参考 [Index-Translate](../plugins/index-translate/README.md#浏览器-origin-配置)。
+
+宿主在启动及配置变化时，从已启用、兼容且配置有效的实例快照收集声明，与用户规则去重合并，用户规则优先。模板安装后还需创建并配置实例。插件规则在有符合条件的实例声明该 origin 时持续生效，依赖规则的调用会等待同步。导入和实例升级时可以核对声明。改动已发布的声明后，已有实例需升级才能应用新清单。
 
 ### SDK 能力边界与稳定性
 
@@ -1539,6 +1545,8 @@ npm run build
 | SCRIPT_ERROR                             | 全局/ES module/依赖/Sval 语法，Node 通过不代表 Sval                    |
 | SECRET_UNAVAILABLE                       | 声明、非空保存、ref 键                                                 |
 | NETWORK_DENIED                           | origin 声明范围、非 HTTP/HTTPS 协议、URL 内嵌凭据或重定向              |
+| ORIGIN_REWRITE_UNSUPPORTED               | 确认目标浏览器扩展支持 DNR                                              |
+| ORIGIN_REWRITE_FAILED                    | 检查扩展后台日志中的 Origin 规则同步错误                                |
 | HTTP_ERROR                               | 地址模型账号参数，无厂家错误正文                                       |
 | INVALID_RESPONSE/INCOMPLETE_RESPONSE     | 标准结构/JSON/拒答/缺重复 ID/截断                                      |
 | CAPABILITY_DISABLED/SERVICE_UNAVAILABLE  | 启用/服务声明/停用/配置完整                                            |
@@ -1549,6 +1557,8 @@ npm run build
 | RESOURCE_BUDGET_EXCEEDED                 | 体积/事件/待完成操作/流数                                              |
 | SCRIPT_TIMEOUT/REQUEST_TIMEOUT           | 同步计算/网络停滞/全程期限                                             |
 | 更新后行为不变                           | 是否旧快照，是否新版实例                                               |
+
+验收自动重写时，使用未在「禁用Origin名单」中手动添加目标 origin 的浏览器配置。启用并配置插件实例后发起一次实际请求，在扩展后台的网络面板或测试服务端确认收到的 `Origin` 等于目标 origin。遇到 HTTP 403 或 412 时，若服务要求同源 `Origin`，先用同样的方法核对请求头。
 
 ### 13.4 宿主 SDK 回归（可选）
 

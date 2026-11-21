@@ -287,7 +287,8 @@ Shared fields and permissions are validated per service, and shared capability-s
 {
   "permissions": {
     "network": ["https://api.example.com", "http://localhost:8080"],
-    "endpointFields": ["baseUrl"]
+    "endpointFields": ["baseUrl"],
+    "originRewrite": ["https://api.example.com"]
   }
 }
 ```
@@ -296,11 +297,16 @@ Shared fields and permissions are validated per service, and shared capability-s
 - Fixed addresses in `network` and user-configured addresses in `endpointFields` support HTTP/HTTPS, including LAN services; origin scope checks still apply.
 - `endpointFields` references merged non-secret `text` fields, granting access to the origin of the instance's saved value without restricting paths.
 - Requests may only access declared fixed origins and origins from configured endpoint fields; requests outside these scopes are blocked.
-- API 2 plugins can rely on `permissions.originRewrite: ["https://api.example.com"]` to set the Origin header of extension requests to the destination origin. Entries must be a subset of fixed `network` origins, without wildcards, paths, trailing slashes, queries, or credentials. Changing `endpointFields` does not expand this list.
-- The host deduplicates declarations from all enabled, compatible and configured external service snapshots and merges them with saved user Origin rules; user rules take precedence. Installing a template alone activates nothing. A shared plugin rule remains until its last contributing instance is disabled or removed, and saved user settings remain unchanged. Import, instance upgrade and settings views display this permission.
-- Rules synchronize at startup and on configuration changes; affected first requests await synchronization. Requests do not install or remove rules individually. Rules match the exact origin and extension-initiated XHR/fetch only; they do not remove CSP or expand network access. Browsers without DNR explicitly reject calls requiring this feature.
 - When endpoint fields are modified, new requests use the new address while active tasks continue using their original snapshot. Never declare unrelated endpoint fields.
 - Cookies, URL credentials, redirects, and access to other instance credentials are prohibited; no browser extension API permissions are granted.
+
+#### Origin Rewrite
+
+If a service requires the `Origin` request header to equal the endpoint's own origin, declare the optional `permissions.originRewrite` field in the manifest. The example sets `Origin: https://api.example.com` for extension-initiated XHR/fetch requests to that exact origin. Network permissions and CSP still apply. Each entry must match a fixed HTTP/HTTPS origin in `permissions.network`. Include the scheme, lowercase host, and optional non-default port. Omit paths, trailing slashes, queries, fragments, credentials, and wildcards. Changes to `endpointFields` do not expand the rewrite list.
+
+Plugin API 1 and API 2 can both declare this field. KISS Translator 2.2.6 applies it automatically in browser extensions that support `declarativeNetRequest` (DNR). If the plugin supports 2.2.5, document the manual setup in its README. Tell users to add each required full origin on a separate line under **Basic Settings → Disabled Origin List**. See [Index-Translate](../plugins/index-translate/README.en.md).
+
+At startup and when configuration changes, the host collects declarations from enabled, compatible, validly configured instance snapshots and deduplicates them with user rules. User rules take precedence. After installing a template, create and configure an instance. A plugin rule stays active while any eligible instance declares its origin. Calls that depend on the rule wait for synchronization. Review the declared origins during import or instance upgrade. When a published declaration changes, upgrade existing instances to apply the new manifest.
 
 ### SDK Capability Boundaries and Stability
 
@@ -1537,6 +1543,8 @@ Declarative `protocol` delegates protocol handling to the host, but vendor compa
 | `SCRIPT_ERROR` | Check globals, ES modules, dependencies, and Sval syntax; passing in Node.js does not guarantee Sval compatibility |
 | `SECRET_UNAVAILABLE` | Check secret declarations, non-empty saved values, and `$secret`/`ref` keys |
 | `NETWORK_DENIED` | Check declared `origin` scopes, non-HTTP/HTTPS schemes, embedded URL credentials, or redirects |
+| `ORIGIN_REWRITE_UNSUPPORTED` | Check that the target browser extension supports DNR |
+| `ORIGIN_REWRITE_FAILED` | Check the extension background logs for Origin rule synchronization errors |
 | `HTTP_ERROR` | Check URL, model, credentials, and parameters; vendor error bodies are omitted |
 | `INVALID_RESPONSE` / `INCOMPLETE_RESPONSE` | Check standard schemas, JSON formatting, refusals, missing/duplicate IDs, and stream truncation |
 | `CAPABILITY_DISABLED` / `SERVICE_UNAVAILABLE` | Check user-enabled capabilities, service declarations, disabled services, and complete configs |
@@ -1547,6 +1555,8 @@ Declarative `protocol` delegates protocol handling to the host, but vendor compa
 | `RESOURCE_BUDGET_EXCEEDED` | Check sizes, event budgets, pending operations, and stream counts |
 | `SCRIPT_TIMEOUT` / `REQUEST_TIMEOUT` | Check synchronous execution blocks, network stalls, and overall deadlines |
 | Unchanged behavior after update | Check if running on an old snapshot or an upgraded instance |
+
+To verify automatic rewriting, use a browser profile without a manual entry for the target origin in **Disabled Origin List**. Enable and configure the plugin instance, make a request, and check in the extension background Network panel or at the test server that the received `Origin` header equals the destination origin. If a service requires a same-origin header and returns HTTP 403 or 412, use the same check during troubleshooting.
 
 ### 13.4 Host SDK Regression (Optional)
 
