@@ -31,6 +31,9 @@ exports.transcribe = async function (input, config, ctx) {
   if (input.language && input.language !== "auto") {
     body.language = ctx.helpers.languages.toIso6391(input.language);
   }
+  if (typeof input.context === "string" && input.context.trim()) {
+    body.prompt = input.context.trim();
+  }
   var request = ctx.helpers.openai.chatCompletions.buildRequest({
     baseUrl: config.baseUrl,
     model: config.model,

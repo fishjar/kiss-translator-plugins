@@ -1,7 +1,7 @@
 {
   "id": "openrouter",
   "name": "OpenRouter",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "freeTier": "some-models",
   "apiVersion": 1,
   "icon": "assets/logo.png",
