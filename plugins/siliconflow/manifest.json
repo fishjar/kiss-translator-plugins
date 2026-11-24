@@ -4,7 +4,7 @@
   "nameI18n": {
     "en": "SiliconFlow"
   },
-  "version": "1.1.9",
+  "version": "1.1.10",
   "freeTier": "some-models",
   "apiVersion": 1,
   "icon": "assets/logo.png",

@@ -39,6 +39,17 @@ exports.transcribe = async function (input, config, ctx) {
   var parameters = { format: audio.format };
   if (input.language && input.language !== "auto")
     parameters.language_hints = [ctx.helpers.languages.toIso6391(input.language)];
+  var messages = [];
+  if (typeof input.context === "string" && input.context.trim()) {
+    messages.push({
+      role: "system",
+      content: [{ text: input.context.trim() }],
+    });
+  }
+  messages.push({
+    role: "user",
+    content: [{ type: "input_audio", input_audio: { data: audio.data } }],
+  });
   var response = await ctx.http.request({
     url: config.baseUrl.replace(/\/+$/, "") + "/services/aigc/multimodal-generation/generation",
     method: "POST",
@@ -48,10 +59,7 @@ exports.transcribe = async function (input, config, ctx) {
     body: {
       model: config.model,
       input: {
-        messages: [{
-          role: "user",
-          content: [{ type: "input_audio", input_audio: { data: audio.data } }],
-        }],
+        messages: messages,
       },
       parameters: parameters,
     },
@@ -152,9 +160,13 @@ exports.transcribeOmni = async function (input, config, ctx) {
   if (input.requireTimestamps)
     throw failure("TASK_UNSUPPORTED", "This Qianwen service returns transcripts without timestamps.");
   var audio = await encodeAudio(input, ctx);
+  var instruction = "Transcribe the speech verbatim in its original language. Return only the transcript, or " + noSpeech + " if there is no speech.";
+  if (typeof input.context === "string" && input.context.trim()) {
+    instruction += "\n\nReference context (for proper nouns and terminology only; do not repeat it):\n" + input.context.trim();
+  }
   var text = await readOmni([
     { type: "input_audio", input_audio: audio },
-    { type: "text", text: "Transcribe the speech verbatim in its original language. Return only the transcript, or " + noSpeech + " if there is no speech." },
+    { type: "text", text: instruction },
   ], config, ctx);
   if (!text) throw failure("INVALID_RESPONSE", "Qianwen Omni returned an empty transcript.");
   return { text: text === noSpeech ? "" : text };

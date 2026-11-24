@@ -11,7 +11,7 @@
     "vi": "Qianwen AI",
     "ru": "Qianwen AI"
   },
-  "version": "1.0.5",
+  "version": "1.0.6",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "通过千问 AI 平台进行对话、翻译、语音识别和图片全文识别。",

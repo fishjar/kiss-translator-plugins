@@ -18,6 +18,10 @@
             "omitIfEmpty": true,
             "omitValues": ["auto"],
             "transform": "languages.toIso6391"
+          },
+          "prompt": {
+            "$ref": "input.context",
+            "omitIfEmpty": true
           }
         },
         "responseType": "text"

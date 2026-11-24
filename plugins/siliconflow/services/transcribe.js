@@ -42,6 +42,9 @@ exports.transcribe = async function (input, config, ctx) {
     file: { ...input.audio, filename: filename },
     model: config.model,
   };
+  if (typeof input.context === "string" && input.context.trim()) {
+    request.body.prompt = input.context.trim();
+  }
   // XingChen returns segment times in verbose JSON; Qwen rejects this format.
   if (config.model === "XingChenAGI/XingChenASR-V3.2-Ultra") {
     request.body.response_format = "verbose_json";
