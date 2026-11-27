@@ -7,6 +7,27 @@ const { getPluginPromptOptions, withDefaultPromptInput } = load("providers/defau
 const completion = (text) => ({ choices: [{ message: { content: text }, finish_reason: "stop" }] });
 const sse = (data) => new Response(data, { headers: { "content-type": "text/event-stream" } });
 
+test("installed Qwen-MT-Uni package uses the native endpoint and host-injected credentials", async () => {
+  const f = fixture("qianwen", "mt-uni");
+  assert.equal(f.config.model, "qwen-mt-uni");
+  f.respond(() => Response.json({
+    output: { Success: true, Data: { TranslatedTexts: ["你好", "世界"] } },
+  }));
+  const result = await f.invoke("translate", {
+    items: [{ id: "b", text: "Hello" }, { id: "a", text: "World" }],
+    translationMode: "batch", targetLanguage: "zh-CN", sourceLanguage: "en",
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(result.items)), [
+    { id: "b", text: "你好" }, { id: "a", text: "世界" },
+  ]);
+  const [{ url, init }] = f.calls;
+  assert.equal(url, "https://maas.qianwenaiapi.com/api/v1/services/aigc/multimodal-generation/generation");
+  assert.equal(init.headers.Authorization, "Bearer test-only-secret");
+  assert.deepEqual(JSON.parse(init.body), {
+    model: "qwen-mt-uni", input: { source_texts: ["Hello", "World"], source_lang: "en", target_lang: "zh" },
+  });
+});
+
 test("all Qianwen services retain default URLs and honor custom HTTP base paths without a key", async () => {
   for (const service of ["chat", "ocr", "omni", "asr"]) {
     for (const baseUrl of [undefined, "http://192.168.6.138:8088/proxy/v1/"]) {

@@ -7,13 +7,16 @@ Install Qianwen AI from Service Plugins in KISS Translator, or import the built 
 | Service | Model | Use |
 | --- | --- | --- |
 | Chat and Translation (LLM) | `qwen3.8-flash`, `qwen3.8-max` | Flash is the default. Text and image chat, single and batch translation, AI dictionary, and subtitle segmentation. Chat, translation, and dictionary support streaming. Thinking is off by default. |
+| Text Translation (Qwen-MT-Uni) | `qwen-mt-uni` | Synchronous single and batch translation of web text and text extracted in the file workspace. |
 | Speech Recognition (with Timestamps) | `qwen-audio-3.1-asr-flash` | Short audio transcription with sentence timing and valid word timing when available. Use for precise YouTube subtitle alignment. |
 | Image Text Extraction | `qwen3.5-ocr` | Extracts text from screenshots and scanned pages. |
 | Multimodal Recognition | `qwen3.8-omni-flash` | Image text extraction and short audio transcription without timestamps. KISS Translator aligns YouTube subtitles to audio chunks. |
 
 Chat, image extraction, and Omni use OpenAI-compatible Chat Completions. Timestamped ASR uses Qianwen's native HTTP endpoint. Live checks covered WAV and host-remuxed AAC-LC M4A. The dedicated ASR can return HTTP 400 for silent input. Omni returned an empty transcript for the silence sample. [Dedicated ASR](https://platform.qianwenai.com/docs/api-reference/speech-recognition/qwen-audio-asr/http-api) · [Omni](https://platform.qianwenai.com/docs/developer-guides/speech/multimodal-speech)
 
-All four services accept editable HTTP/HTTPS API base URLs and custom model IDs. API Key is optional. Chat, image extraction, and Omni default to `https://maas.qianwenaiapi.com/compatible-mode/v1`; timestamped ASR defaults to `https://maas.qianwenaiapi.com/api/v1`. Each service appends its endpoint path to the base URL. Custom services must support the selected protocol and capabilities.
+All services accept editable HTTP/HTTPS API base URLs. Chat, image extraction, Omni, and timestamped ASR accept custom model IDs and can omit the API key for endpoints that require no authentication. Chat, image extraction, and Omni default to `https://maas.qianwenaiapi.com/compatible-mode/v1`. Timestamped ASR and Qwen-MT-Uni default to `https://maas.qianwenaiapi.com/api/v1`. Each service appends its endpoint path to the base URL.
+
+To use Qwen-MT-Uni, add Text Translation (Qwen-MT-Uni) in Services, enter a Qianwen AI Platform API key, and select the service for a translation scenario. The model ID is fixed to `qwen-mt-uni`. See the provider's language table for supported translation directions. For web paragraphs with inline tags, turn off rich-text translation and retry. This service sends text segments and covers synchronous text translation. [Qwen-MT-Uni API and language table](https://platform.qianwenai.com/docs/api-reference/multimodal-translation/qwen-mt-uni/translate)
 
 Preview the image prompts in the plugin list and choose a preset in the service settings. Image Text Extraction and Multimodal Recognition both default to Plain text recognition and offer Document to Markdown and Table extraction. The dedicated OCR service also offers Formula extraction (LaTeX), while Omni offers Chart analysis and Image description. Existing instances can be upgraded to the new template snapshot.
 
