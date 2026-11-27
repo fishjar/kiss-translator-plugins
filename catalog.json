@@ -304,7 +304,7 @@
         "vi": "Trò chuyện, dịch, nhận dạng giọng nói và trích xuất văn bản từ ảnh qua nền tảng Qianwen AI.",
         "ru": "Чат, перевод, распознавание речи и извлечение текста из изображений на платформе Qianwen AI."
       },
-      "version": "1.0.5",
+      "version": "1.1.0",
       "apiVersion": 1,
       "capabilities": [
         "chat",
@@ -314,9 +314,9 @@
         "transcribe",
         "parseImage"
       ],
-      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.5.zip",
-      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.0.5.icon.png",
-      "sha256": "f58d156488de8a4a7a3bebe752e9ccb3ad464135409e0d413ad5cf3221f2708c"
+      "downloadUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.1.0.zip",
+      "iconUrl": "https://raw.githubusercontent.com/fishjar/kiss-translator-plugins/dist/qianwen/1.1.0.icon.png",
+      "sha256": "d709da57acf34e5cdf1b524c417a10f69ca0a289e056d98ca2a0c6e969ac998b"
     },
     {
       "id": "siliconflow",
