@@ -55,7 +55,7 @@ test("Qwen-MT-Uni reports provider errors and rejects malformed results", async 
   for (const [response, expected] of [
     [{ code: "InvalidParameter", message: "Unsupported language pair", request_id: "req-1" },
       { code: "PROVIDER_ERROR", message: /InvalidParameter.*Unsupported language pair.*req-1/ }],
-    [{ output: { Success: false, Code: 400, Message: "Translation failed" } },
+    [{ code: "", output: { Success: false, Code: 400, Message: "Translation failed" } },
       { code: "PROVIDER_ERROR", message: /400.*Translation failed/ }],
     [null, { code: "INVALID_RESPONSE", message: /JSON/ }],
     [success(["你好 {{1}}"]), { code: "INVALID_RESPONSE", message: /unexpected/ }],
@@ -71,10 +71,44 @@ test("Qwen-MT-Uni reports provider errors and rejects malformed results", async 
     { code: "INVALID_RESPONSE", message: /unexpected/ });
 });
 
-test("Qwen-MT-Uni rejects rich-text tags before calling the API", async () => {
+test("Qwen-MT-Uni rejects host rich-text placeholders before calling the API", async () => {
   const { ctx, config, requests } = probe();
-  await assert.rejects(translate({
-    ...input, items: [{ id: "a", text: "Hello <i1>world</i1>" }],
-  }, config, ctx), { code: "INVALID_INPUT", message: /Disable rich-text/ });
+  for (const tag of ["i", "a", "b", "x", "span"]) {
+    for (const text of [`Hello <${tag}1>world</${tag}1>`, `Hello <${tag} i=1>world</${tag}>`]) {
+      await assert.rejects(translate({
+        ...input, items: [{ id: "a", text }],
+      }, config, ctx), { code: "INVALID_INPUT", message: /Disable rich-text/ });
+    }
+  }
   assert.equal(requests.length, 0);
+});
+
+test("Qwen-MT-Uni maps regional aliases and preserves provider-specific language codes", async () => {
+  const { ctx, config } = probe();
+  for (const [locale, code] of [
+    ["zh-TW", "zh-tw"], ["zh-HK", "zh-tw"], ["zh-MO", "zh-tw"],
+    ["zh-Hant", "zh-tw"], ["zh-Hant-TW", "zh-tw"], ["zh_Hant_HK", "zh-tw"],
+    ["zh-Hans-CN", "zh"], ["fil-PH", "tl"], ["iw-IL", "he"], ["pt-PT", "pt-pt"], ["ro_ur", "ro_ur"],
+  ]) {
+    ctx.http.request = async ({ body }) => {
+      assert.equal(body.input.target_lang, code);
+      assert.equal(body.input.source_lang, code);
+      return { body: JSON.stringify(success("Hello {{1}}")) };
+    };
+    await translate({ ...input, sourceLanguage: locale, targetLanguage: locale }, config, ctx);
+  }
+});
+
+test("Qwen-MT-Uni accepts a batch of technical text and ignores blank success codes", async () => {
+  const { ctx, config } = probe();
+  const texts = ["Array<string>", "Promise<void>", "std::vector<int>", "<user@example.com>"];
+  const items = texts.map((text, index) => ({ id: String(index), text }));
+  for (const code of ["", "  "]) {
+    ctx.http.request = async ({ body }) => {
+      assert.deepEqual(Array.from(body.input.source_texts), texts);
+      return { body: JSON.stringify({ code, ...success(texts) }) };
+    };
+    const result = await translate({ ...input, items, translationMode: "batch" }, config, ctx);
+    assert.deepEqual(JSON.parse(JSON.stringify(result.items)), items);
+  }
 });

@@ -2,11 +2,12 @@ function languageCode(value) {
   var code = value.trim().toLowerCase();
   if (code === "ro_ur" || code === "ro-ur") return "ro_ur";
   code = code.replace(/_/g, "-");
-  if (code === "zh-hant" || code === "zh-tw") return "zh-tw";
+  if (/^zh-(?:hant|tw|hk|mo)(?:-|$)/.test(code)) return "zh-tw";
   if (code === "pt-pt") return code;
-  if (code === "fil") return "tl";
-  if (code === "iw") return "he";
-  return code.split("-")[0];
+  var base = code.split("-")[0];
+  if (base === "fil") return "tl";
+  if (base === "iw") return "he";
+  return base;
 }
 
 function failure(code, message) {
@@ -17,7 +18,7 @@ function failure(code, message) {
 
 exports.translate = async function (input, config, ctx) {
   var texts = input.items.map(function (item) {
-    if (input.textFormat === "html" && /<\/?[a-z][\w:-]*(?:\s[^<>]*)?\s*\/?>/i.test(item.text)) {
+    if (input.textFormat === "html" && /<(?:\/?(?:i|a|b|x|span)\d+|(?:i|a|b|x|span) i=\d+)>/i.test(item.text)) {
       throw failure("INVALID_INPUT", "Disable rich-text translation to use Qwen-MT-Uni on this page.");
     }
     return item.text;
@@ -45,9 +46,10 @@ exports.translate = async function (input, config, ctx) {
     throw failure("INVALID_RESPONSE", "Invalid Qwen-MT-Uni JSON.");
   }
   var output = data?.output;
-  if (typeof data?.code === "string" || output?.Success === false) {
+  var errorCode = typeof data?.code === "string" ? data.code.trim() : "";
+  if (errorCode || output?.Success === false) {
     var detail = data.message || output?.Message || "Translation failed.";
-    var code = data.code ?? output?.Code;
+    var code = errorCode || output?.Code;
     var requestId = data.request_id || output?.RequestId;
     throw failure("PROVIDER_ERROR", "Qwen-MT-Uni" + (code == null ? "" : " [" + code + "]") +
       ": " + detail + (requestId ? " (request ID: " + requestId + ")" : ""));

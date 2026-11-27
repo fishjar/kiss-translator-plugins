@@ -29,11 +29,16 @@ test("installed Qwen-MT-Uni package uses the native endpoint and host-injected c
 });
 
 test("all Qianwen services retain default URLs and honor custom HTTP base paths without a key", async () => {
-  for (const service of ["chat", "ocr", "omni", "asr"]) {
+  for (const service of ["chat", "ocr", "omni", "asr", "mt-uni"]) {
     for (const baseUrl of [undefined, "http://192.168.6.138:8088/proxy/v1/"]) {
       const f = fixture("qianwen", service, { apiKey: "", ...(baseUrl && { baseUrl }) });
       let handler, input, suffix;
-      if (service === "asr") {
+      if (service === "mt-uni") {
+        handler = "translate";
+        input = { items: [{ id: "a", text: "Hello" }], translationMode: "single", targetLanguage: "zh-CN" };
+        suffix = "/services/aigc/multimodal-generation/generation";
+        f.respond(() => Response.json({ output: { Success: true, Data: { TranslatedTexts: "你好" } } }));
+      } else if (service === "asr") {
         handler = "transcribe";
         input = { audio: f.assets.put(new Blob(["wav"], { type: "audio/wav" })) };
         suffix = "/services/aigc/multimodal-generation/generation";
@@ -49,10 +54,11 @@ test("all Qianwen services retain default URLs and honor custom HTTP base paths 
         if (service === "omni")
           f.respond(() => sse('data: {"choices":[{"delta":{"content":"Hello"},"finish_reason":"stop"}]}\n\ndata: [DONE]\n\n'));
       }
-      await f.invoke(handler, input);
+      const result = await f.invoke(handler, input);
+      if (service === "mt-uni") assert.equal(result.items[0].text, "你好");
       const expectedBase = baseUrl
         ? baseUrl.replace(/\/+$/, "")
-        : "https://maas.qianwenaiapi.com/" + (service === "asr" ? "api/v1" : "compatible-mode/v1");
+        : "https://maas.qianwenaiapi.com/" + (["asr", "mt-uni"].includes(service) ? "api/v1" : "compatible-mode/v1");
       assert.equal(f.calls[0].url, expectedBase + suffix);
       assert.equal(f.calls[0].init.headers.Authorization, undefined);
     }
