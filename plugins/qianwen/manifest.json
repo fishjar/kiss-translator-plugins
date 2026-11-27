@@ -11,7 +11,7 @@
     "vi": "Qianwen AI",
     "ru": "Qianwen AI"
   },
-  "version": "1.0.5",
+  "version": "1.1.0",
   "apiVersion": 1,
   "icon": "assets/logo.png",
   "description": "通过千问 AI 平台进行对话、翻译、语音识别和图片全文识别。",
@@ -250,6 +250,69 @@
           }
         ]
       }
+    },
+    {
+      "id": "mt-uni",
+      "name": "文本翻译（Qwen-MT-Uni）",
+      "nameI18n": {
+        "zh": "文本翻译（Qwen-MT-Uni）",
+        "en": "Text Translation (Qwen-MT-Uni)",
+        "zh_TW": "文字翻譯（Qwen-MT-Uni）",
+        "ja": "テキスト翻訳（Qwen-MT-Uni）",
+        "ko": "텍스트 번역 (Qwen-MT-Uni)",
+        "tr": "Metin Çevirisi (Qwen-MT-Uni)",
+        "vi": "Dịch văn bản (Qwen-MT-Uni)",
+        "ru": "Перевод текста (Qwen-MT-Uni)"
+      },
+      "implementation": {
+        "kind": "script",
+        "entry": "services/mt-uni.js"
+      },
+      "capabilities": {
+        "translate": {
+          "handler": "translate",
+          "batch": { "supported": true },
+          "outputModes": ["complete"]
+        }
+      },
+      "models": [{ "id": "qwen-mt-uni", "name": "Qwen-MT-Uni" }],
+      "allowCustomModel": false,
+      "settings": [
+        {
+          "key": "model",
+          "label": "模型 ID",
+          "labelI18n": {
+            "zh": "模型 ID",
+            "en": "Model ID",
+            "zh_TW": "模型 ID",
+            "ja": "モデル ID",
+            "ko": "모델 ID",
+            "tr": "Model kimliği",
+            "vi": "ID mô hình",
+            "ru": "ID модели"
+          },
+          "type": "text",
+          "required": true,
+          "defaultValue": "qwen-mt-uni"
+        },
+        {
+          "key": "baseUrl",
+          "label": "API 基础地址",
+          "type": "text",
+          "defaultValue": "https://maas.qianwenaiapi.com/api/v1",
+          "required": true,
+          "labelI18n": {
+            "zh": "API 基础地址",
+            "en": "API base URL",
+            "zh_TW": "API 基礎地址",
+            "ja": "APIベースURL",
+            "ko": "API 기본 URL",
+            "tr": "API temel URL'si",
+            "vi": "URL gốc API",
+            "ru": "Базовый URL API"
+          }
+        }
+      ]
     },
     {
       "id": "asr",
